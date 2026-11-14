@@ -2,9 +2,14 @@
 
 namespace App\Models;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property CarbonImmutable $starts_at
+ * @property CarbonImmutable $expires_at
+ */
 class Membership extends Model
 {
     protected $guarded = ['id'];

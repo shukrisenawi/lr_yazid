@@ -52,3 +52,9 @@ jobs:
 
       - name: Run CI Checks
         run: composer ci:check
+
+      - name: Verify concurrent checkout on MySQL
+        run: php artisan test --filter=MySqlCheckoutConcurrencyTest
+        env:
+          MYSQL_CONCURRENCY_TEST: '1'
+          DB_PASSWORD: ci_only_password

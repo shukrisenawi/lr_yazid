@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\CartService;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -39,6 +40,7 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'name' => config('app.name'),
             'copy' => __('interface'),
+            'cartCount' => fn () => app(CartService::class)->count($request),
             'auth' => [
                 'user' => $request->user()?->only(['id', 'name', 'email', 'phone', 'role', 'email_verified_at', 'created_at', 'updated_at']),
             ],

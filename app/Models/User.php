@@ -50,6 +50,18 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
             ->where('starts_at', '<=', now())->where('expires_at', '>', now())->exists();
     }
 
+    /** @return HasMany<Address, $this> */
+    public function addresses(): HasMany
+    {
+        return $this->hasMany(Address::class);
+    }
+
+    /** @return HasMany<Order, $this> */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *

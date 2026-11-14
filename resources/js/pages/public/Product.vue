@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import ProductCard from '@/components/ProductCard.vue';
+import AddToCartForm from '@/components/AddToCartForm.vue';
 import { money, type Product } from '@/types/catalog';
 const props = defineProps<{ product: Product; related: Product[] }>();
 const imageIndex = ref(0);
@@ -9,6 +10,12 @@ const variantId = ref<number | ''>('');
 const variant = computed(() =>
     props.product.variants?.find((item) => item.id === variantId.value),
 );
+watch(variant, (value) => {
+    const index = props.product.images.findIndex(
+        (image) => image.id === value?.product_image_id,
+    );
+    if (index >= 0) imageIndex.value = index;
+});
 </script>
 <template>
     <Head :title="product.seo_title || product.name"
@@ -95,19 +102,42 @@ const variant = computed(() =>
                 >
                 <p class="mt-6 text-sm">
                     {{
-                        (variant?.stock ?? product.stock) > 0
-                            ? 'In stock'
-                            : 'Out of stock'
+                        product.type === 'membership'
+                            ? 'Membership · No shipping'
+                            : (variant?.stock ?? product.stock) > 0
+                              ? 'In stock'
+                              : 'Out of stock'
                     }}
                 </p>
+                <dl
+                    v-if="variant?.attributes?.length"
+                    class="mt-4 grid grid-cols-2 gap-2 text-sm"
+                >
+                    <template
+                        v-for="attribute in variant.attributes"
+                        :key="attribute.name"
+                        ><dt class="text-muted-foreground">
+                            {{ attribute.name }}
+                        </dt>
+                        <dd>{{ attribute.value }}</dd></template
+                    >
+                </dl>
                 <p class="mt-3 text-xs text-muted-foreground">
                     SKU: {{ variant?.sku ?? product.sku }}
                 </p>
-                <p
-                    class="mt-8 rounded-md bg-muted p-4 text-sm text-muted-foreground"
-                >
-                    Online checkout is not available yet.
-                </p>
+                <AddToCartForm
+                    :product-id="product.id"
+                    :variant-id="variant?.id ?? null"
+                    :available="
+                        product.type === 'membership'
+                            ? 1
+                            : (variant?.stock ?? product.stock)
+                    "
+                    :requires-variant="
+                        (product.variants?.length ?? 0) > 0 ||
+                        (product.variants_count ?? 0) > 0
+                    "
+                />
             </section>
         </div>
         <section class="mt-16 max-w-3xl">

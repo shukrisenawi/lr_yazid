@@ -74,16 +74,19 @@ class ProductController extends Controller
             $copy->sku = Str::limit($product->sku, 80, '').'-'.Str::upper(Str::random(8));
             $copy->status = 'draft';
             $copy->save();
+            $imageIds = [];
             foreach ($product->images as $image) {
                 $path = 'products/'.Str::uuid().'.'.pathinfo($image->path, PATHINFO_EXTENSION);
                 if (Storage::disk('public')->copy($image->path, $path)) {
-                    $copy->images()->create(['path' => $path, 'alt' => $image->alt, 'position' => $image->position]);
+                    $imageIds[$image->id] = $copy->images()->create(['path' => $path, 'alt' => $image->alt, 'position' => $image->position])->id;
                 }
             }
             foreach ($product->variants as $variant) {
                 $copy->variants()->create([
                     'name' => $variant->name, 'sku' => $variant->sku.'-'.Str::upper(Str::random(8)),
                     'price_sen' => $variant->price_sen, 'stock' => $variant->stock, 'is_active' => $variant->is_active,
+                    'attributes' => $variant->attributes,
+                    'product_image_id' => $imageIds[$variant->product_image_id] ?? null,
                 ]);
             }
 
@@ -119,5 +122,29 @@ class ProductController extends Controller
         $path = $service->store($request->file('image'));
 
         return response()->json(['url' => Storage::disk('public')->url($path)]);
+    }
+
+    public function replaceImage(Request $request, Product $product, ProductImage $image, ProductImageService $service): RedirectResponse
+    {
+        Gate::authorize('update', $product);
+        abort_unless($image->product_id === $product->id, 404);
+        $request->validate(['image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120', 'dimensions:max_width=6000,max_height=6000']]);
+        $path = $service->store($request->file('image'));
+        try {
+            $oldPath = DB::transaction(function () use ($image, $path) {
+                $locked = ProductImage::whereKey($image->id)->lockForUpdate()->firstOrFail();
+                $old = $locked->path;
+                $locked->update(['path' => $path]);
+
+                return $old;
+            });
+        } catch (\Throwable $error) {
+            Storage::disk('public')->delete($path);
+            throw $error;
+        }
+        Storage::disk('public')->delete($oldPath);
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Image replaced.')]);
+
+        return back();
     }
 }

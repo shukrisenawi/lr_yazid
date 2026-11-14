@@ -1,7 +1,7 @@
 # Implementation status
 
 The master requirements remain the source of truth. This delivery is a working
-foundation and catalog milestone, **not the complete production-ready system**.
+commerce and membership milestone, **not the complete production-ready system**.
 
 ## Phase 1: Complete
 
@@ -47,11 +47,42 @@ Main files: `app/Models/{Product,ProductImage,ProductVariant,Category}.php`,
 `resources/js/pages/{public,admin}/`, `resources/js/components/RichTextEditor.vue`,
 `resources/js/types/catalog.ts`, `tests/Feature/CatalogTest.php`.
 
-Outstanding catalog refinements before declaring full Phase 2 acceptance:
-variant-specific images/structured attribute definitions; dedicated image replacement
-instead of remove/re-upload; complete UI string centralization; automated Vue
-component tests; broader keyboard, upload-failure and responsive regression coverage.
-Cart buttons belong to Phase 3 and are intentionally not fake/disabled actions.
+Variant-specific images/structured attributes, direct image replacement and accessible
+image ordering are implemented and covered by backend/Vue tests.
+Complete UI string centralization and broader accessibility/responsive acceptance
+remain outstanding.
+
+## Phase 3: Shopping core implemented
+
+- Persistent guest/authenticated carts, safe login merge, server pricing/stock validation.
+- Owner-protected multiple/default shipping addresses and configurable flat-rate shipping.
+- User-scoped idempotent checkout, immutable order snapshots and expiring reservations.
+- Row-locked inventory protection, including MySQL REPEATABLE READ locking reads.
+- Customer orders/cancellation; administrator order fulfillment, invoice and export
+  remain outstanding.
+
+## Phase 4: Payment integration implemented; external acceptance blocked
+
+- ToyyibPay sandbox/production configuration with encrypted secrets.
+- Bill creation, signed callbacks, transaction API reconciliation, retries and logs.
+- Verified amount/reference/status checks; idempotent settlement and inventory deduction.
+- Browser returns never activate membership or mark orders paid.
+- Ambiguous bill-creation outcomes block blind retries. Late/additional payments
+  are recorded for review without repeated fulfillment.
+- Payment administration and scheduled reconciliation.
+- Genuine sandbox acceptance needs credentials and a publicly reachable HTTPS APP_URL.
+  Automated HTTP responses are mocked; no real provider payment has been performed.
+
+## Phase 5: VIP purchase and lifecycle core implemented
+
+- Configurable plans, membership-only/mixed carts, no membership stock/shipping.
+- Verified activation and serialized renewal; purchased duration/price snapshots.
+- Exclusive expiry timestamps, calendar-month/leap-day behavior, revoked-access guards.
+- Membership history, dashboard and owner-protected database notifications.
+- Administrator expiry adjustments require reasons and create permanent audit records.
+- Queued database/mail notices and deduplicated 30/7/1-day/expired reminders.
+- Full administrative member-detail/history views and broader dashboard summaries
+  remain outstanding.
 
 ## Verification
 
@@ -69,16 +100,20 @@ Cart buttons belong to Phase 3 and are intentionally not fake/disabled actions.
 - Composer audit and npm production-dependency audit reported no advisories.
 - Temporary browser test accounts were removed and the browser-created test
   product was archived after verification.
-- No real or simulated payments were performed.
+- Latest checks: 119 backend tests / 545 assertions passed; three opt-in MySQL
+  concurrency tests / 29 assertions passed separately. PHPStan and Pint passed.
+- Ten Vue component tests, TypeScript, frontend formatting/lint and production build passed.
+- Browser: plan creation and membership-only checkout produced an unpaid RM199
+  order with no shipping address or fee. Gateway collection remains disabled.
+- Verified activation/renewal/reminder behavior is automated-test coverage, not
+  a claim of real sandbox payment acceptance.
 
-## Not implemented: Phases 3–10
+## Remaining phases and acceptance
 
-Cart persistence/merge, address management, checkout/order snapshots/reservations,
-ToyyibPay callbacks/reconciliation, verified VIP activation/renewal, expiry reminders,
-program registration/capacity, appointment generation/approval/rescheduling,
-notifications, CMS, reports, production hardening and final deployment acceptance.
-An initial VIP schema/gate is not a completed paid-membership module.
+Program registration/capacity, appointment generation/approval/rescheduling,
+remaining commerce notifications, administrator order/customer management,
+CMS, reports, production hardening and final deployment acceptance.
 
 Continue in roadmap order. ToyyibPay sandbox acceptance will require sandbox
 credentials and a reachable callback URL, not real payments. Do not advertise
-checkout, VIP purchases or appointment booking as available until implemented.
+live payment collection or appointment booking as production-ready.

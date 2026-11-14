@@ -2,6 +2,7 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import { ArrowUpRight } from '@lucide/vue';
 import { computed } from 'vue';
+import { Toaster } from '@/components/ui/sonner';
 const page = usePage();
 const copy = computed(() => page.props.copy as Record<string, string>);
 </script>
@@ -19,12 +20,20 @@ const copy = computed(() => page.props.copy as Record<string, string>);
                     >{{ copy.brand
                     }}<span class="text-emerald-700">.</span></Link
                 >
-                <div class="flex items-center gap-5 text-sm">
+                <div
+                    class="flex flex-wrap items-center gap-x-4 gap-y-3 text-sm"
+                >
                     <Link href="/" class="hover:underline">{{
                         copy.home
                     }}</Link>
                     <Link href="/products" class="hover:underline"
                         >Products</Link
+                    >
+                    <Link href="/vip-membership" class="hover:underline"
+                        >VIP Membership</Link
+                    >
+                    <Link href="/cart" class="whitespace-nowrap hover:underline"
+                        >Cart ({{ page.props.cartCount ?? 0 }})</Link
                     >
                     <template v-if="page.props.auth.user">
                         <Link
@@ -53,5 +62,6 @@ const copy = computed(() => page.props.copy as Record<string, string>);
             <span>{{ copy.brand }} &copy; {{ new Date().getFullYear() }}</span>
             <span>{{ copy.footer }}</span>
         </footer>
+        <Toaster />
     </div>
 </template>

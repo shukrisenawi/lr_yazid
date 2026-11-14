@@ -13,8 +13,8 @@ class CatalogController extends Controller
     public function home(): Response
     {
         return Inertia::render('public/Home', [
-            'featured' => Product::with(['images', 'category'])->where('status', 'active')->where('is_featured', true)->latest()->limit(4)->get(),
-            'latest' => Product::with(['images', 'category'])->where('status', 'active')->where('is_featured', false)->latest()->limit(4)->get(),
+            'featured' => Product::with(['images', 'category'])->withCount('variants')->where('status', 'active')->where('is_featured', true)->latest()->limit(4)->get(),
+            'latest' => Product::with(['images', 'category'])->withCount('variants')->where('status', 'active')->where('is_featured', false)->latest()->limit(4)->get(),
             'categories' => Category::whereHas('products', fn ($query) => $query->where('status', 'active'))->orderBy('name')->get(),
         ]);
     }
@@ -28,7 +28,7 @@ class CatalogController extends Controller
             'min' => ['nullable', 'integer', 'min:0'],
             'max' => ['nullable', 'integer', 'min:0'],
         ]);
-        $query = Product::with(['images', 'category'])->where('status', 'active')
+        $query = Product::with(['images', 'category'])->withCount('variants')->where('status', 'active')
             ->when($filters['search'] ?? null, fn ($q, $value) => $q->where('name', 'like', '%'.$value.'%'))
             ->when($filters['category'] ?? null, fn ($q, $value) => $q->where('category_id', $value));
         $priceSql = 'CASE WHEN sale_price_sen IS NOT NULL AND (sale_starts_at IS NULL OR sale_starts_at <= ?) AND (sale_ends_at IS NULL OR sale_ends_at > ?) THEN sale_price_sen ELSE price_sen END';
@@ -51,12 +51,12 @@ class CatalogController extends Controller
 
     public function show(string $slug): Response
     {
-        $product = Product::with(['images', 'category', 'variants' => fn ($q) => $q->where('is_active', true)])
+        $product = Product::with(['images', 'category', 'variants' => fn ($q) => $q->where('is_active', true)])->withCount('variants')
             ->where('status', 'active')->where('slug', $slug)->firstOrFail();
 
         return Inertia::render('public/Product', [
             'product' => $product,
-            'related' => Product::with('images')->where('status', 'active')
+            'related' => Product::with('images')->withCount('variants')->where('status', 'active')
                 ->where('category_id', $product->category_id)->where('id', '!=', $product->id)->limit(3)->get(),
         ]);
     }

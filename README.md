@@ -3,10 +3,11 @@
 A Laravel 13 + Inertia 3 + Vue 3 / TypeScript application, built incrementally
 against [PROJECT_REQUIREMENTS.md](PROJECT_REQUIREMENTS.md).
 
-**Current scope: Phase 1 foundation and Phase 2 catalog implementation.**
-This is not a completed commerce system. Cart, checkout, ToyyibPay, paid membership
-activation, programs, appointments and CMS/reporting are not implemented yet.
-No payments are simulated. See [implementation status](docs/IMPLEMENTATION_STATUS.md).
+**Current scope: foundation, catalog, shopping, payment integration and VIP lifecycle.**
+Programs, appointments and CMS/reporting are not implemented yet. Payment logic
+has automated tests with mocked provider responses; real ToyyibPay sandbox
+acceptance remains blocked on credentials and a public HTTPS callback URL.
+This is not production-ready. See [implementation status](docs/IMPLEMENTATION_STATUS.md).
 
 ## Requirements
 
@@ -77,16 +78,52 @@ Sale times use Asia/Kuala_Lumpur. Archiving never deletes product records.
 ## Verification
 
 ```sh
-php artisan test
+composer test
 composer lint:check
 composer types:check
 npm run check
 npm run types:check
+npm test
 npm run build
 ```
 
-Tests use an isolated SQLite in-memory database, never the application's MySQL
-database. Migrations are also verified against local MySQL/MariaDB.
+Most tests use isolated SQLite. Opt-in concurrent checkout/payment tests create
+and drop uniquely named disposable MySQL databases, never the application database.
+The database user needs CREATE/DROP DATABASE privileges:
+
+```powershell
+$env:MYSQL_CONCURRENCY_TEST='1'
+php vendor/phpunit/phpunit/phpunit tests/Feature/MySqlCheckoutConcurrencyTest.php --testdox
+```
+
+Run the frontend build before backend tests, not simultaneously: the starter kit
+font directive reads the generated font manifest.
+
+## Shopping, payments and membership
+
+Customers use `/cart`, `/checkout`, `/addresses`, `/orders`, `/membership`
+and `/notifications`. Administrators configure `/admin/shipping`,
+`/admin/payment-settings`, `/admin/membership-plans` and `/admin/memberships`.
+Prices are server-calculated; checkout reserves physical stock and snapshots
+membership duration/prices. Verified payments settle inventory and membership
+once. Browser returns cannot mark an order paid.
+
+Payment collection defaults disabled. Use genuine sandbox credentials and a public
+HTTPS `APP_URL` before enabling sandbox collection. Secrets are encrypted using
+`APP_KEY`; preserve that key securely. Ambiguous bill-creation failures and
+late/additional payments require review, not blind retry or manual activation.
+No live payments have been tested.
+
+Run the scheduler every minute and supervise the database queue worker:
+
+```sh
+php artisan schedule:work
+php artisan queue:work database --tries=3
+```
+
+Production should use cron `schedule:run` instead of `schedule:work`. Scheduled
+tasks expire reservations, reconcile payments and process VIP expiry/reminders.
+Membership notices use database/mail channels; configure SMTP before launch.
 
 ## Deployment foundation
 

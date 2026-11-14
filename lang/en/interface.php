@@ -17,6 +17,6 @@ return [
     'active_vip' => 'Active VIP Member',
     'profile' => 'Profile settings',
     'security' => 'Account security',
-    'foundation' => 'Your account is ready. Shopping, VIP programs and appointments will become available as their modules are released.',
+    'foundation' => 'Browse products, manage your shipping addresses and view your order history. VIP programs and appointments will become available in a future release.',
     'footer' => 'Thoughtfully selected. Personally connected.',
 ];

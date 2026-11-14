@@ -2,6 +2,7 @@
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import RichTextEditor from '@/components/RichTextEditor.vue';
+import VariantAttributes from '@/components/VariantAttributes.vue';
 import type { Product, Category, ProductVariant } from '@/types/catalog';
 const props = defineProps<{
     product: Product | null;
@@ -58,6 +59,22 @@ watch(
     },
 );
 const destructive = useForm({});
+const replacement = useForm({ image: null as File | null });
+function replaceImage(id: number, event: Event) {
+    replacement.image = (event.target as HTMLInputElement).files?.[0] ?? null;
+    if (replacement.image)
+        replacement.post(`/admin/products/${props.product?.id}/images/${id}`, {
+            preserveScroll: true,
+            onSuccess: () => replacement.reset(),
+        });
+}
+function moveImage(index: number, direction: number) {
+    const target = index + direction;
+    if (target < 0 || target >= form.image_order.length) return;
+    const order = [...form.image_order];
+    [order[index], order[target]] = [order[target], order[index]];
+    form.image_order = order;
+}
 function save() {
     const onSuccess = () => {
         form.images = [];
@@ -237,6 +254,13 @@ function archive() {
                     Drag to reorder, or use Set primary. The first image is the
                     featured image. Save to apply ordering.
                 </p>
+                <p
+                    v-if="replacement.errors.image"
+                    role="alert"
+                    class="mt-3 text-sm text-red-700 dark:text-red-400"
+                >
+                    {{ replacement.errors.image }}
+                </p>
                 <div class="mt-4 flex flex-wrap gap-4">
                     <div
                         v-for="(id, index) in form.image_order"
@@ -256,6 +280,32 @@ function archive() {
                             class="size-28 rounded object-cover"
                         />
                         <div class="mt-2 grid gap-1">
+                            <button
+                                type="button"
+                                class="text-xs underline disabled:opacity-40"
+                                :disabled="index === 0"
+                                @click="moveImage(index, -1)"
+                            >
+                                Move earlier
+                            </button>
+                            <button
+                                type="button"
+                                class="text-xs underline disabled:opacity-40"
+                                :disabled="
+                                    index === form.image_order.length - 1
+                                "
+                                @click="moveImage(index, 1)"
+                            >
+                                Move later
+                            </button>
+                            <label class="grid gap-1 text-xs"
+                                >Replace image<input
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    class="max-w-40 text-xs"
+                                    :disabled="replacement.processing"
+                                    @change="replaceImage(id, $event)"
+                            /></label>
                             <button
                                 type="button"
                                 class="text-xs underline"
@@ -313,6 +363,8 @@ function archive() {
                                 price_sen: form.price_sen,
                                 stock: 0,
                                 is_active: true,
+                                product_image_id: null,
+                                attributes: [],
                             })
                         "
                     >
@@ -328,6 +380,26 @@ function archive() {
                     :key="index"
                     class="mt-4 grid gap-3 rounded-md border p-4 sm:grid-cols-2 lg:grid-cols-5"
                 >
+                    <label class="grid gap-2 text-xs"
+                        >Variant image<select
+                            v-model="variant.product_image_id"
+                            class="min-w-0 rounded border bg-background p-2"
+                        >
+                            <option :value="null">Product default</option>
+                            <option
+                                v-for="(
+                                    image, imagePosition
+                                ) in product?.images ?? []"
+                                :key="image.id"
+                                :value="image.id"
+                            >
+                                Image {{ imagePosition + 1 }}
+                            </option>
+                        </select></label
+                    >
+                    <div class="sm:col-span-2 lg:col-span-5">
+                        <VariantAttributes v-model="variant.attributes" />
+                    </div>
                     <label class="grid gap-2 text-xs"
                         >Option name<input
                             v-model="variant.name"

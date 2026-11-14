@@ -48,6 +48,11 @@ class ProductRequest extends FormRequest
             'variants.*.price_sen' => ['required', 'integer', 'min:0', 'max:100000000'],
             'variants.*.stock' => ['required', 'integer', 'min:0', 'max:10000000'],
             'variants.*.is_active' => ['required', 'boolean'],
+            'variants.*.product_image_id' => ['nullable', 'integer', Rule::exists('product_images', 'id')->where('product_id', $id ?? 0)],
+            'variants.*.attributes' => ['sometimes', 'array', 'max:10'],
+            'variants.*.attributes.*' => ['array:name,value'],
+            'variants.*.attributes.*.name' => ['required', 'string', 'max:50'],
+            'variants.*.attributes.*.value' => ['required', 'string', 'max:100'],
         ];
     }
 }

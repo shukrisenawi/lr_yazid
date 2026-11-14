@@ -17,6 +17,8 @@ export type ProductVariant = {
     price_sen: number;
     stock: number;
     is_active: boolean;
+    product_image_id?: number | null;
+    attributes?: { name: string; value: string }[];
 };
 export type Product = {
     id: number;
@@ -41,6 +43,7 @@ export type Product = {
     meta_description: string;
     images: ProductImage[];
     variants?: ProductVariant[];
+    variants_count?: number;
 };
 export type Paginated<T> = {
     data: T[];

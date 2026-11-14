@@ -25,14 +25,40 @@ const mainNavItems = computed<NavItem[]>(() => [
         href: dashboard(),
         icon: LayoutGrid,
     },
+    { title: 'My orders', href: '/orders', icon: LayoutGrid },
+    { title: 'My membership', href: '/membership', icon: ShieldCheck },
+    { title: 'Notifications', href: '/notifications', icon: LayoutGrid },
+    { title: 'Shopping cart', href: '/cart', icon: House },
+    { title: 'My addresses', href: '/addresses', icon: House },
     ...(page.props.auth.user.role === 'admin'
         ? [
+              { title: 'Payments', href: '/admin/payments', icon: LayoutGrid },
+              {
+                  title: 'VIP memberships',
+                  href: '/admin/memberships',
+                  icon: ShieldCheck,
+              },
+              {
+                  title: 'Membership plans',
+                  href: '/admin/membership-plans',
+                  icon: ShieldCheck,
+              },
+              {
+                  title: 'Payment settings',
+                  href: '/admin/payment-settings',
+                  icon: ShieldCheck,
+              },
               {
                   title: 'Administration',
                   href: '/admin/dashboard',
                   icon: ShieldCheck,
               },
               { title: 'Products', href: '/admin/products', icon: LayoutGrid },
+              {
+                  title: 'Shipping settings',
+                  href: '/admin/shipping',
+                  icon: LayoutGrid,
+              },
               {
                   title: 'Categories',
                   href: '/admin/categories',
