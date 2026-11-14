@@ -90,3 +90,19 @@ Each phase requires backend tests, TypeScript checks, a production asset build,
 and browser verification (including real form submission).
 External payment tests require sandbox credentials and a reachable callback URL.
 No live payment is performed during development.
+## Scheduling consistency
+
+Appointment scheduling operations acquire the appointment service row before
+slot/appointment records. Manual creation, generation and date blocking share this
+lock so half-open intervals `[starts_at, ends_at)` cannot overlap within a service.
+Disabled slots also participate in overlap checks. Generation never rewrites
+existing slots and records each committed run.
+
+The forthcoming booking/approval workflow must preserve this hierarchy:
+customer row -> service row(s), ordered by ID -> slot row(s), ordered by ID ->
+appointment records -> membership eligibility records. Recheck current membership,
+blocked dates, slot/service availability, approved capacity and user time conflicts
+inside the same transaction using current/locking reads, not stale MySQL
+REPEATABLE READ snapshots. Pending requests must not reserve approved capacity.
+Rescheduling must lock both services/slots in deterministic order and leave the
+original approved appointment unchanged until the move is approved.

@@ -53,7 +53,7 @@ jobs:
       - name: Run CI Checks
         run: composer ci:check
 
-      - name: Verify concurrent checkout, payments and program capacity on MySQL
+      - name: Verify concurrent checkout, payments, program capacity and slot generation
         run: php artisan test --filter=MySql
         env:
           MYSQL_CONCURRENCY_TEST: '1'

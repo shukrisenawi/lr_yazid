@@ -3,8 +3,9 @@
 A Laravel 13 + Inertia 3 + Vue 3 / TypeScript application, built incrementally
 against [PROJECT_REQUIREMENTS.md](PROJECT_REQUIREMENTS.md).
 
-**Current scope: foundation, catalog, shopping, payment integration, VIP lifecycle and programs.**
-Appointments and CMS/reporting are not implemented yet. Payment logic
+**Current scope: foundation, catalog, shopping, payment integration, VIP lifecycle,
+programs and appointment scheduling administration.**
+Customer appointment booking/approval and CMS/reporting are not implemented yet. Payment logic
 has automated tests with mocked provider responses; real ToyyibPay sandbox
 acceptance remains blocked on credentials and a public HTTPS callback URL.
 This is not production-ready. See [implementation status](docs/IMPLEMENTATION_STATUS.md).
@@ -137,6 +138,20 @@ Schedule/location changes are blocked after registration: cancel the event and
 create a replacement. Pending queue jobs announce publications and deliver notices
 with database/mail delivery tracking. Email uses the configured mailer; local
 acceptance used the log driver, not external SMTP delivery.
+
+## Appointment scheduling
+
+Administrators use `/admin/appointment-services` to manage services, booking-policy
+defaults, manual slots, blocked dates and automatic generation. Preview is read-only.
+Generation skips breaks, blocked/non-working dates and overlapping existing slots;
+repeating a run does not create duplicates. Runs are limited to 93 days and 5,000
+new slots, with configuration/count history retained.
+
+Approved appointments protect their slots against schedule/availability changes
+and date blocking; any appointment history prevents slot deletion. Unblocking a
+date does not automatically re-enable its disabled slots. Customer booking,
+approval, calendars, rescheduling and reminders are the next unfinished workflow;
+persisted policy settings are not yet a claim of a working booking portal.
 
 ## Deployment foundation
 

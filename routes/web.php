@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\Admin\AppointmentServiceController;
+use App\Http\Controllers\Admin\AppointmentSlotController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\MembershipController as AdminMembershipController;
 use App\Http\Controllers\Admin\MembershipPlanController;
@@ -32,6 +34,16 @@ Route::delete('/cart/items/{cartItem}', [CartController::class, 'destroy'])->blo
 Route::delete('/cart', [CartController::class, 'clear'])->block()->name('cart.clear');
 
 Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('appointment-services', AppointmentServiceController::class)->only(['index', 'store', 'update']);
+    Route::prefix('appointment-services/{appointmentService}')->name('appointment-services.')->group(function () {
+        Route::get('slots', [AppointmentSlotController::class, 'index'])->name('slots.index');
+        Route::post('slots', [AppointmentSlotController::class, 'store'])->name('slots.store');
+        Route::put('slots/{slot}', [AppointmentSlotController::class, 'update'])->name('slots.update');
+        Route::delete('slots/{slot}', [AppointmentSlotController::class, 'destroy'])->name('slots.destroy');
+        Route::post('generate-slots', [AppointmentSlotController::class, 'generate'])->middleware('throttle:10,1')->name('slots.generate');
+        Route::post('blocked-dates', [AppointmentSlotController::class, 'block'])->name('blocked-dates.store');
+        Route::delete('blocked-dates/{blockedDate}', [AppointmentSlotController::class, 'unblock'])->name('blocked-dates.destroy');
+    });
     Route::resource('programs', AdminVipProgramController::class)->except(['show', 'destroy']);
     Route::get('programs/{program}/participants', [AdminVipProgramController::class, 'participants'])->name('programs.participants');
     Route::get('programs/{program}/export', [AdminVipProgramController::class, 'export'])->name('programs.export');

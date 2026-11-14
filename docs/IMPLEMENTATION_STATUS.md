@@ -1,7 +1,7 @@
 # Implementation status
 
 The master requirements remain the source of truth. This delivery is a working
-commerce, membership and programs milestone, **not the complete production-ready system**.
+commerce, membership, programs and scheduling milestone, **not the complete production-ready system**.
 
 ## Phase 1: Complete
 
@@ -97,6 +97,23 @@ remain outstanding.
 - Schedule/location changes are blocked once registrations exist to prevent silent
   changes to confirmed plans.
 
+## Phase 7A: Appointment scheduling administration implemented
+
+- Service management with duration/capacity/location and persisted booking-policy defaults.
+- Manual future slots, editing, availability controls, filtering and unused-slot deletion.
+- Automatic generation with date range, working days/hours, optional breaks,
+  blocked dates, duration/capacity/location, read-only preview and run history.
+- Service row locks serialize manual creation and generator runs; overlapping and
+  existing disabled slots are preserved. Sorted interval scanning and batched
+  insertion keep generation bounded.
+- Maximum 93 days and 5,000 new slots per run; previews display at most 100.
+- Approved-appointment guards prevent silent slot changes/date blocking;
+  any appointment history prevents deletion. Removing a date block does not
+  automatically reactivate disabled slots.
+- Appointment schema is present for the next workflow, but customer submission,
+  administrator approval, calendars, rescheduling, status history and reminders
+  are **not implemented**. No customer-facing booking action is advertised.
+
 ## Verification
 
 - Foundation: 50 backend tests / 169 assertions passed.
@@ -113,9 +130,9 @@ remain outstanding.
 - Composer audit and npm production-dependency audit reported no advisories.
 - Temporary browser test accounts were removed and the browser-created test
   product was archived after verification.
-- Latest checks: 134 backend tests / 653 assertions passed; five opt-in MySQL
-  concurrency tests / 49 assertions passed separately. PHPStan and Pint passed.
-- Seventeen Vue component tests, TypeScript, frontend formatting/lint and production build passed.
+- Latest checks: 146 backend tests / 740 assertions passed; seven opt-in MySQL
+  concurrency tests / 69 assertions passed separately. PHPStan and Pint passed.
+- Twenty-one Vue component tests, TypeScript, frontend formatting/lint and production build passed.
 - Browser: plan creation and membership-only checkout produced an unpaid RM199
   order with no shipping address or fee. Gateway collection remains disabled.
 - Verified activation/renewal/reminder behavior is automated-test coverage, not
@@ -128,10 +145,14 @@ remain outstanding.
   notification reading was browser-verified. No real SMTP delivery is claimed.
 - Program details and history checked at 390px dark/mobile with no horizontal overflow;
   no browser console errors were observed.
+- Scheduling browser acceptance: service creation, filtered listing, manual slot,
+  blocked date, read-only generation preview and generation of 20 slots.
+  Break and blocked-day skip counts matched expectations; mobile 390px inspection
+  showed no document overflow or console errors.
 
 ## Remaining phases and acceptance
 
-Appointment generation/approval/rescheduling,
+Customer appointment submission/approval/calendars/rescheduling/reminders,
 remaining commerce notifications, administrator order/customer management,
 CMS, reports, production hardening and final deployment acceptance.
 
