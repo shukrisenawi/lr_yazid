@@ -3,8 +3,8 @@
 A Laravel 13 + Inertia 3 + Vue 3 / TypeScript application, built incrementally
 against [PROJECT_REQUIREMENTS.md](PROJECT_REQUIREMENTS.md).
 
-**Current scope: foundation, catalog, shopping, payment integration and VIP lifecycle.**
-Programs, appointments and CMS/reporting are not implemented yet. Payment logic
+**Current scope: foundation, catalog, shopping, payment integration, VIP lifecycle and programs.**
+Appointments and CMS/reporting are not implemented yet. Payment logic
 has automated tests with mocked provider responses; real ToyyibPay sandbox
 acceptance remains blocked on credentials and a public HTTPS callback URL.
 This is not production-ready. See [implementation status](docs/IMPLEMENTATION_STATUS.md).
@@ -93,7 +93,7 @@ The database user needs CREATE/DROP DATABASE privileges:
 
 ```powershell
 $env:MYSQL_CONCURRENCY_TEST='1'
-php vendor/phpunit/phpunit/phpunit tests/Feature/MySqlCheckoutConcurrencyTest.php --testdox
+php vendor/phpunit/phpunit/phpunit --filter=MySql --testdox
 ```
 
 Run the frontend build before backend tests, not simultaneously: the starter kit
@@ -124,6 +124,19 @@ php artisan queue:work database --tries=3
 Production should use cron `schedule:run` instead of `schedule:work`. Scheduled
 tasks expire reservations, reconcile payments and process VIP expiry/reminders.
 Membership notices use database/mail channels; configure SMTP before launch.
+
+## VIP programs
+
+Administrators manage programs at `/admin/programs`: sanitized rich text,
+optimized images, registration windows, capacity, publication/cancellation,
+participant filtering, CSV export and attendance. Active VIPs browse
+`/vip/programs`; `/my-programs` preserves owner-scoped history after expiry.
+Membership must cover the entire event. Program locks serialize registration;
+duplicate submissions do not consume another place or repeat confirmation.
+Schedule/location changes are blocked after registration: cancel the event and
+create a replacement. Pending queue jobs announce publications and deliver notices
+with database/mail delivery tracking. Email uses the configured mailer; local
+acceptance used the log driver, not external SMTP delivery.
 
 ## Deployment foundation
 

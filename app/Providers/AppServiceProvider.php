@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Enums\UserRole;
 use App\Models\MembershipReminder;
+use App\Models\ProgramNoticeDelivery;
 use App\Models\User;
 use App\Notifications\MembershipNotice;
+use App\Notifications\ProgramNotice;
 use App\Services\CartService;
 use Carbon\CarbonImmutable;
 use Illuminate\Auth\Events\Login;
@@ -41,6 +43,10 @@ class AppServiceProvider extends ServiceProvider
             }
         });
         Event::listen(NotificationSent::class, function (NotificationSent $event): void {
+            if ($event->notification instanceof ProgramNotice && in_array($event->channel, ['mail', 'database'], true)) {
+                ProgramNoticeDelivery::whereKey($event->notification->deliveryId)
+                    ->where('user_id', $event->notifiable->id)->update([$event->channel.'_sent_at' => now()]);
+            }
             if ($event->notification instanceof MembershipNotice && $event->notification->reminderId) {
                 $field = match ($event->channel) {
                     'mail' => 'mail_sent_at',

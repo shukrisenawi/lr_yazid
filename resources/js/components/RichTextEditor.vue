@@ -5,7 +5,10 @@ import Image from '@tiptap/extension-image';
 import TextAlign from '@tiptap/extension-text-align';
 import { TableKit } from '@tiptap/extension-table';
 import { onBeforeUnmount, ref, watch } from 'vue';
-const props = defineProps<{ modelValue: string }>();
+const props = withDefaults(
+    defineProps<{ modelValue: string; label?: string }>(),
+    { label: 'Product description' },
+);
 const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
 const preview = ref(false);
 const uploading = ref(false);
@@ -45,7 +48,7 @@ const editor = useEditor({
     editorProps: {
         attributes: {
             class: 'rich-content min-h-64 p-4 outline-none',
-            'aria-label': 'Product description',
+            'aria-label': props.label,
             role: 'textbox',
         },
     },

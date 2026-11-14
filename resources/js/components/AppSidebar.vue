@@ -27,11 +27,20 @@ const mainNavItems = computed<NavItem[]>(() => [
     },
     { title: 'My orders', href: '/orders', icon: LayoutGrid },
     { title: 'My membership', href: '/membership', icon: ShieldCheck },
+    { title: 'My Programs', href: '/my-programs', icon: LayoutGrid },
+    ...(page.props.auth.isVip
+        ? [{ title: 'VIP Programs', href: '/vip/programs', icon: ShieldCheck }]
+        : []),
     { title: 'Notifications', href: '/notifications', icon: LayoutGrid },
     { title: 'Shopping cart', href: '/cart', icon: House },
     { title: 'My addresses', href: '/addresses', icon: House },
     ...(page.props.auth.user.role === 'admin'
         ? [
+              {
+                  title: 'Manage VIP Programs',
+                  href: '/admin/programs',
+                  icon: LayoutGrid,
+              },
               { title: 'Payments', href: '/admin/payments', icon: LayoutGrid },
               {
                   title: 'VIP memberships',

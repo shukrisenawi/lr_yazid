@@ -1,7 +1,7 @@
 # Implementation status
 
 The master requirements remain the source of truth. This delivery is a working
-commerce and membership milestone, **not the complete production-ready system**.
+commerce, membership and programs milestone, **not the complete production-ready system**.
 
 ## Phase 1: Complete
 
@@ -84,6 +84,19 @@ remain outstanding.
 - Full administrative member-detail/history views and broader dashboard summaries
   remain outstanding.
 
+## Phase 6: VIP program core implemented
+
+- Administrator create/edit/publish/unpublish/cancel/complete/archive operations.
+- Sanitized Tiptap content, optimized featured/additional images and HTTPS map links.
+- VIP-only listings/details; registration windows and whole-event membership eligibility.
+- Row-locked capacity checks and idempotent registration; customer withdrawal releases capacity.
+- Owner-scoped registration history survives expiry and program cancellation.
+- Participant filters, attendance with administrator/timestamp, spreadsheet-safe CSV export.
+- Publication, registration and cancellation notices with transactional queueing,
+  event deduplication and database/mail delivery tracking.
+- Schedule/location changes are blocked once registrations exist to prevent silent
+  changes to confirmed plans.
+
 ## Verification
 
 - Foundation: 50 backend tests / 169 assertions passed.
@@ -100,17 +113,25 @@ remain outstanding.
 - Composer audit and npm production-dependency audit reported no advisories.
 - Temporary browser test accounts were removed and the browser-created test
   product was archived after verification.
-- Latest checks: 119 backend tests / 545 assertions passed; three opt-in MySQL
-  concurrency tests / 29 assertions passed separately. PHPStan and Pint passed.
-- Ten Vue component tests, TypeScript, frontend formatting/lint and production build passed.
+- Latest checks: 134 backend tests / 653 assertions passed; five opt-in MySQL
+  concurrency tests / 49 assertions passed separately. PHPStan and Pint passed.
+- Seventeen Vue component tests, TypeScript, frontend formatting/lint and production build passed.
 - Browser: plan creation and membership-only checkout produced an unpaid RM199
   order with no shipping address or fee. Gateway collection remains disabled.
 - Verified activation/renewal/reminder behavior is automated-test coverage, not
   a claim of real sandbox payment acceptance.
+- Program browser acceptance: actual create/upload/publish, rich-text rendering,
+  VIP registration, participant filtering, program cancellation and retained history.
+  A local-only QA membership was provisioned with an explicit administrator audit;
+  it was not represented as a paid membership.
+- Database queue jobs delivered program/membership notices and local log-mail;
+  notification reading was browser-verified. No real SMTP delivery is claimed.
+- Program details and history checked at 390px dark/mobile with no horizontal overflow;
+  no browser console errors were observed.
 
 ## Remaining phases and acceptance
 
-Program registration/capacity, appointment generation/approval/rescheduling,
+Appointment generation/approval/rescheduling,
 remaining commerce notifications, administrator order/customer management,
 CMS, reports, production hardening and final deployment acceptance.
 

@@ -14,6 +14,7 @@ export type User = {
 
 export type Auth = {
     user: User;
+    isVip: boolean;
 };
 
 export type Passkey = {

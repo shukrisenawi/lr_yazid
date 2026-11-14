@@ -9,7 +9,7 @@ use Illuminate\Validation\ValidationException;
 
 class ProductImageService
 {
-    public function store(UploadedFile $file): string
+    public function store(UploadedFile $file, string $directory = 'products'): string
     {
         $image = @imagecreatefromstring($file->getContent());
         if ($image === false) {
@@ -27,7 +27,7 @@ class ProductImageService
         $contents = ob_get_clean();
         imagedestroy($image);
         imagedestroy($output);
-        $path = 'products/'.Str::uuid().'.webp';
+        $path = $directory.'/'.Str::uuid().'.webp';
         if ($contents === false || $contents === '' || ! Storage::disk('public')->put($path, $contents)) {
             throw ValidationException::withMessages(['images' => 'The image could not be stored. Please try again.']);
         }

@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\MembershipPlanController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ShippingSettingsController;
+use App\Http\Controllers\Admin\VipProgramController as AdminVipProgramController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CheckoutController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\VipProgramController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -30,6 +32,10 @@ Route::delete('/cart/items/{cartItem}', [CartController::class, 'destroy'])->blo
 Route::delete('/cart', [CartController::class, 'clear'])->block()->name('cart.clear');
 
 Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('programs', AdminVipProgramController::class)->except(['show', 'destroy']);
+    Route::get('programs/{program}/participants', [AdminVipProgramController::class, 'participants'])->name('programs.participants');
+    Route::get('programs/{program}/export', [AdminVipProgramController::class, 'export'])->name('programs.export');
+    Route::put('programs/{program}/participants/{registration}/attendance', [AdminVipProgramController::class, 'attendance'])->name('programs.attendance');
     Route::resource('products', ProductController::class)->except('show');
     Route::post('products/{product}/duplicate', [ProductController::class, 'duplicate'])->name('products.duplicate');
     Route::delete('products/{product}/images/{image}', [ProductController::class, 'removeImage'])->name('products.images.destroy');
@@ -50,6 +56,13 @@ Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('adm
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/my-programs', [VipProgramController::class, 'mine'])->name('programs.mine');
+    Route::post('/my-programs/{registration}/cancel', [VipProgramController::class, 'cancel'])->name('programs.cancel');
+    Route::middleware('can:vip')->prefix('vip/programs')->name('vip.programs.')->group(function () {
+        Route::get('/', [VipProgramController::class, 'index'])->name('index');
+        Route::get('/{slug}', [VipProgramController::class, 'show'])->name('show');
+        Route::post('/{program}/register', [VipProgramController::class, 'register'])->middleware('throttle:20,1')->name('register');
+    });
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->block()->middleware('throttle:10,1')->name('checkout.store');
     Route::resource('addresses', AddressController::class)->only(['index', 'store', 'update', 'destroy']);
