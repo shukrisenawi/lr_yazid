@@ -44,4 +44,10 @@ class Order extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
+    /** @return HasMany<OrderFulfillmentHistory, $this> */
+    public function fulfillmentHistory(): HasMany
+    {
+        return $this->hasMany(OrderFulfillmentHistory::class)->orderBy('id');
+    }
 }

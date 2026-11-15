@@ -146,6 +146,20 @@ remain outstanding.
   profile navigation using a labeled local QA account. Mobile 390px inspection
   found no document overflow or browser console errors.
 
+## Administrator order fulfillment: Core implemented
+
+- Search and payment/fulfillment filters, paginated orders and snapshot-based details.
+- Verified paid physical orders advance new -> processing -> packed -> shipped -> delivered.
+- Courier/tracking required before shipping; updates require an administrator reason
+  and retain old/new status and tracking in an audit record.
+- Unpaid, membership-only and review-flagged payments cannot be fulfilled.
+- Repeated identical updates are idempotent; stock and payment state are not changed.
+- Customer order pages display courier/tracking. Basic printable order summaries
+  are available; formal business invoices, exports, refunds/cancellation handling
+  and shipping notifications remain unfinished.
+- Browser verification confirmed an attempted update of a real unpaid QA order
+  was rejected without changing its fulfillment or payment state.
+
 ## Verification
 
 - Foundation: 50 backend tests / 169 assertions passed.
@@ -162,7 +176,7 @@ remain outstanding.
 - Composer audit and npm production-dependency audit reported no advisories.
 - Temporary browser test accounts were removed and the browser-created test
   product was archived after verification.
-- Latest checks: 174 backend tests / 1070 assertions passed; twelve opt-in MySQL
+- Latest checks: 178 backend tests / 1098 assertions passed; twelve opt-in MySQL
   concurrency tests / 113 assertions passed separately. PHPStan and Pint passed.
 - Thirty-one Vue component tests, TypeScript, frontend formatting/lint and production build passed.
 - Browser: plan creation and membership-only checkout produced an unpaid RM199

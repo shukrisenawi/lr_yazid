@@ -178,6 +178,16 @@ history, scoped to the selected customer. This is read-only administration:
 credentials and administrator accounts are not exposed, and payments/roles
 cannot be modified here.
 
+## Order fulfillment
+
+Administrators use `/admin/orders` to search orders, view purchased snapshots and
+advance verified paid physical orders through processing, packed, shipped and
+delivered. Courier/tracking are required before shipping. Each change requires a
+reason and records an audit. Unpaid, membership-only or review-flagged orders are
+blocked; fulfillment never marks payments paid or modifies stock. Customer order
+pages show tracking. Printable summaries are not formal business invoices;
+invoice/export, refund workflows and shipping notices remain unfinished.
+
 ## Deployment foundation
 
 Serve only `public/`, enable HTTPS, disable `APP_DEBUG`, set `APP_ENV=production`,

@@ -135,6 +135,9 @@ function cancel(id: number) {
                     </p>
                 </article>
                 <div v-if="order.shipping_address" class="mt-8">
+                    <p v-if="order.tracking_number" class="mb-5 text-sm">
+                        {{ order.courier_name }} · {{ order.tracking_number }}
+                    </p>
                     <h2 class="text-xl font-semibold">Ship to</h2>
                     <p class="mt-4 text-sm leading-relaxed">
                         {{ order.shipping_address.full_name }}<br />{{

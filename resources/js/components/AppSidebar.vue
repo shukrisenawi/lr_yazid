@@ -47,6 +47,11 @@ const mainNavItems = computed<NavItem[]>(() => [
     ...(page.props.auth.user.role === 'admin'
         ? [
               {
+                  title: 'Manage Orders',
+                  href: '/admin/orders',
+                  icon: LayoutGrid,
+              },
+              {
                   title: 'Customers',
                   href: '/admin/customers',
                   icon: LayoutGrid,

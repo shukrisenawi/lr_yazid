@@ -102,8 +102,15 @@ defineProps<{
                     >
                         <td class="p-4">
                             <Link
-                                v-if="section === 'appointments'"
-                                :href="`/admin/appointments/${record.id}`"
+                                v-if="
+                                    section === 'appointments' ||
+                                    section === 'orders'
+                                "
+                                :href="
+                                    section === 'orders'
+                                        ? `/admin/orders/${record.id}`
+                                        : `/admin/appointments/${record.id}`
+                                "
                                 class="underline"
                                 >{{ record.reference }}</Link
                             ><span v-else>{{
