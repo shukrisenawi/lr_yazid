@@ -170,6 +170,14 @@ after cancellation or a change of appointment time. Configure SMTP and supervise
 workers before launch. The database queue must share the business database
 connection for transactional enqueueing. External SMTP delivery remains unverified.
 
+## Customer directory
+
+Administrators browse `/admin/customers` with search and membership filters.
+Profiles provide paginated order, membership-payment, program and appointment
+history, scoped to the selected customer. This is read-only administration:
+credentials and administrator accounts are not exposed, and payments/roles
+cannot be modified here.
+
 ## Deployment foundation
 
 Serve only `public/`, enable HTTPS, disable `APP_DEBUG`, set `APP_ENV=production`,

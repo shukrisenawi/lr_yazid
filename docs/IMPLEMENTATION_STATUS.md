@@ -133,6 +133,19 @@ remain outstanding.
 - Administrator accounts and accounts with retained appointment/business history
   cannot self-delete through profile settings.
 
+## Customer administration: Directory and profile history implemented
+
+- Admin-only customer directory with name/email/phone search and timestamp-aware
+  active, expired, expiring and no-membership-history filters.
+- Paginated customer profiles link orders, membership payments, programs and appointments.
+- Passwords, two-factor secrets and administrator accounts are excluded from the directory.
+- Read-only records cannot grant roles, mark payments paid or change membership validity.
+- Customer account mutation, advanced reporting and administrator order fulfillment
+  remain separate unfinished work.
+- Browser acceptance verified real customer search/filter submission and customer
+  profile navigation using a labeled local QA account. Mobile 390px inspection
+  found no document overflow or browser console errors.
+
 ## Verification
 
 - Foundation: 50 backend tests / 169 assertions passed.
@@ -149,7 +162,7 @@ remain outstanding.
 - Composer audit and npm production-dependency audit reported no advisories.
 - Temporary browser test accounts were removed and the browser-created test
   product was archived after verification.
-- Latest checks: 169 backend tests / 949 assertions passed; twelve opt-in MySQL
+- Latest checks: 174 backend tests / 1070 assertions passed; twelve opt-in MySQL
   concurrency tests / 113 assertions passed separately. PHPStan and Pint passed.
 - Thirty-one Vue component tests, TypeScript, frontend formatting/lint and production build passed.
 - Browser: plan creation and membership-only checkout produced an unpaid RM199
@@ -180,7 +193,7 @@ remain outstanding.
 
 ## Remaining phases and acceptance
 
-Remaining commerce notifications, administrator order/customer management,
+Remaining commerce notifications, administrator order fulfillment and advanced customer administration,
 CMS, reports, production hardening and final deployment acceptance.
 
 Continue in roadmap order. ToyyibPay sandbox acceptance will require sandbox
