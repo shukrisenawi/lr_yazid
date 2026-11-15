@@ -25,7 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->dontFlash(['sandbox_secret_key', 'production_secret_key']);
+        $exceptions->dontFlash(['sandbox_secret_key', 'production_secret_key', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token']);
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*', 'payments/toyyibpay/callback') || $request->expectsJson(),
         );

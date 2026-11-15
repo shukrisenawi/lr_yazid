@@ -140,7 +140,7 @@ remain outstanding.
 - Paginated customer profiles link orders, membership payments, programs and appointments.
 - Passwords, two-factor secrets and administrator accounts are excluded from the directory.
 - Read-only records cannot grant roles, mark payments paid or change membership validity.
-- Customer account mutation and advanced reporting remain separate unfinished work.
+- Contact corrections were added in a later phase below; financial/history records remain read-only.
 - Browser acceptance verified real customer search/filter submission and customer
   profile navigation using a labeled local QA account. Mobile 390px inspection
   found no document overflow or browser console errors.
@@ -358,6 +358,37 @@ remain outstanding.
   or errors were observed. Synthetic data are not genuine provider/refund acceptance.
   The temporary browser server was stopped and its synthetic database removed.
 
+## Customer contact administration: Implemented
+
+- The required customer directory/history scope was already available. The new
+  extension allows authorized administrators to correct current customer name
+  and Malaysian phone only, with a required reason and explicit confirmation.
+  Login email, password/2FA, role, verification, addresses and VIP access are not
+  editable through this form; administrator profiles cannot be targeted.
+- Admin-only, separately paginated contact audits retain previous/new name/phone,
+  actor, profile version, reason and timestamp. No-op corrections do not create
+  rows or advance versions. Audit and contact writes roll back together.
+- A shared contact version and user row lock protect admin and owner profile
+  updates from stale writes. Actual Eloquent name/email/phone changes advance the
+  version; unrelated authentication/verification updates do not. Stale drafts
+  retain their old expected version until explicit reload; successful saves alone
+  synchronize the form's version. Existing self-service email uniqueness and
+  verification-reset behavior are retained.
+- Financial, invoice, membership and booking snapshots are untouched. Contact-only
+  audits follow deletion of an otherwise eligible nonfinancial account; existing
+  history-based account deletion protections are unchanged.
+- Browser acceptance used labeled local QA customer ID 5 and administrator ID 6.
+  An admin phone correction produced audit/version 2; the stale owner draft was
+  rejected without silently discarding it. After explicit reload, the owner
+  restored the original normalized phone at version 3; a stale admin draft was
+  then rejected. The existing order snapshot, email and verification stayed intact.
+- QA customer name/phone finished at their original values. One admin correction
+  audit remains intentionally; owner self-service events do not masquerade as
+  administrator corrections. No payment, membership or real mail was generated.
+- Desktop and 390px dark/mobile views were checked with no document overflow or
+  browser console warnings/errors. MySQL independent-process editing verifies one
+  successful correction/version/audit and one conflict, not a lost update.
+
 ## Verification
 
 - Foundation: 50 backend tests / 169 assertions passed.
@@ -374,10 +405,10 @@ remain outstanding.
 - Composer audit and npm production-dependency audit reported no advisories.
 - Temporary browser test accounts were removed and the browser-created test
   product was archived after verification.
-- Latest checks: 284 backend tests / 2077 assertions passed; twenty-two opt-in MySQL
-  checks / 227 assertions passed separately (21 concurrency tests and one reporting test).
+- Latest checks: 295 backend tests / 2189 assertions passed; twenty-three opt-in MySQL
+  checks / 238 assertions passed separately (22 concurrency tests and one reporting test).
   PHPStan and Pint passed.
-- Seventy-one Vue/component/helper tests, TypeScript, frontend formatting/lint and production build passed.
+- Seventy-seven Vue/component/helper tests, TypeScript, frontend formatting/lint and production build passed.
 - Browser: plan creation and membership-only checkout produced an unpaid RM199
   order with no shipping address or fee. Gateway collection remains disabled.
 - Verified activation/renewal/reminder behavior is automated-test coverage, not
@@ -406,9 +437,10 @@ remain outstanding.
 
 ## Remaining phases and acceptance
 
-Advanced customer
-administration, deeper reporting/production hardening and
-final deployment acceptance.
+Production/security/performance hardening and final deployment acceptance remain.
+The required customer-management directory/history and the scoped contact-correction
+extension are implemented; administrator email/password/role mutation or account
+suspension is not part of the current requirements and is not advertised as supported.
 
 Continue in roadmap order. ToyyibPay sandbox acceptance will require sandbox
 credentials and a reachable callback URL, not real payments. Do not advertise

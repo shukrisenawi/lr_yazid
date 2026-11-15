@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/DeleteUser.vue';
 import Heading from '@/components/Heading.vue';
@@ -25,6 +25,7 @@ defineOptions({
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
+const profileVersion = ref(user.value.profile_version);
 </script>
 
 <template>
@@ -43,7 +44,19 @@ const user = computed(() => page.props.auth.user);
             v-bind="ProfileController.update.form()"
             class="space-y-6"
             v-slot="{ errors, processing }"
+            @success="profileVersion = user.profile_version"
         >
+            <input
+                type="hidden"
+                name="profile_version"
+                :value="profileVersion"
+            />
+            <div v-if="errors.profile_version" role="alert" class="space-y-2">
+                <InputError :message="errors.profile_version" />
+                <a :href="edit().url" class="text-sm underline"
+                    >Reload latest profile</a
+                >
+            </div>
             <div class="grid gap-2">
                 <Label for="name">Name</Label>
                 <Input

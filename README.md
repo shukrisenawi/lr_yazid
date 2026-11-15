@@ -5,7 +5,7 @@ against [PROJECT_REQUIREMENTS.md](PROJECT_REQUIREMENTS.md).
 
 **Current scope: foundation, catalog, shopping, payment integration, VIP lifecycle,
 programs, appointment workflows, fulfillment/invoices, CMS, core reports and commerce notices.**
-Advanced customer administration and deployment acceptance remain unfinished. Payment logic
+Production hardening and deployment acceptance remain unfinished. Payment logic
 has automated tests with mocked provider responses; real ToyyibPay sandbox
 acceptance remains blocked on credentials and a public HTTPS callback URL.
 This is not production-ready. See [implementation status](docs/IMPLEMENTATION_STATUS.md).
@@ -293,17 +293,35 @@ Schedule/location snapshots and timestamped actor/status history are retained.
 
 `appointments:send-reminders` runs every five minutes for deduplicated 24-hour and
 1-hour notices. Database/mail delivery is tracked; stale reminders are suppressed
-after cancellation or a change of appointment time. Configure SMTP and supervise
+after cancellation or a change of appointment time. Configure server PHP mail and supervise
 workers before launch. The database queue must share the business database
-connection for transactional enqueueing. External SMTP delivery remains unverified.
+connection for transactional enqueueing. External mail delivery remains unverified.
 
 ## Customer directory
 
 Administrators browse `/admin/customers` with search and membership filters.
 Profiles provide paginated order, membership-payment, program and appointment
-history, scoped to the selected customer. This is read-only administration:
-credentials and administrator accounts are not exposed, and payments/roles
-cannot be modified here.
+history, scoped to the selected customer. History remains read-only; credentials
+and administrator accounts are not exposed, and payments/roles cannot be modified here.
+
+Admins may correct a customer's current name and Malaysian phone with a required
+reason and explicit confirmation. An independently paginated, admin-only contact
+audit records old/new values, actor, profile version and time. Email/login,
+password, verification, role, VIP access and addresses are not editable through
+this action. Existing commercial and booking snapshots are never rewritten.
+
+Admin corrections and customer self-service profile updates use the same row lock
+and contact profile version. Stale forms are rejected even when the competing edit
+came from the other interface. Reload to review the new details; a conflict does
+not silently replace the form's expected version or discard the unsaved draft.
+No-op contact saves do not advance versions or create audit noise. Actual Eloquent
+name/email/phone changes advance the version; unrelated security/verification
+updates do not. Custom maintenance scripts must preserve this concurrency policy.
+
+Contact history lists administrator corrections only, not customer self-service
+events. Existing financial/appointment deletion guards remain. For nonfinancial
+accounts still eligible for owner deletion, contact-only audit rows cascade with
+the deleted account instead of blocking the existing deletion/privacy workflow.
 
 ## Order fulfillment
 
@@ -314,7 +332,7 @@ reason and records an audit. Unpaid, membership-only or review-flagged orders ar
 blocked; fulfillment never marks payments paid or modifies stock. Customer order
 pages show tracking. Shipped, tracking-correction and delivered notices are queued
 once per actual fulfillment change and track database/mail delivery. Email delivery
-is at-least-once; external SMTP acceptance remains outstanding.
+is at-least-once; external mail acceptance remains outstanding.
 
 ## Administrator dashboards and reports
 
@@ -380,7 +398,8 @@ LHDN-validated e-Invoices**. No tax or regulatory compliance is implied.
 
 Export CSV from the order list after applying search, payment, fulfillment and
 date filters. Exports are capped at 10,000 orders, generated in batches and protected
-against spreadsheet formula injection. Refund/cancellation workflows remain unfinished.
+against spreadsheet formula injection. Unpaid cancellation and manual refund ledgers
+are described above; no automatic refund API is implemented.
 
 ## Deployment foundation
 

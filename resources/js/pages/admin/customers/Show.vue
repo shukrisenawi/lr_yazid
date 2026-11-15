@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import Pagination from '@/components/Pagination.vue';
+import CustomerContactEditor from '@/components/CustomerContactEditor.vue';
 import { customerCopy as copy } from '@/lib/customerCopy';
 import { money, type Paginated } from '@/types/catalog';
 import { dateTime } from '@/types/commerce';
 import type { Membership } from '@/types/membership';
+import type { CustomerContactChange } from '@/types/customerContact';
 type Row = {
     id: number;
     reference?: string;
@@ -25,12 +27,14 @@ defineProps<{
         phone: string | null;
         created_at: string;
         email_verified_at: string | null;
+        profile_version: number;
     };
     isVip: boolean;
     section: 'orders' | 'memberships' | 'programs' | 'appointments';
     records: Paginated<Row>;
     memberships: Membership[];
     orderCount: number;
+    contactHistory: Paginated<CustomerContactChange>;
 }>();
 </script>
 <template>
@@ -54,6 +58,7 @@ defineProps<{
             </p>
         </section>
         <p class="mt-5 text-sm text-muted-foreground">{{ copy.readOnly }}</p>
+        <CustomerContactEditor :customer="customer" :history="contactHistory" />
         <div class="mt-6 grid gap-4 md:grid-cols-2">
             <section
                 v-for="membership in memberships"

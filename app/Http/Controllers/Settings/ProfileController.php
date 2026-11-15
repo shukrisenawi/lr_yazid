@@ -7,10 +7,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\ProfileDeleteRequest;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
 use App\Models\Appointment;
+use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -33,13 +36,21 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        try {
+            DB::transaction(function () use ($request) {
+                $user = User::whereKey($request->user()->id)->lockForUpdate()->firstOrFail();
+                if ($user->profile_version !== (int) $request->validated('profile_version')) {
+                    throw ValidationException::withMessages(['profile_version' => __('customer_contacts.conflict')]);
+                }
+                $user->fill($request->safe()->only(['name', 'email', 'phone']));
+                if ($user->isDirty('email')) {
+                    $user->email_verified_at = null;
+                }
+                $user->save();
+            }, 3);
+        } catch (UniqueConstraintViolationException) {
+            throw ValidationException::withMessages(['email' => __('validation.unique', ['attribute' => 'email'])]);
         }
-
-        $request->user()->save();
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Profile updated.')]);
 

@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
+use App\Models\CustomerContactChange;
 use App\Models\MembershipTransaction;
 use App\Models\User;
 use App\Models\VipProgramRegistration;
+use App\Services\CustomerContactService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -45,10 +48,19 @@ class CustomerController extends Controller
         };
 
         return Inertia::render('admin/customers/Show', [
-            'customer' => $customer->only(['id', 'name', 'email', 'phone', 'created_at', 'email_verified_at']),
+            'customer' => $customer->only(['id', 'name', 'email', 'phone', 'created_at', 'email_verified_at', 'profile_version']),
+            'contactHistory' => CustomerContactChange::where('customer_id', $customer->id)->latest('id')->paginate(10, pageName: 'contactPage')->withQueryString(),
             'isVip' => $customer->hasActiveMembership(), 'section' => $section, 'records' => $records->withQueryString(),
             'memberships' => $customer->memberships()->with('plan')->orderByDesc('expires_at')->get(),
             'orderCount' => $customer->orders()->count(),
         ]);
+    }
+
+    public function update(Request $request, User $customer, CustomerContactService $service): RedirectResponse
+    {
+        $service->update($customer, $request->user(), $request->all());
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('customer_contacts.saved')]);
+
+        return back();
     }
 }

@@ -47,7 +47,7 @@ class HandleInertiaRequests extends Middleware
             'cartCount' => fn () => app(CartService::class)->count($request),
             'auth' => [
                 'isVip' => $request->user()?->hasActiveMembership() ?? false,
-                'user' => $request->user()?->only(['id', 'name', 'email', 'phone', 'role', 'email_verified_at', 'created_at', 'updated_at']),
+                'user' => $request->user()?->only(['id', 'name', 'email', 'phone', 'role', 'email_verified_at', 'created_at', 'updated_at', 'profile_version']),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];

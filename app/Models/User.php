@@ -22,6 +22,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string $email
  * @property UserRole $role
  * @property string|null $phone
+ * @property int $profile_version
  * @property Carbon|null $email_verified_at
  * @property string $password
  * @property string|null $two_factor_secret
@@ -37,6 +38,17 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
+
+    protected $attributes = ['profile_version' => 1];
+
+    protected static function booted(): void
+    {
+        static::updating(function (User $user): void {
+            if ($user->isDirty(['name', 'email', 'phone'])) {
+                $user->profile_version = $user->getOriginal('profile_version') + 1;
+            }
+        });
+    }
 
     /** @return HasMany<Membership, $this> */
     public function memberships(): HasMany
@@ -70,6 +82,7 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     protected function casts(): array
     {
         return [
+            'profile_version' => 'integer',
             'role' => UserRole::class,
             'email_verified_at' => 'datetime',
             'password' => 'hashed',

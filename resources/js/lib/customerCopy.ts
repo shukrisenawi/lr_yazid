@@ -29,7 +29,7 @@ export const customerCopy = {
     expiry: 'Expires',
     plan: 'Membership plan',
     readOnly:
-        'Read-only customer records. Payment and membership status cannot be changed from this page.',
+        'Account history is read-only. Contact corrections do not change payment, membership or booking history.',
     verified: 'Email verified',
     unverified: 'Email not verified',
     view: 'View appointment',

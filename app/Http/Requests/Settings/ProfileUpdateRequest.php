@@ -34,6 +34,7 @@ class ProfileUpdateRequest extends FormRequest
     {
         return [
             ...$this->profileRules($this->user()->id),
+            'profile_version' => ['required', 'integer', 'min:1'],
             'phone' => ['sometimes', 'required', 'regex:/^\+60[1-9][0-9]{7,9}$/'],
         ];
     }

@@ -28,6 +28,7 @@ class ProfileUpdateTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->patch(route('profile.update'), [
+                'profile_version' => $user->profile_version,
                 'name' => 'Test User',
                 'email' => 'test@example.com',
             ]);
@@ -50,6 +51,7 @@ class ProfileUpdateTest extends TestCase
         $this
             ->actingAs($user)
             ->patch(route('profile.update'), [
+                'profile_version' => $user->profile_version,
                 'name' => 'Test User',
                 'email' => 'Test@Example.com',
             ])
@@ -77,6 +79,7 @@ class ProfileUpdateTest extends TestCase
             ->actingAs($user)
             ->from(route('profile.edit'))
             ->patch(route('profile.update'), [
+                'profile_version' => $user->profile_version,
                 'name' => 'Test User',
                 'email' => 'Taken@Example.com',
             ]);
@@ -93,6 +96,7 @@ class ProfileUpdateTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->patch(route('profile.update'), [
+                'profile_version' => $user->profile_version,
                 'name' => 'Test User',
                 'email' => $user->email,
             ]);
