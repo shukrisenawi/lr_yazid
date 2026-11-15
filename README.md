@@ -5,7 +5,7 @@ against [PROJECT_REQUIREMENTS.md](PROJECT_REQUIREMENTS.md).
 
 **Current scope: foundation, catalog, shopping, payment integration, VIP lifecycle,
 programs, appointment workflows, fulfillment/invoices, CMS, core reports and commerce notices.**
-Manual refund administration and advanced customer administration remain unfinished. Payment logic
+Advanced customer administration and deployment acceptance remain unfinished. Payment logic
 has automated tests with mocked provider responses; real ToyyibPay sandbox
 acceptance remains blocked on credentials and a public HTTPS callback URL.
 This is not production-ready. See [implementation status](docs/IMPLEMENTATION_STATUS.md).
@@ -187,6 +187,39 @@ Existing historical cancellations keep their original reason; no actors are fabr
 Cancellation does not void an existing ToyyibPay bill or issue a refund. A later
 verified payment is recorded as received but requires review; fulfillment stays
 cancelled, inventory is not consumed and membership is not activated.
+
+## Manual refund records
+
+Admins record already-completed external refunds from the order details page.
+This is an append-only ledger, **not a ToyyibPay refund API**. The application
+does not transfer money, void bills, alter original payment/invoice records,
+return stock, cancel fulfillment or revoke VIP; handle those decisions separately.
+It also does not create a credit note or tax/e-Invoice adjustment.
+
+Choose a matching server-verified paid MYR payment, enter an exact decimal MYR
+amount, external receipt/reference, method, completed time in Malaysia and an
+admin-only reason, then acknowledge external completion and confirm. Server checks
+reject future/pre-payment dates and cap cumulative records per payment, not per
+order (additional actual paid attempts have independent refundable balances).
+Paid review-flagged attempts are supported, but the review flag is never cleared.
+
+Submission UUIDs are retry-idempotent only for identical data and the same actor.
+References are normalized to uppercase and unique within each payment environment;
+use an institution prefix where needed to disambiguate external references.
+Owner/order/payment and refund locking plus unique constraints prevent duplicate
+or excess records under concurrent requests. Records retain actor, original
+payment, environment, reason and both refund/recording timestamps. No edit/delete
+or correction endpoint is provided; investigate erroneous records through an
+audited maintenance process rather than creating fictitious offset refunds.
+
+Customers see only their own reference, amount, environment and refund date,
+not external bank references or private admin audit notes. Sandbox entries are
+explicitly test records. Manual entries do not prove receipt in a customer account.
+
+Reports/aggregate CSV show manual refund amount/count separately from gross
+verified collections, by refund-completion date and environment. Gross sales are
+not netted or rewritten. Refunds against reviewed payments can be included in
+the manual ledger even when those payments are excluded from gross collections.
 
 ## Commerce notifications
 

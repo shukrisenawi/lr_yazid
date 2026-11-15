@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import OrderSummary from '@/components/OrderSummary.vue';
+import ManualRefundLedger from '@/components/ManualRefundLedger.vue';
 import { orderCopy as copy } from '@/lib/orderCopy';
 import { documentCopy } from '@/lib/documentCopy';
 import { orderCancellationCopy as cancellationCopy } from '@/lib/orderCancellationCopy';
 import { money } from '@/types/catalog';
 import { dateTime, type Order } from '@/types/commerce';
-const props = defineProps<{ order: Order; canCancel: boolean }>();
+const props = defineProps<{
+    order: Order;
+    canCancel: boolean;
+    refundKey?: string;
+}>();
 const form = useForm({
     fulfillment_status: props.order.fulfillment_status ?? 'new',
     courier_name: props.order.courier_name ?? '',
@@ -227,6 +232,7 @@ function cancelOrder() {
                 {{ order.cancellation?.reason ?? order.cancellation_reason }}
             </p>
         </section>
+        <ManualRefundLedger :order="order" :refund-key="refundKey" />
         <section class="mt-8 print:hidden">
             <h2 class="text-xl font-semibold">{{ copy.history }}</h2>
             <ol class="mt-4 space-y-3">

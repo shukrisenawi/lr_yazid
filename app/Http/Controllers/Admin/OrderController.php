@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Services\CheckoutService;
+use App\Services\ManualRefundService;
 use App\Services\OrderFulfillmentService;
 use App\Support\CsvCell;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -29,7 +31,8 @@ class OrderController extends Controller
 
     public function show(Order $order): Response
     {
-        return Inertia::render('admin/orders/Show', ['order' => $order->load(['items', 'payments', 'fulfillmentHistory', 'invoice', 'cancellation']),
+        return Inertia::render('admin/orders/Show', ['order' => $order->load(['items', 'payments', 'fulfillmentHistory', 'invoice', 'cancellation', 'manualRefunds']),
+            'refundKey' => (string) Str::uuid(),
             'canCancel' => in_array($order->payment_status, ['pending', 'failed'], true)
                 && in_array($order->fulfillment_status, [null, 'new'], true)
                 && ! $order->payments->contains('status', 'paid') && ! $order->payments->contains('requires_review', true)]);
@@ -40,6 +43,14 @@ class OrderController extends Controller
         $data = $request->validate(['reason' => ['required', 'string', 'min:5', 'max:1000']]);
         $service->cancel($order, $data['reason'], $request->user());
         Inertia::flash('toast', ['type' => 'success', 'message' => __('order_cancellation.saved')]);
+
+        return back();
+    }
+
+    public function refund(Request $request, Order $order, ManualRefundService $service): RedirectResponse
+    {
+        $service->record($order, $request->user(), $request->only(['idempotency_key', 'payment_id', 'amount', 'external_reference', 'method', 'refunded_at', 'reason', 'confirmed']));
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('refunds.saved')]);
 
         return back();
     }

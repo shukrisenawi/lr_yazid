@@ -60,6 +60,7 @@ Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('adm
     Route::get('orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
     Route::put('orders/{order}', [AdminOrderController::class, 'update'])->name('orders.update');
     Route::post('orders/{order}/cancel', [AdminOrderController::class, 'cancel'])->name('orders.cancel');
+    Route::post('orders/{order}/manual-refunds', [AdminOrderController::class, 'refund'])->name('orders.manual-refunds.store');
     Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
     Route::get('customers/{customer}', [CustomerController::class, 'show'])->name('customers.show');
     Route::get('appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');

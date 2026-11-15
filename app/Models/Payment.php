@@ -30,4 +30,10 @@ class Payment extends Model
     {
         return $this->hasMany(PaymentCallback::class);
     }
+
+    /** @return HasMany<ManualRefund, $this> */
+    public function manualRefunds(): HasMany
+    {
+        return $this->hasMany(ManualRefund::class);
+    }
 }

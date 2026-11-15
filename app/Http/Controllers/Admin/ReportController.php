@@ -40,7 +40,7 @@ class ReportController extends Controller
                     $write([$label, $report['labels'][$key], $isMoney ? $this->decimal($value) : $value, $isMoney ? 'MYR' : 'count']);
                 }
             }
-            $columns = ['collected_sen', 'membership_sen', 'paid_orders', 'orders_created', 'vip_activations', 'vip_renewals', 'appointment_requests'];
+            $columns = ['collected_sen', 'manual_refund_sen', 'membership_sen', 'paid_orders', 'orders_created', 'vip_activations', 'vip_renewals', 'appointment_requests'];
             $write([__('reports.month'), ...array_map(fn ($key) => $report['labels'][$key], $columns)]);
             foreach ($report['monthly'] as $row) {
                 $write([$row['month'], ...array_map(fn ($key) => str_ends_with($key, '_sen') ? $this->decimal($row[$key]) : $row[$key], $columns)]);

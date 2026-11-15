@@ -2,6 +2,7 @@
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import OrderSummary from '@/components/OrderSummary.vue';
 import StatusBadge from '@/components/StatusBadge.vue';
+import { manualRefundCopy as refundCopy } from '@/lib/manualRefundCopy';
 import { money } from '@/types/catalog';
 import { dateTime, type Order } from '@/types/commerce';
 defineProps<{ order: Order; paymentEnabled: boolean }>();
@@ -180,5 +181,27 @@ function cancel(id: number) {
                 </div>
             </aside>
         </div>
+        <section
+            v-if="order.manual_refunds?.length"
+            class="mt-8 rounded-xl border p-6"
+        >
+            <h2 class="text-xl font-semibold">{{ refundCopy.title }}</h2>
+            <p class="mt-3 text-sm leading-relaxed text-muted-foreground">
+                {{ refundCopy.customerHelp }}
+            </p>
+            <ul class="mt-4 space-y-3">
+                <li
+                    v-for="refund in order.manual_refunds"
+                    :key="refund.id"
+                    class="text-sm [overflow-wrap:anywhere]"
+                >
+                    {{ refund.reference }} · {{ money(refund.amount_sen) }} ·
+                    {{ dateTime(refund.refunded_at) }}
+                    <p v-if="refund.environment === 'sandbox'" class="mt-2">
+                        {{ refundCopy.sandbox }}
+                    </p>
+                </li>
+            </ul>
+        </section>
     </div>
 </template>

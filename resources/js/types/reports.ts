@@ -6,6 +6,7 @@ export type ReportFilters = {
 export type ReportMonth = {
     month: string;
     collected_sen: number;
+    manual_refund_sen: number;
     membership_sen: number;
     paid_orders: number;
     orders_created: number;

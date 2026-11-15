@@ -39,6 +39,7 @@ function fixture(): AdminReport {
             {
                 month: '2026-11',
                 collected_sen: 12345,
+                manual_refund_sen: 0,
                 membership_sen: 10000,
                 paid_orders: 1,
                 orders_created: 2,

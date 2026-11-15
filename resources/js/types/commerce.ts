@@ -44,6 +44,8 @@ export type OrderItem = {
     line_total_sen: number;
 };
 export type Order = {
+    currency?: string;
+    manual_refunds?: ManualRefund[];
     cancellation?: {
         id: number;
         actor_id: number | null;
@@ -95,6 +97,21 @@ export type Payment = {
     review_reason: string | null;
     paid_at: string | null;
     checked_at: string | null;
+};
+export type ManualRefund = {
+    id: number;
+    order_id: number;
+    payment_id?: number;
+    recorded_by?: number;
+    reference: string;
+    environment: string;
+    external_reference?: string;
+    method?: string;
+    amount_sen: number;
+    currency: string;
+    refunded_at: string;
+    reason?: string;
+    created_at?: string;
 };
 export const dateTime = (value: string) =>
     new Intl.DateTimeFormat('en-MY', {

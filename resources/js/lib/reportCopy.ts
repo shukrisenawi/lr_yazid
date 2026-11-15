@@ -23,9 +23,9 @@ export const reportCopy = {
     appointments: 'Appointment request status',
     count: 'Count',
     status: 'Current status',
-    help: 'Dates are inclusive in Asia/Kuala_Lumpur, up to 366 days. Financial figures use verified payment dates; order and appointment trends use creation dates.',
+    help: 'Dates are inclusive in Asia/Kuala_Lumpur, up to 366 days. Sales use verified payment dates, manual refunds use refund-completion dates, and order and appointment trends use creation dates.',
     financialHelp:
-        'Collected sales include shipping, not profit or a net-refund ledger. Only MYR paid orders with a single amount-matched, dated, provider-checked transaction and no review flags are included. Failed, pending, refunded and unverified records are excluded. Membership revenue is included within collected sales.',
+        'Collected sales are gross, including shipping; they are not profit or net of refunds. Only MYR paid orders with a single amount-matched, dated, provider-checked transaction and no review flags are included. Membership revenue is included within collected sales. Manual refunds are administrator-declared records, reported separately by refund date and environment, including refunds against review-flagged payments excluded from gross sales. They do not prove an external transfer.',
     currentHelp:
         'Current counts are as of the generation time, not historical counts for the selected dates. Customer, membership, product, order, program and appointment counts include all environments and manual provisioning. Payment review counts use the selected environment. Expired VIP is a subset of customers without active VIP.',
     cohortHelp:
@@ -38,6 +38,7 @@ export const reportCopy = {
     bookings: 'Appointment requests',
     columns: [
         'collected_sen',
+        'manual_refund_sen',
         'membership_sen',
         'paid_orders',
         'orders_created',

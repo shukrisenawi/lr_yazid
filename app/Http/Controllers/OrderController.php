@@ -24,6 +24,7 @@ class OrderController extends Controller
 
         $settings = PaymentGatewaySetting::current();
         $order->load(['items', 'payments', 'invoice']);
+        $order->load(['manualRefunds' => fn ($query) => $query->select(['id', 'order_id', 'reference', 'environment', 'amount_sen', 'currency', 'refunded_at'])]);
 
         return Inertia::render('customer/Order', [
             'order' => $order,

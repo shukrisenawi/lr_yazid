@@ -23,6 +23,8 @@ class AdminReportService
             $from = CarbonImmutable::parse($filters['from'])->startOfDay();
             $until = CarbonImmutable::parse($filters['to'])->addDay()->startOfDay();
             $paid = $this->verifiedPayments($filters['environment'])->where('p.paid_at', '>=', $from)->where('p.paid_at', '<', $until);
+            $refunds = DB::table('manual_refunds')->where('currency', 'MYR')->where('environment', $filters['environment'])
+                ->where('refunded_at', '>=', $from)->where('refunded_at', '<', $until);
             $sales = (clone $paid)->selectRaw('count(*) as paid_orders, coalesce(sum(p.amount_sen), 0) as collected_sen')->first();
             $membershipItems = (clone $paid)->join('order_items as oi', 'oi.order_id', '=', 'o.id')->where('oi.type', 'membership');
             $transactions = (clone $membershipItems)->join('membership_transactions as mt', function ($join) {
@@ -32,6 +34,8 @@ class AdminReportService
             $appointments = Appointment::where('created_at', '>=', $from)->where('created_at', '<', $until);
             $summary = [
                 'collected_sen' => (int) $sales->collected_sen,
+                'manual_refund_sen' => (int) (clone $refunds)->sum('amount_sen'),
+                'manual_refunds' => (clone $refunds)->count(),
                 'membership_sen' => (int) (clone $membershipItems)->sum('oi.line_total_sen'),
                 'paid_orders' => (int) $sales->paid_orders,
                 'orders_created' => (clone $orders)->count(),
@@ -44,6 +48,7 @@ class AdminReportService
             ];
             $monthly = [];
             $salesMonths = $this->months(clone $paid, 'p.paid_at', 'sum(p.amount_sen) as collected_sen, count(*) as paid_orders');
+            $refundMonths = $this->months(clone $refunds, 'refunded_at', 'sum(amount_sen) as manual_refund_sen');
             $membershipMonths = $this->months(clone $membershipItems, 'p.paid_at', 'sum(oi.line_total_sen) as membership_sen');
             $activationMonths = $this->months((clone $transactions)->where('mt.type', 'activation'), 'p.paid_at', 'count(distinct mt.user_id) as vip_activations');
             $renewalMonths = $this->months((clone $transactions)->where('mt.type', 'renewal'), 'p.paid_at', 'count(*) as vip_renewals');
@@ -53,6 +58,7 @@ class AdminReportService
                 $key = $month->format('Y-m');
                 $monthly[] = [
                     'month' => $key, 'collected_sen' => (int) ($salesMonths[$key]->collected_sen ?? 0),
+                    'manual_refund_sen' => (int) ($refundMonths[$key]->manual_refund_sen ?? 0),
                     'membership_sen' => (int) ($membershipMonths[$key]->membership_sen ?? 0),
                     'paid_orders' => (int) ($salesMonths[$key]->paid_orders ?? 0),
                     'orders_created' => (int) ($orderMonths[$key]->orders_created ?? 0),

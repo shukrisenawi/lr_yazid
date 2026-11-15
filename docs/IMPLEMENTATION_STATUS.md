@@ -328,6 +328,36 @@ remain outstanding.
   MySQL independent-process tests cover duplicate cancellation and a verified
   settlement/cancellation race; frontend tests cover confirmation and escaped audit.
 
+## Manual refund ledger: Initial release implemented
+
+- Authorized admins record completed external refunds on order details. Exact
+  integer-sen amounts, external reference/method, MYT completion time, required
+  audit reason, acknowledgement and confirmation are enforced.
+- Only matching server-verified paid MYR attempts are eligible. Review-flagged
+  and additional paid attempts are supported without clearing review flags.
+  Amounts are capped independently per payment, so duplicate received payments
+  may each have a refund record; unpaid/foreign/mismatched attempts are rejected.
+- Owner/order/payment locks, locking refund reads and database uniqueness protect
+  retries/concurrent submissions. Identical same-actor UUID retries return the
+  original row; mismatched reuse is rejected. External refs are uppercased and
+  unique per environment. The audit ledger has no edit/delete/correction routes.
+- This module sends no money and invokes no ToyyibPay API. Original paid status,
+  invoice, fulfillment, stock, membership and review flags are not rewritten.
+  There is no automatic credit note or tax/e-Invoice adjustment.
+- Owner-only customer details expose minimal reference/amount/date/environment
+  summaries; external bank references, admin identities and audit notes are private.
+- Reports and aggregate CSV add separate manual refund amount/count/monthly totals
+  by completion date/environment; verified collections remain gross, not net.
+  Manually declared refunds are not provider proof of transfer or customer receipt.
+- Chrome acceptance used port 8001 and a disposable `lr_yazid_test_*` MySQL DB,
+  never fabricated settlement in the application DB. A clearly synthetic Sandbox
+  review payment received one synthetic RM25.10 ledger entry. The admin form,
+  acknowledgement/confirmation, remaining RM74.90 balance, audit, customer privacy
+  projection and Sandbox-versus-Production reporting were verified.
+- 390px dark/mobile ledger had no document overflow. No browser console warnings
+  or errors were observed. Synthetic data are not genuine provider/refund acceptance.
+  The temporary browser server was stopped and its synthetic database removed.
+
 ## Verification
 
 - Foundation: 50 backend tests / 169 assertions passed.
@@ -344,10 +374,10 @@ remain outstanding.
 - Composer audit and npm production-dependency audit reported no advisories.
 - Temporary browser test accounts were removed and the browser-created test
   product was archived after verification.
-- Latest checks: 273 backend tests / 1944 assertions passed; twenty opt-in MySQL
-  checks / 207 assertions passed separately (19 concurrency tests and one reporting test).
+- Latest checks: 284 backend tests / 2077 assertions passed; twenty-two opt-in MySQL
+  checks / 227 assertions passed separately (21 concurrency tests and one reporting test).
   PHPStan and Pint passed.
-- Sixty-five Vue/component/helper tests, TypeScript, frontend formatting/lint and production build passed.
+- Seventy-one Vue/component/helper tests, TypeScript, frontend formatting/lint and production build passed.
 - Browser: plan creation and membership-only checkout produced an unpaid RM199
   order with no shipping address or fee. Gateway collection remains disabled.
 - Verified activation/renewal/reminder behavior is automated-test coverage, not
@@ -376,7 +406,7 @@ remain outstanding.
 
 ## Remaining phases and acceptance
 
-Manual refund administration, advanced customer
+Advanced customer
 administration, deeper reporting/production hardening and
 final deployment acceptance.
 

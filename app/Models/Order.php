@@ -64,4 +64,10 @@ class Order extends Model
     {
         return $this->hasOne(OrderCancellation::class);
     }
+
+    /** @return HasMany<ManualRefund, $this> */
+    public function manualRefunds(): HasMany
+    {
+        return $this->hasMany(ManualRefund::class)->orderBy('id');
+    }
 }

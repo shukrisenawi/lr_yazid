@@ -9,6 +9,8 @@ return [
     'count' => 'Count',
     'metrics' => [
         'collected_sen' => 'Verified collected sales (including shipping)',
+        'manual_refund_sen' => 'Manually recorded refunds',
+        'manual_refunds' => 'Manual refund records',
         'membership_sen' => 'Membership item revenue',
         'paid_orders' => 'Verified paid orders',
         'orders_created' => 'Orders created',
