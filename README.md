@@ -45,6 +45,8 @@ Registration always creates customers, regardless of submitted role fields.
 
 The official starter kit provides Fortify login, logout, email verification,
 password reset, profile editing, password changes and two-factor authentication.
+Sign-in uses email and password only; passkey login, confirmation and registration
+are disabled. Existing two-factor authentication remains available.
 Register using a Malaysian phone number (normalized to E.164).
 New accounts must verify email before accessing dashboards.
 `MAIL_MAILER=log` writes local verification/reset messages to
