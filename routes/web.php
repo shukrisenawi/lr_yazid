@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentControll
 use App\Http\Controllers\Admin\AppointmentServiceController;
 use App\Http\Controllers\Admin\AppointmentSlotController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ContentPageController as AdminContentPageController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\MembershipController as AdminMembershipController;
 use App\Http\Controllers\Admin\MembershipPlanController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ContentPageController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\NotificationController;
@@ -28,6 +30,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', [CatalogController::class, 'home'])->name('home');
+Route::get('/pages/{slug}', [ContentPageController::class, 'show'])->name('content.show');
 Route::get('/vip-membership', [MembershipController::class, 'index'])->name('membership.info');
 Route::get('/products', [CatalogController::class, 'index'])->name('products.index');
 Route::get('/products/{slug}', [CatalogController::class, 'show'])->name('products.show');
@@ -39,6 +42,7 @@ Route::delete('/cart/items/{cartItem}', [CartController::class, 'destroy'])->blo
 Route::delete('/cart', [CartController::class, 'clear'])->block()->name('cart.clear');
 
 Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('content-pages', AdminContentPageController::class)->parameters(['content-pages' => 'contentPage'])->except(['show', 'destroy']);
     Route::get('invoice-settings', [InvoiceController::class, 'settings'])->name('invoices.settings');
     Route::put('invoice-settings', [InvoiceController::class, 'updateSettings'])->name('invoices.settings.update');
     Route::post('orders/{order}/invoice', [InvoiceController::class, 'issue'])->name('orders.invoice');

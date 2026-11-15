@@ -189,6 +189,17 @@ pages show tracking. Shipped, tracking-correction and delivered notices are queu
 once per actual fulfillment change and track database/mail delivery. Email delivery
 is at-least-once; external SMTP acceptance remains outstanding.
 
+## Website content
+
+Manage content at `/admin/content-pages`: About Us, Contact Us, policies and
+membership information can be created without source-code changes. The shared rich
+text editor supports formatted content/images; HTML is sanitized server-side.
+Set SEO title/description, publication status and optional footer visibility.
+Only published pages appear at `/pages/{slug}`; drafts return 404, including to admins.
+Every changed save records an administrator-attributed revision. Stale form versions
+are rejected rather than overwriting newer content. Review actual business/legal
+details before publishing policies. Homepage banners/general settings remain unfinished.
+
 ## Invoices and exports
 
 Configure real seller details at `/admin/invoice-settings` before enabling invoice

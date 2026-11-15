@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { ArrowUpRight } from '@lucide/vue';
 import { computed } from 'vue';
 import { Toaster } from '@/components/ui/sonner';
+import { contentCopy } from '@/lib/contentCopy';
 const page = usePage();
 const copy = computed(() => page.props.copy as Record<string, string>);
 </script>
@@ -61,6 +62,19 @@ const copy = computed(() => page.props.copy as Record<string, string>);
         >
             <span>{{ copy.brand }} &copy; {{ new Date().getFullYear() }}</span>
             <span>{{ copy.footer }}</span>
+            <nav
+                v-if="page.props.footerPages?.length"
+                class="flex w-full flex-wrap gap-x-6 gap-y-3"
+                :aria-label="contentCopy.navigation"
+            >
+                <Link
+                    v-for="item in page.props.footerPages"
+                    :key="item.slug"
+                    :href="`/pages/${item.slug}`"
+                    class="max-w-full min-w-0 [overflow-wrap:anywhere] hover:underline"
+                    >{{ item.title }}</Link
+                >
+            </nav>
         </footer>
         <Toaster />
     </div>

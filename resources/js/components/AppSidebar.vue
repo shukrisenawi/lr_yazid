@@ -16,6 +16,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import { contentCopy } from '@/lib/contentCopy';
 import type { NavItem } from '@/types';
 
 const page = usePage();
@@ -46,6 +47,11 @@ const mainNavItems = computed<NavItem[]>(() => [
     { title: 'My addresses', href: '/addresses', icon: House },
     ...(page.props.auth.user.role === 'admin'
         ? [
+              {
+                  title: contentCopy.title,
+                  href: '/admin/content-pages',
+                  icon: LayoutGrid,
+              },
               {
                   title: 'Manage Orders',
                   href: '/admin/orders',

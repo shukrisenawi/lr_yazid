@@ -140,8 +140,7 @@ remain outstanding.
 - Paginated customer profiles link orders, membership payments, programs and appointments.
 - Passwords, two-factor secrets and administrator accounts are excluded from the directory.
 - Read-only records cannot grant roles, mark payments paid or change membership validity.
-- Customer account mutation, advanced reporting and administrator order fulfillment
-  remain separate unfinished work.
+- Customer account mutation and advanced reporting remain separate unfinished work.
 - Browser acceptance verified real customer search/filter submission and customer
   profile navigation using a labeled local QA account. Mobile 390px inspection
   found no document overflow or browser console errors.
@@ -180,6 +179,23 @@ remain outstanding.
   Positive issuance/print rendering/shipment behavior is automated-test coverage,
   not a claim of a genuine provider payment or external SMTP delivery.
 
+## Content pages: Core implemented
+
+- Admin-managed About/Contact, policies and membership information via general
+  content pages: title, slug, sanitized rich text, SEO title, meta description,
+  draft/publication status and optional public footer navigation.
+- Public `/pages/{slug}` returns published pages only, without internal audit data.
+  Empty/unsafe-only content cannot be published. No legal policies are invented.
+- Version-checked updates reject stale edits; each actual save retains an immutable
+  revision snapshot and administrator identity. No destructive page deletion.
+- Browser acceptance: create/publish with the rich text editor, public SEO/footer
+  rendering, return to draft, retained revisions and public 404 after unpublishing.
+  Search/status filter submitted successfully. QA page remains a nonpublic draft.
+- Desktop light and 390px mobile dark inspected without document overflow.
+  Local public-page Lighthouse: performance 91, accessibility 100, best practices
+  100, SEO 100. This is a local content-page check, not whole-site production acceptance.
+- Homepage banners and general website settings remain outstanding.
+
 ## Verification
 
 - Foundation: 50 backend tests / 169 assertions passed.
@@ -196,9 +212,9 @@ remain outstanding.
 - Composer audit and npm production-dependency audit reported no advisories.
 - Temporary browser test accounts were removed and the browser-created test
   product was archived after verification.
-- Latest checks: 188 backend tests / 1173 assertions passed; fourteen opt-in MySQL
+- Latest checks: 196 backend tests / 1295 assertions passed; fourteen opt-in MySQL
   concurrency tests / 135 assertions passed separately. PHPStan and Pint passed.
-- Thirty-six Vue/component/helper tests, TypeScript, frontend formatting/lint and production build passed.
+- Thirty-nine Vue/component/helper tests, TypeScript, frontend formatting/lint and production build passed.
 - Browser: plan creation and membership-only checkout produced an unpaid RM199
   order with no shipping address or fee. Gateway collection remains disabled.
 - Verified activation/renewal/reminder behavior is automated-test coverage, not
@@ -227,8 +243,9 @@ remain outstanding.
 
 ## Remaining phases and acceptance
 
-Remaining commerce notifications, administrator order fulfillment and advanced customer administration,
-CMS, reports, production hardening and final deployment acceptance.
+Remaining commerce notifications, refund/cancellation administration, advanced customer
+administration, homepage banners/general settings, reports, production hardening and
+final deployment acceptance.
 
 Continue in roadmap order. ToyyibPay sandbox acceptance will require sandbox
 credentials and a reachable callback URL, not real payments. Do not advertise
