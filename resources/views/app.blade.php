@@ -30,18 +30,17 @@
             }
         </style>
 
-        <link rel="icon" href="/favicon.ico" sizes="any">
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        <link rel="icon" href="{{ $page['props']['website']['favicon_url'] ?? '/favicon.ico' }}" type="{{ empty($page['props']['website']['favicon_url']) ? 'image/x-icon' : 'image/webp' }}" data-inertia="website-icon">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
         @fonts
         @if(request()->routeIs('home'))
-            <link rel="preload" as="image" href="/images/collective.jpg" fetchpriority="high">
+            <link rel="preload" as="image" href="{{ $page['props']['banners'][0]['image_url'] ?? '/images/collective.jpg' }}" fetchpriority="high">
         @endif
 
         @vite(['resources/css/app.css', 'resources/js/app.ts', "resources/js/pages/{$page['component']}.vue"])
         <x-inertia::head>
-            <title>{{ config('app.name', 'Laravel') }}</title>
+            <title>{{ $page['props']['website']['website_name'] ?? config('app.name', 'Laravel') }}</title>
         </x-inertia::head>
     </head>
     <body class="font-sans antialiased">

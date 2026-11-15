@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { contentCopy } from '@/lib/contentCopy';
+import { websiteCopy } from '@/lib/websiteCopy';
 import type { NavItem } from '@/types';
 
 const page = usePage();
@@ -47,6 +48,16 @@ const mainNavItems = computed<NavItem[]>(() => [
     { title: 'My addresses', href: '/addresses', icon: House },
     ...(page.props.auth.user.role === 'admin'
         ? [
+              {
+                  title: websiteCopy.settings,
+                  href: '/admin/website-settings',
+                  icon: LayoutGrid,
+              },
+              {
+                  title: websiteCopy.banners,
+                  href: '/admin/banners',
+                  icon: LayoutGrid,
+              },
               {
                   title: contentCopy.title,
                   href: '/admin/content-pages',

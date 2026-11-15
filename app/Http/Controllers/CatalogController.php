@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\HomepageBanner;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -13,6 +14,7 @@ class CatalogController extends Controller
     public function home(): Response
     {
         return Inertia::render('public/Home', [
+            'banners' => HomepageBanner::visible(),
             'featured' => Product::with(['images', 'category'])->withCount('variants')->where('status', 'active')->where('is_featured', true)->latest()->limit(4)->get(),
             'latest' => Product::with(['images', 'category'])->withCount('variants')->where('status', 'active')->where('is_featured', false)->latest()->limit(4)->get(),
             'categories' => Category::whereHas('products', fn ($query) => $query->where('status', 'active'))->orderBy('name')->get(),

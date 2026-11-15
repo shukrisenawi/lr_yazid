@@ -3,8 +3,11 @@ import { Head, Link, usePage } from '@inertiajs/vue3';
 import { ArrowUpRight, ShieldCheck, Users, Sparkles } from '@lucide/vue';
 import { computed } from 'vue';
 import ProductCard from '@/components/ProductCard.vue';
+import HomeBanner from '@/components/HomeBanner.vue';
+import type { PublicBanner } from '@/types/website';
 import type { Product, Category } from '@/types/catalog';
 defineProps<{
+    banners: PublicBanner[];
     featured: Product[];
     latest: Product[];
     categories: Category[];
@@ -14,15 +17,19 @@ const copy = computed(() => page.props.copy as Record<string, string>);
 </script>
 
 <template>
-    <Head title="Home" />
+    <Head title="Home"
+        ><meta head-key="description" name="description" :content="copy.intro"
+    /></Head>
+    <HomeBanner v-if="banners.length" :banners="banners" />
     <section
+        v-else
         class="mx-auto grid max-w-7xl items-center gap-10 px-6 py-16 md:grid-cols-2 md:py-20"
     >
         <div>
             <p
                 class="mb-6 text-xs font-semibold tracking-[0.2em] text-emerald-800 uppercase dark:text-emerald-400"
             >
-                The Yazid Collective
+                {{ page.props.website.website_name }}
             </p>
             <h1
                 class="max-w-lg text-5xl leading-[1.06] font-semibold tracking-tight lg:text-6xl"

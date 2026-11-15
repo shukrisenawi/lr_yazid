@@ -194,7 +194,30 @@ remain outstanding.
 - Desktop light and 390px mobile dark inspected without document overflow.
   Local public-page Lighthouse: performance 91, accessibility 100, best practices
   100, SEO 100. This is a local content-page check, not whole-site production acceptance.
-- Homepage banners and general website settings remain outstanding.
+## Homepage banners and website settings implemented
+
+- Administrator-managed raster image uploads, title/subtitle, accessible image
+  description, internal CTA, draft/publication, ordering and optional start/end
+  schedule. Active display uses inclusive start and exclusive end in MYT.
+- Maximum six eligible banners; deterministic order and manual accessible controls,
+  no autoplay. Default homepage remains when no published banner is eligible.
+- Website name, logo, favicon, email/phone/address, HTTPS social links and footer
+  are configurable without touching invoice, mail, payment or currency configuration.
+- SVG and oversized/invalid uploads are rejected; accepted files are re-encoded.
+  Internal-only banner paths reject protocol-relative, external and encoded redirects.
+- Locked version checks reject stale writes. Administrator-attributed snapshots
+  preserve prior values/assets; duplicate unchanged saves do not add history.
+  Failed writes clean up only new assets. No destructive history/asset purge.
+- Browser: website/contact/logo/favicon save, social link save/render, image banner
+  creation/publication with schedule, manual second-banner selection and unpublishing.
+  Empty multipart arrays and favicon head deduplication were corrected.
+- QA branding/contact/social placeholders were cleared, uploaded branding removed,
+  and both test banners returned to drafts. Public homepage restored to its defaults.
+- Desktop light and mobile dark checked; no document overflow or browser console
+  errors. Guest authentication branding and rejected invalid login were also checked.
+- Final default-home local Lighthouse: performance 76, accessibility 100, best
+  practices 100, SEO 100. The development-server performance target remains unmet;
+  these checks do not establish whole-site production readiness.
 
 ## Verification
 
@@ -212,9 +235,9 @@ remain outstanding.
 - Composer audit and npm production-dependency audit reported no advisories.
 - Temporary browser test accounts were removed and the browser-created test
   product was archived after verification.
-- Latest checks: 196 backend tests / 1295 assertions passed; fourteen opt-in MySQL
+- Latest checks: 210 backend tests / 1503 assertions passed; fourteen opt-in MySQL
   concurrency tests / 135 assertions passed separately. PHPStan and Pint passed.
-- Thirty-nine Vue/component/helper tests, TypeScript, frontend formatting/lint and production build passed.
+- Forty-seven Vue/component/helper tests, TypeScript, frontend formatting/lint and production build passed.
 - Browser: plan creation and membership-only checkout produced an unpaid RM199
   order with no shipping address or fee. Gateway collection remains disabled.
 - Verified activation/renewal/reminder behavior is automated-test coverage, not
@@ -244,7 +267,7 @@ remain outstanding.
 ## Remaining phases and acceptance
 
 Remaining commerce notifications, refund/cancellation administration, advanced customer
-administration, homepage banners/general settings, reports, production hardening and
+administration, reports, production hardening and
 final deployment acceptance.
 
 Continue in roadmap order. ToyyibPay sandbox acceptance will require sandbox

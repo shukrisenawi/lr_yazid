@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\ContentPage;
+use App\Models\WebsiteSetting;
 use App\Services\CartService;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -40,6 +41,7 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'name' => config('app.name'),
+            'website' => fn () => WebsiteSetting::publicData(),
             'copy' => __('interface'),
             'footerPages' => fn () => ContentPage::where('status', 'published')->where('show_in_footer', true)->orderBy('title')->get(['title', 'slug']),
             'cartCount' => fn () => app(CartService::class)->count($request),

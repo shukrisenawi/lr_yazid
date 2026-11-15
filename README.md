@@ -198,7 +198,26 @@ Set SEO title/description, publication status and optional footer visibility.
 Only published pages appear at `/pages/{slug}`; drafts return 404, including to admins.
 Every changed save records an administrator-attributed revision. Stale form versions
 are rejected rather than overwriting newer content. Review actual business/legal
-details before publishing policies. Homepage banners/general settings remain unfinished.
+details before publishing policies.
+
+Manage ordered, scheduled homepage banners at `/admin/banners`. Publishing requires
+an image and accessible image description. Banner destinations are internal paths
+only; up to six currently published banners appear in order with manual controls,
+never autoplay. Start is inclusive and end is exclusive in Asia/Kuala_Lumpur.
+With no eligible banners the default homepage is retained.
+
+At `/admin/website-settings`, configure the website name, logo, favicon, contact
+details, social HTTPS links and footer. Logos/favicons/banner images accept bounded
+JPEG/PNG/WebP uploads and are re-encoded to WebP. These public settings do not alter
+invoice seller snapshots, payment credentials, currency, email sender or `APP_URL`.
+Website name and favicon update across navigation; the logo is used on public,
+account and authentication screens.
+
+Settings/banner writes use locked version checks, reject stale forms and retain
+administrator-attributed snapshots in `website_changes`. Identical saves do not
+create extra revisions. Old images remain available for audit history; failed
+database writes remove only their newly uploaded assets. Do not purge retained
+website assets without a separately reviewed retention policy.
 
 ## Invoices and exports
 

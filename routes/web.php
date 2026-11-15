@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\AppointmentSlotController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ContentPageController as AdminContentPageController;
 use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\HomepageBannerController;
 use App\Http\Controllers\Admin\MembershipController as AdminMembershipController;
 use App\Http\Controllers\Admin\MembershipPlanController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ShippingSettingsController;
 use App\Http\Controllers\Admin\VipProgramController as AdminVipProgramController;
+use App\Http\Controllers\Admin\WebsiteSettingController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatalogController;
@@ -42,6 +44,9 @@ Route::delete('/cart/items/{cartItem}', [CartController::class, 'destroy'])->blo
 Route::delete('/cart', [CartController::class, 'clear'])->block()->name('cart.clear');
 
 Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('website-settings', [WebsiteSettingController::class, 'edit'])->name('website-settings.edit');
+    Route::put('website-settings', [WebsiteSettingController::class, 'update'])->name('website-settings.update');
+    Route::resource('banners', HomepageBannerController::class)->except(['show', 'destroy']);
     Route::resource('content-pages', AdminContentPageController::class)->parameters(['content-pages' => 'contentPage'])->except(['show', 'destroy']);
     Route::get('invoice-settings', [InvoiceController::class, 'settings'])->name('invoices.settings');
     Route::put('invoice-settings', [InvoiceController::class, 'updateSettings'])->name('invoices.settings.update');

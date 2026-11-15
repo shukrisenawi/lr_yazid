@@ -3,6 +3,7 @@ import { initializeTheme } from '@/composables/useAppearance';
 import { defineAsyncComponent } from 'vue';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 import { initializeFlashToast } from '@/lib/flashToast';
+import { websiteTitle } from '@/lib/websiteTitle';
 
 const AppLayout = defineAsyncComponent(() => import('@/layouts/AppLayout.vue'));
 const AuthLayout = defineAsyncComponent(
@@ -25,7 +26,7 @@ const InvoiceLayout = defineAsyncComponent(
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 void createInertiaApp({
-    title: (title) => (title ? `${title} - ${appName}` : appName),
+    title: (title, page) => websiteTitle(title, page.props.website, appName),
     layout: (name) => {
         switch (true) {
             case name.startsWith('invoice/'):

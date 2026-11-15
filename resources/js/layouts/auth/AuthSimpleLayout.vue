@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import { Link, usePage } from '@inertiajs/vue3';
 import { home } from '@/routes';
+const page = usePage();
 
 defineProps<{
     title?: string;
@@ -23,11 +23,25 @@ defineProps<{
                         <div
                             class="mb-1 flex h-9 w-9 items-center justify-center rounded-md"
                         >
-                            <AppLogoIcon
-                                class="size-9 fill-current text-[var(--foreground)] dark:text-white"
-                            />
+                            <img
+                                v-if="page.props.website?.logo_url"
+                                :src="page.props.website.logo_url"
+                                alt=""
+                                class="size-9 object-contain"
+                            /><span v-else class="text-2xl font-semibold">{{
+                                (
+                                    page.props.website?.website_name ||
+                                    page.props.name
+                                ).charAt(0)
+                            }}</span>
                         </div>
-                        <span class="sr-only">{{ title }}</span>
+                        <span
+                            class="text-center text-sm [overflow-wrap:anywhere]"
+                            >{{
+                                page.props.website?.website_name ||
+                                page.props.name
+                            }}</span
+                        >
                     </Link>
                     <div class="space-y-2 text-center">
                         <h1 class="text-xl font-medium">{{ title }}</h1>
