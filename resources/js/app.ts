@@ -18,6 +18,9 @@ const AdminLayout = defineAsyncComponent(
     () => import('@/layouts/AdminLayout.vue'),
 );
 const VIPLayout = defineAsyncComponent(() => import('@/layouts/VIPLayout.vue'));
+const InvoiceLayout = defineAsyncComponent(
+    () => import('@/layouts/InvoiceLayout.vue'),
+);
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -25,6 +28,8 @@ void createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
     layout: (name) => {
         switch (true) {
+            case name.startsWith('invoice/'):
+                return InvoiceLayout;
             case name.startsWith('public/'):
                 return PublicLayout;
             case name.startsWith('customer/'):

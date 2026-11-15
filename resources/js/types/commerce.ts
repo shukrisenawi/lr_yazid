@@ -44,6 +44,7 @@ export type OrderItem = {
     line_total_sen: number;
 };
 export type Order = {
+    invoice?: { id: number; reference: string } | null;
     courier_name?: string | null;
     tracking_number?: string | null;
     fulfillment_history?: {

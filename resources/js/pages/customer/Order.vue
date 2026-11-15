@@ -28,6 +28,12 @@ function cancel(id: number) {
         <p class="mt-3 text-sm text-muted-foreground">
             {{ dateTime(order.created_at) }} · MYR
         </p>
+        <Link
+            v-if="order.invoice"
+            :href="`/invoices/${order.invoice.id}`"
+            class="mt-4 inline-block text-sm underline"
+            >{{ order.invoice.reference }}</Link
+        >
         <section
             v-if="['pending', 'failed'].includes(order.payment_status)"
             class="mt-6 rounded-lg border bg-muted/50 p-5 text-sm leading-relaxed"

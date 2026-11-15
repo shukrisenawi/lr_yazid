@@ -2,6 +2,7 @@
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import OrderSummary from '@/components/OrderSummary.vue';
 import { orderCopy as copy } from '@/lib/orderCopy';
+import { documentCopy } from '@/lib/documentCopy';
 import { money } from '@/types/catalog';
 import { dateTime, type Order } from '@/types/commerce';
 const props = defineProps<{ order: Order }>();
@@ -14,6 +15,7 @@ const form = useForm({
 function print() {
     window.print();
 }
+const invoiceForm = useForm({});
 </script>
 <template>
     <Head :title="order.reference" />
@@ -27,6 +29,34 @@ function print() {
             </button>
         </div>
         <h1 class="mt-6 text-3xl font-semibold">{{ order.reference }}</h1>
+        <div class="mt-4 flex flex-wrap gap-5 text-sm print:hidden">
+            <Link
+                v-if="order.invoice"
+                :href="`/invoices/${order.invoice.id}`"
+                class="underline"
+                >{{ documentCopy.view }} · {{ order.invoice.reference }}</Link
+            >
+            <form
+                v-else
+                @submit.prevent="
+                    invoiceForm.post(`/admin/orders/${order.id}/invoice`)
+                "
+            >
+                <button :disabled="invoiceForm.processing" class="underline">
+                    {{ documentCopy.issue }}
+                </button>
+            </form>
+            <Link href="/admin/invoice-settings" class="underline">{{
+                documentCopy.settings
+            }}</Link>
+        </div>
+        <p
+            v-if="Object.keys(invoiceForm.errors).length"
+            role="alert"
+            class="mt-4 text-sm text-red-700"
+        >
+            {{ Object.values(invoiceForm.errors).join(' ') }}
+        </p>
         <p class="mt-3 text-sm">
             {{ dateTime(order.created_at) }} · {{ order.payment_status }} ·
             {{ order.customer_name }} · {{ order.customer_email }}

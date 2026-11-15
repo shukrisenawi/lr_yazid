@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/** @property CarbonImmutable|null $paid_at */
 class Payment extends Model
 {
     protected $guarded = ['id'];

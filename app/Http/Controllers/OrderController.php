@@ -23,7 +23,7 @@ class OrderController extends Controller
         Gate::authorize('view', $order);
 
         $settings = PaymentGatewaySetting::current();
-        $order->load(['items', 'payments']);
+        $order->load(['items', 'payments', 'invoice']);
 
         return Inertia::render('customer/Order', [
             'order' => $order,

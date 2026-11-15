@@ -185,8 +185,22 @@ advance verified paid physical orders through processing, packed, shipped and
 delivered. Courier/tracking are required before shipping. Each change requires a
 reason and records an audit. Unpaid, membership-only or review-flagged orders are
 blocked; fulfillment never marks payments paid or modifies stock. Customer order
-pages show tracking. Printable summaries are not formal business invoices;
-invoice/export, refund workflows and shipping notices remain unfinished.
+pages show tracking. Shipped, tracking-correction and delivered notices are queued
+once per actual fulfillment change and track database/mail delivery. Email delivery
+is at-least-once; external SMTP acceptance remains outstanding.
+
+## Invoices and exports
+
+Configure real seller details at `/admin/invoice-settings` before enabling invoice
+issuance. Admins issue one invoice per verified paid MYR order from its details page.
+Invoices freeze seller, buyer, item, totals and payment references; later changes
+cannot rewrite an issued document. Customers and admins can open `/invoices/{id}`
+and use Print / Save PDF. These are commercial invoices, **not tax invoices or
+LHDN-validated e-Invoices**. No tax or regulatory compliance is implied.
+
+Export CSV from the order list after applying search, payment, fulfillment and
+date filters. Exports are capped at 10,000 orders, generated in batches and protected
+against spreadsheet formula injection. Refund/cancellation workflows remain unfinished.
 
 ## Deployment foundation
 

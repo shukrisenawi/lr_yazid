@@ -154,11 +154,31 @@ remain outstanding.
   and retain old/new status and tracking in an audit record.
 - Unpaid, membership-only and review-flagged payments cannot be fulfilled.
 - Repeated identical updates are idempotent; stock and payment state are not changed.
-- Customer order pages display courier/tracking. Basic printable order summaries
-  are available; formal business invoices, exports, refunds/cancellation handling
-  and shipping notifications remain unfinished.
+- Customer order pages display courier/tracking. Printable summaries are separate
+  from the commercial invoice workflow below. Refund/cancellation handling remains unfinished.
 - Browser verification confirmed an attempted update of a real unpaid QA order
   was rejected without changing its fulfillment or payment state.
+
+## Invoices, exports and shipment notices implemented
+
+- Admin-configured seller details, disabled by default; no invented issuer details
+  are used for production invoicing. Invoices require verified paid MYR orders,
+  matching payment amount/date, consistent totals and no payment review flags.
+- One invoice per order, protected by owner/order locks and a unique constraint.
+  Seller/buyer/line/total/payment snapshots remain unchanged after later edits.
+- Owner/admin-only printable commercial invoice with browser Print / Save PDF.
+  This is not LHDN e-Invoice validation, SST/tax-invoice support or tax advice.
+- CSV exports share the search/payment/fulfillment/date filters, stream in batches,
+  cap at 10,000 orders and neutralize spreadsheet formula cells. No secrets exported.
+- Shipped, tracking-correction and delivered notices use transactional database
+  queueing, immutable shipment snapshots and per-channel delivery tracking.
+  Identical retried updates do not enqueue duplicate notices.
+- Browser acceptance checked issuer form submission while disabled, unpaid invoice
+  rejection and filtered CSV response content. A first-visit default hydration bug
+  and nullable-filter export bug were fixed and regression-tested.
+- Local QA issuer placeholders were cleared after testing; issuance remains disabled.
+  Positive issuance/print rendering/shipment behavior is automated-test coverage,
+  not a claim of a genuine provider payment or external SMTP delivery.
 
 ## Verification
 
@@ -176,9 +196,9 @@ remain outstanding.
 - Composer audit and npm production-dependency audit reported no advisories.
 - Temporary browser test accounts were removed and the browser-created test
   product was archived after verification.
-- Latest checks: 178 backend tests / 1098 assertions passed; twelve opt-in MySQL
-  concurrency tests / 113 assertions passed separately. PHPStan and Pint passed.
-- Thirty-one Vue component tests, TypeScript, frontend formatting/lint and production build passed.
+- Latest checks: 188 backend tests / 1173 assertions passed; fourteen opt-in MySQL
+  concurrency tests / 135 assertions passed separately. PHPStan and Pint passed.
+- Thirty-six Vue/component/helper tests, TypeScript, frontend formatting/lint and production build passed.
 - Browser: plan creation and membership-only checkout produced an unpaid RM199
   order with no shipping address or fee. Gateway collection remains disabled.
 - Verified activation/renewal/reminder behavior is automated-test coverage, not

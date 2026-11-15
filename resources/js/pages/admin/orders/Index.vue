@@ -2,22 +2,43 @@
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import Pagination from '@/components/Pagination.vue';
 import { orderCopy as copy } from '@/lib/orderCopy';
+import { documentCopy } from '@/lib/documentCopy';
+import { orderExportUrl } from '@/lib/orderExport';
+import { computed } from 'vue';
 import { money, type Paginated } from '@/types/catalog';
 import type { Order } from '@/types/commerce';
 const props = defineProps<{
     orders: Paginated<Order>;
-    filters: { search?: string; payment?: string; fulfillment?: string };
+    filters: {
+        search?: string | null;
+        payment?: string | null;
+        fulfillment?: string | null;
+        from?: string | null;
+        to?: string | null;
+    };
 }>();
 const filter = useForm({
     search: props.filters.search ?? '',
     payment: props.filters.payment ?? '',
     fulfillment: props.filters.fulfillment ?? '',
+    from: props.filters.from ?? '',
+    to: props.filters.to ?? '',
 });
+const exportUrl = computed(() => orderExportUrl(props.filters));
 </script>
 <template>
     <Head :title="copy.title" />
     <div class="p-6 md:p-10">
         <h1 class="text-3xl font-semibold">{{ copy.title }}</h1>
+        <div class="mt-5 flex flex-wrap gap-5 text-sm">
+            <a :href="exportUrl" class="underline">{{ documentCopy.export }}</a
+            ><Link href="/admin/invoice-settings" class="underline">{{
+                documentCopy.settings
+            }}</Link>
+        </div>
+        <p class="mt-3 text-xs text-muted-foreground">
+            {{ documentCopy.exportHelp }}
+        </p>
         <form
             class="mt-8 flex flex-wrap items-end gap-4"
             @submit.prevent="filter.get('/admin/orders')"
@@ -51,10 +72,29 @@ const filter = useForm({
                     </option>
                     <option>cancelled</option>
                 </select></label
+            ><label class="grid gap-2 text-sm"
+                >{{ documentCopy.from
+                }}<input
+                    v-model="filter.from"
+                    type="date"
+                    class="rounded-md border bg-transparent p-2.5" /></label
+            ><label class="grid gap-2 text-sm"
+                >{{ documentCopy.to
+                }}<input
+                    v-model="filter.to"
+                    type="date"
+                    class="rounded-md border bg-transparent p-2.5" /></label
             ><button class="rounded-md border px-4 py-2.5">
                 {{ copy.apply }}
             </button>
         </form>
+        <p
+            v-if="Object.keys($page.props.errors).length"
+            role="alert"
+            class="mt-4 text-sm text-red-700"
+        >
+            {{ Object.values($page.props.errors).join(' ') }}
+        </p>
         <div class="mt-6 overflow-x-auto rounded-xl border">
             <table class="w-full text-left text-sm">
                 <thead class="bg-muted">

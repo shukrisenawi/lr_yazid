@@ -17,6 +17,7 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
@@ -38,6 +39,10 @@ Route::delete('/cart/items/{cartItem}', [CartController::class, 'destroy'])->blo
 Route::delete('/cart', [CartController::class, 'clear'])->block()->name('cart.clear');
 
 Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('invoice-settings', [InvoiceController::class, 'settings'])->name('invoices.settings');
+    Route::put('invoice-settings', [InvoiceController::class, 'updateSettings'])->name('invoices.settings.update');
+    Route::post('orders/{order}/invoice', [InvoiceController::class, 'issue'])->name('orders.invoice');
+    Route::get('orders/export', [AdminOrderController::class, 'export'])->middleware('throttle:10,1')->name('orders.export');
     Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
     Route::put('orders/{order}', [AdminOrderController::class, 'update'])->name('orders.update');
@@ -83,6 +88,7 @@ Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('adm
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
     Route::get('/vip/appointments/book', [AppointmentController::class, 'calendar'])->middleware('can:vip')->name('appointments.book');
     Route::post('/vip/appointments', [AppointmentController::class, 'store'])->middleware(['can:vip', 'throttle:20,1'])->name('appointments.store');
     Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');

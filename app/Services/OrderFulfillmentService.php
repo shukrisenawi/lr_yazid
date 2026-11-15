@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\UserRole;
 use App\Models\Order;
 use App\Models\User;
+use App\Notifications\ShipmentNotice;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -41,9 +42,17 @@ class OrderFulfillmentService
                 throw ValidationException::withMessages(['tracking_number' => __('fulfillment.tracking_required')]);
             }
             $order->save();
-            $order->fulfillmentHistory()->create(['admin_id' => $admin->id, 'previous_status' => $previousStatus,
+            $history = $order->fulfillmentHistory()->create(['admin_id' => $admin->id, 'previous_status' => $previousStatus,
                 'new_status' => $order->fulfillment_status, 'previous_tracking' => $previousTracking,
                 'new_tracking' => $order->only(['courier_name', 'tracking_number']), 'reason' => $data['reason']]);
+            $kind = match ($order->fulfillment_status) {
+                'shipped' => $previousStatus === 'shipped' ? 'tracking_updated' : 'shipped',
+                'delivered' => 'delivered',
+                default => null,
+            };
+            if ($kind !== null) {
+                $order->user->notify(new ShipmentNotice($history->id, $order->id, $kind, $order->reference, $order->courier_name, $order->tracking_number));
+            }
         }, 3);
     }
 }

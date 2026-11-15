@@ -5,11 +5,13 @@ namespace App\Providers;
 use App\Enums\UserRole;
 use App\Models\AppointmentNoticeDelivery;
 use App\Models\MembershipReminder;
+use App\Models\OrderFulfillmentHistory;
 use App\Models\ProgramNoticeDelivery;
 use App\Models\User;
 use App\Notifications\AppointmentNotice;
 use App\Notifications\MembershipNotice;
 use App\Notifications\ProgramNotice;
+use App\Notifications\ShipmentNotice;
 use App\Services\CartService;
 use Carbon\CarbonImmutable;
 use Illuminate\Auth\Events\Login;
@@ -45,6 +47,12 @@ class AppServiceProvider extends ServiceProvider
             }
         });
         Event::listen(NotificationSent::class, function (NotificationSent $event): void {
+            if ($event->notification instanceof ShipmentNotice && in_array($event->channel, ['mail', 'database'], true)) {
+                OrderFulfillmentHistory::whereKey($event->notification->historyId)
+                    ->where('order_id', $event->notification->orderId)
+                    ->whereHas('order', fn ($query) => $query->where('user_id', $event->notifiable->id))
+                    ->update([$event->channel.'_sent_at' => now()]);
+            }
             if ($event->notification instanceof AppointmentNotice && in_array($event->channel, ['mail', 'database'], true)) {
                 AppointmentNoticeDelivery::whereKey($event->notification->deliveryId)->where('user_id', $event->notifiable->id)
                     ->update([$event->channel.'_sent_at' => now()]);
