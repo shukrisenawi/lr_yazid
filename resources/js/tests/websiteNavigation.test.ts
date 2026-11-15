@@ -1,9 +1,14 @@
 import { afterEach, describe, expect, it, vi } from 'vite-plus/test';
-import { createApp, h, type App, type VNode } from 'vue';
+import { createApp, h, nextTick, type App, type VNode } from 'vue';
 import AppSidebar from '@/components/AppSidebar.vue';
-const state = vi.hoisted(() => ({ role: 'customer', isVip: false }));
+const state = vi.hoisted(() => ({
+    role: 'customer',
+    isVip: false,
+    url: '/admin/dashboard',
+}));
 vi.mock('@inertiajs/vue3', () => ({
     usePage: () => ({
+        url: state.url,
         props: { auth: { user: { role: state.role }, isVip: state.isVip } },
     }),
     Link: {
@@ -45,7 +50,8 @@ vi.mock('@/components/NavMain.vue', () => ({
             ),
     },
 }));
-vi.mock('@/components/ui/sidebar', () => {
+vi.mock('@/components/ui/sidebar', async () => {
+    const { ref } = await import('vue');
     const container = {
         setup:
             (
@@ -55,22 +61,35 @@ vi.mock('@/components/ui/sidebar', () => {
             () =>
                 h('div', slots.default?.()),
     };
-    return Object.fromEntries(
-        [
-            'Sidebar',
-            'SidebarContent',
-            'SidebarFooter',
-            'SidebarHeader',
-            'SidebarMenu',
-            'SidebarMenuButton',
-            'SidebarMenuItem',
-        ].map((name) => [name, container]),
-    );
+    return {
+        ...Object.fromEntries(
+            [
+                'Sidebar',
+                'SidebarContent',
+                'SidebarFooter',
+                'SidebarHeader',
+                'SidebarMenu',
+                'SidebarMenuButton',
+                'SidebarMenuItem',
+                'SidebarGroup',
+                'SidebarMenuSub',
+                'SidebarMenuSubItem',
+                'SidebarMenuSubButton',
+            ].map((name) => [name, container]),
+        ),
+        useSidebar: () => ({
+            state: ref('expanded'),
+            isMobile: ref(false),
+            setOpen: vi.fn(),
+            setOpenMobile: vi.fn(),
+        }),
+    };
 });
 let app: App | undefined;
 afterEach(() => {
     app?.unmount();
     document.body.innerHTML = '';
+    state.url = '/admin/dashboard';
 });
 function mount(role: string, isVip: boolean) {
     state.role = role;
@@ -95,7 +114,46 @@ describe('website administration navigation', () => {
         expect(
             root.querySelector('a[href="/admin/payment-settings"]')
                 ?.textContent,
-        ).toBe('ToyyibPay settings');
+        ).toContain('ToyyibPay settings');
+    });
+    it('opens one menu group at a time and allows it to collapse', async () => {
+        const root = mount('admin', false);
+        const commerce = root.querySelector<HTMLElement>(
+            '[aria-controls="sidebar-group-commerce"]',
+        )!;
+        const website = root.querySelector<HTMLElement>(
+            '[aria-controls="sidebar-group-website"]',
+        )!;
+        expect(commerce.getAttribute('aria-expanded')).toBe('false');
+        commerce.click();
+        await nextTick();
+        expect(commerce.getAttribute('aria-expanded')).toBe('true');
+        website.click();
+        await nextTick();
+        expect(commerce.getAttribute('aria-expanded')).toBe('false');
+        expect(website.getAttribute('aria-expanded')).toBe('true');
+        website.click();
+        await nextTick();
+        expect(website.getAttribute('aria-expanded')).toBe('false');
+    });
+    it('automatically opens the active group on nested routes', () => {
+        state.url = '/admin/appointments/calendar?month=2026-11';
+        const root = mount('admin', false);
+        expect(
+            root
+                .querySelector('[aria-controls="sidebar-group-appointments"]')
+                ?.getAttribute('aria-expanded'),
+        ).toBe('true');
+        expect(
+            root
+                .querySelector('a[href="/admin/appointments/calendar"]')
+                ?.getAttribute('aria-current'),
+        ).toBe('page');
+        expect(
+            root
+                .querySelector('a[href="/admin/appointments"]')
+                ?.hasAttribute('aria-current'),
+        ).toBe(false);
     });
     it.each([false, true])(
         'is hidden from customers, including VIP customers (%s)',
