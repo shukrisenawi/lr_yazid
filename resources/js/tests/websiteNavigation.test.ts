@@ -89,6 +89,10 @@ describe('website administration navigation', () => {
         ).not.toBeNull();
         expect(root.querySelector('a[href="/admin/banners"]')).not.toBeNull();
         expect(root.querySelector('a[href="/admin/reports"]')).not.toBeNull();
+        expect(
+            root.querySelector('a[href="/admin/payment-settings"]')
+                ?.textContent,
+        ).toBe('ToyyibPay settings');
     });
     it.each([false, true])(
         'is hidden from customers, including VIP customers (%s)',

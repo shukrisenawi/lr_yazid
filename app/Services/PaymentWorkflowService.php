@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\PaymentCallback;
 use App\Models\PaymentGatewaySetting;
+use App\Support\PublicHttpsUrl;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -21,9 +22,7 @@ class PaymentWorkflowService
         if (! $settings->enabled || ! $settings->configured()) {
             throw ValidationException::withMessages(['payment' => 'Payments are not configured yet. No payment has been taken.']);
         }
-        $host = parse_url(config('app.url'), PHP_URL_HOST);
-        if (! app()->runningUnitTests() && (parse_url(config('app.url'), PHP_URL_SCHEME) !== 'https'
-            || in_array($host, ['localhost', '127.0.0.1', '::1'], true))) {
+        if (! app()->runningUnitTests() && ! PublicHttpsUrl::configured(config('app.url'))) {
             throw ValidationException::withMessages(['payment' => 'A publicly reachable HTTPS application URL is required for ToyyibPay callbacks.']);
         }
         $payment = DB::transaction(function () use ($order, $settings) {

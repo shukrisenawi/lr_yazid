@@ -243,6 +243,27 @@ remain outstanding.
 - Positive financial/membership aggregates are covered in SQLite tests and a disposable
   MySQL reporting database. This is not evidence of genuine ToyyibPay payment acceptance.
 
+## ToyyibPay administration settings enhanced
+
+- Direct admin sidebar entry and Website settings link to `/admin/payment-settings`.
+  Sandbox/Production Secret Keys and Category Codes, environment and collection
+  enable/disable are configurable in the UI, without source-code credential edits.
+- Encrypted DB settings override environment defaults after saving. Blank keys preserve
+  saved values; replacement/removal is explicit. Keys never appear in Inertia props,
+  rendered HTML, validation old-input sessions or audit payloads.
+- Locked version checks protect both first-time and existing configuration from lost
+  updates. Safe before/after metadata and administrator identity are audited.
+- Collection requires the selected credentials and a public HTTPS application address.
+  Local/private/unsafe URL configurations are rejected, but credentials can still be
+  saved while disabled. The URL screen does not prove external callback reachability.
+- Key rotation does not rewrite credential snapshots on existing payment attempts.
+  Saving settings makes no provider request and does not validate provider acceptance.
+- Browser: dummy Sandbox credentials saved with collection disabled, input/payload
+  secrecy checked, localhost enable rejected, explicit key removal and settings-menu
+  navigation verified. Dummy credentials/category were cleared; collection remains disabled.
+- Desktop light and 390px mobile dark snapshots checked without document overflow
+  or browser console errors. Positive provider requests use automated HTTP fakes only.
+
 ## Verification
 
 - Foundation: 50 backend tests / 169 assertions passed.
@@ -259,10 +280,10 @@ remain outstanding.
 - Composer audit and npm production-dependency audit reported no advisories.
 - Temporary browser test accounts were removed and the browser-created test
   product was archived after verification.
-- Latest checks: 220 backend tests / 1600 assertions passed; fifteen opt-in MySQL
-  checks / 144 assertions passed separately (14 concurrency tests and one reporting test).
+- Latest checks: 244 backend tests / 1731 assertions passed; seventeen opt-in MySQL
+  checks / 166 assertions passed separately (16 concurrency tests and one reporting test).
   PHPStan and Pint passed.
-- Fifty-three Vue/component/helper tests, TypeScript, frontend formatting/lint and production build passed.
+- Fifty-seven Vue/component/helper tests, TypeScript, frontend formatting/lint and production build passed.
 - Browser: plan creation and membership-only checkout produced an unpaid RM199
   order with no shipping address or fee. Gateway collection remains disabled.
 - Verified activation/renewal/reminder behavior is automated-test coverage, not

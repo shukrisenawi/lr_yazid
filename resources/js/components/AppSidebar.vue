@@ -19,6 +19,7 @@ import { dashboard } from '@/routes';
 import { contentCopy } from '@/lib/contentCopy';
 import { websiteCopy } from '@/lib/websiteCopy';
 import { reportCopy } from '@/lib/reportCopy';
+import { paymentSettingsCopy } from '@/lib/paymentSettingsCopy';
 import type { NavItem } from '@/types';
 
 const page = usePage();
@@ -111,7 +112,7 @@ const mainNavItems = computed<NavItem[]>(() => [
                   icon: ShieldCheck,
               },
               {
-                  title: 'Payment settings',
+                  title: paymentSettingsCopy.title,
                   href: '/admin/payment-settings',
                   icon: ShieldCheck,
               },

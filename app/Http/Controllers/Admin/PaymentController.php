@@ -6,12 +6,12 @@ use App\Exceptions\GatewayException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaymentSettingsRequest;
 use App\Models\Payment;
-use App\Models\PaymentCallback;
 use App\Models\PaymentGatewaySetting;
+use App\Services\PaymentSettingsService;
 use App\Services\PaymentVerificationService;
+use App\Support\PublicHttpsUrl;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -33,26 +33,20 @@ class PaymentController extends Controller
         $settings = PaymentGatewaySetting::current();
 
         return Inertia::render('admin/PaymentSettings', [
-            'settings' => $settings->only(['enabled', 'environment', 'sandbox_category_code', 'production_category_code']),
+            'settings' => $settings->only(['enabled', 'environment', 'sandbox_category_code', 'production_category_code', 'version']),
             'sandboxConfigured' => $settings->configured('sandbox'), 'productionConfigured' => $settings->configured('production'),
+            'sandboxKeyAvailable' => filled($settings->sandbox_secret_key), 'productionKeyAvailable' => filled($settings->production_secret_key),
+            'storedInDatabase' => $settings->exists,
+            'callbackReady' => PublicHttpsUrl::configured(config('app.url')),
             'callbackUrl' => rtrim(config('app.url'), '/').route('payments.callback', absolute: false),
             'returnUrl' => rtrim(config('app.url'), '/').route('payments.return', absolute: false),
         ]);
     }
 
-    public function update(PaymentSettingsRequest $request): RedirectResponse
+    public function update(PaymentSettingsRequest $request, PaymentSettingsService $service): RedirectResponse
     {
-        $settings = PaymentGatewaySetting::current();
-        $data = $request->validated();
-        $settings->fill(Arr::except($data, ['sandbox_secret_key', 'production_secret_key']));
-        foreach (['sandbox_secret_key', 'production_secret_key'] as $field) {
-            if (filled($data[$field] ?? null)) {
-                $settings->setAttribute($field, $data[$field]);
-            }
-        }
-        $settings->save();
-        PaymentCallback::create(['event' => 'settings_updated', 'outcome' => 'saved', 'payload' => ['admin_id' => $request->user()->id, 'environment' => $settings->environment, 'enabled' => $settings->enabled]]);
-        Inertia::flash('toast', ['type' => 'success', 'message' => 'Payment settings saved. Secret keys are never displayed.']);
+        $service->update($request->user(), $request->validated());
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('payment_settings.saved')]);
 
         return back();
     }

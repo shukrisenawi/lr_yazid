@@ -2,6 +2,7 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { websiteCopy as copy } from '@/lib/websiteCopy';
+import { paymentSettingsCopy } from '@/lib/paymentSettingsCopy';
 import type { Website } from '@/types/website';
 const props = defineProps<{
     settings: Omit<Website, 'logo_url' | 'favicon_url'> & { version: number };
@@ -47,11 +48,14 @@ function save() {
         <p class="mt-4 text-sm leading-relaxed text-muted-foreground">
             {{ copy.settingsHelp }}
         </p>
-        <Link
-            href="/admin/banners"
-            class="mt-4 inline-block text-sm underline"
-            >{{ copy.banners }}</Link
-        >
+        <nav class="mt-4 flex flex-wrap gap-5 text-sm">
+            <Link href="/admin/banners" class="underline">{{
+                copy.banners
+            }}</Link
+            ><Link href="/admin/payment-settings" class="underline">{{
+                paymentSettingsCopy.title
+            }}</Link>
+        </nav>
         <form class="mt-8 space-y-6" @submit.prevent="save">
             <label class="grid gap-2 text-sm"
                 >{{ copy.name

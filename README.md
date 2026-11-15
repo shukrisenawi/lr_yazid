@@ -116,6 +116,28 @@ HTTPS `APP_URL` before enabling sandbox collection. Secrets are encrypted using
 late/additional payments require review, not blind retry or manual activation.
 No live payments have been tested.
 
+### ToyyibPay configuration in Settings
+
+Administrators open **Website settings → ToyyibPay settings**, or use the direct
+sidebar entry at `/admin/payment-settings`. Configure Sandbox and Production
+Secret Keys / Category Codes separately, choose the active environment and enable
+or disable collection. No source-code or `.env` credential edits are required.
+
+After the first save, encrypted database credentials take precedence over environment
+defaults. A blank Secret Key preserves the existing value; enter a replacement to
+rotate it or use the explicit removal checkbox. Removing the selected key requires
+collection to be disabled. Secret values never return to the browser or validation
+old-input sessions, and audits record metadata/availability only, not key values.
+Concurrent stale edits are rejected rather than overwriting another administrator.
+Existing payment attempts retain their original encrypted credential snapshot.
+
+Credentials may be saved while collection is disabled. Enabling requires credentials
+for the selected environment and a public HTTPS `APP_URL` configured on the server.
+Callback/return URLs are displayed automatically; the URL screen is not an external
+reachability check. Saving settings does not contact ToyyibPay, create a bill, verify
+credentials with the provider or take payment. Complete genuine sandbox acceptance
+before enabling Production.
+
 Run the scheduler every minute and supervise the database queue worker:
 
 ```sh
