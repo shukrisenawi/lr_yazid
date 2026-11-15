@@ -45,6 +45,20 @@ export type Product = {
     variants?: ProductVariant[];
     variants_count?: number;
 };
+export type ProductCardData = Pick<
+    Product,
+    | 'id'
+    | 'name'
+    | 'slug'
+    | 'type'
+    | 'price_sen'
+    | 'current_price_sen'
+    | 'stock'
+    | 'images'
+    | 'variants_count'
+> & {
+    category?: Category | null;
+};
 export type Paginated<T> = {
     data: T[];
     total: number;

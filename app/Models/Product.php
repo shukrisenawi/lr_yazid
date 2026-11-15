@@ -6,6 +6,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property CarbonImmutable|null $sale_starts_at
@@ -47,6 +48,12 @@ class Product extends Model
     public function images(): HasMany
     {
         return $this->hasMany(ProductImage::class)->orderBy('position')->orderBy('id');
+    }
+
+    /** @return HasOne<ProductImage, $this> */
+    public function coverImage(): HasOne
+    {
+        return $this->hasOne(ProductImage::class)->ofMany(['position' => 'min', 'id' => 'min']);
     }
 
     /** @return HasMany<ProductVariant, $this> */

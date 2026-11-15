@@ -2,8 +2,8 @@
 import { Link } from '@inertiajs/vue3';
 import { Package } from '@lucide/vue';
 import AddToCartForm from '@/components/AddToCartForm.vue';
-import { money, type Product } from '@/types/catalog';
-defineProps<{ product: Product }>();
+import { money, type ProductCardData } from '@/types/catalog';
+defineProps<{ product: ProductCardData }>();
 </script>
 <template>
     <article>

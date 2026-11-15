@@ -403,6 +403,9 @@ are described above; no automatic refund API is implemented.
 
 ## Deployment foundation
 
+Measured storefront query/payload improvements and remaining production benchmark
+requirements are documented in [docs/STOREFRONT_PERFORMANCE.md](docs/STOREFRONT_PERFORMANCE.md).
+
 See [docs/DEPLOYMENT_RUNBOOK.md](docs/DEPLOYMENT_RUNBOOK.md) for the release,
 proxy/TLS, supervised worker, cron, encrypted backup and isolated-restore checklist.
 The examples are operator instructions, not installed infrastructure or proof of

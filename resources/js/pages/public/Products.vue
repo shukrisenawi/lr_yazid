@@ -2,9 +2,9 @@
 import { Head, useForm } from '@inertiajs/vue3';
 import ProductCard from '@/components/ProductCard.vue';
 import Pagination from '@/components/Pagination.vue';
-import type { Category, Product, Paginated } from '@/types/catalog';
+import type { Category, ProductCardData, Paginated } from '@/types/catalog';
 const props = defineProps<{
-    products: Paginated<Product>;
+    products: Paginated<ProductCardData>;
     categories: Category[];
     filters: {
         search?: string | null;

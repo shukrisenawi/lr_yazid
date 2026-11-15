@@ -5,11 +5,11 @@ import { computed } from 'vue';
 import ProductCard from '@/components/ProductCard.vue';
 import HomeBanner from '@/components/HomeBanner.vue';
 import type { PublicBanner } from '@/types/website';
-import type { Product, Category } from '@/types/catalog';
+import type { ProductCardData, Category } from '@/types/catalog';
 defineProps<{
     banners: PublicBanner[];
-    featured: Product[];
-    latest: Product[];
+    featured: ProductCardData[];
+    latest: ProductCardData[];
     categories: Category[];
 }>();
 const page = usePage();

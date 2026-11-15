@@ -3,8 +3,8 @@ import { Head, Link } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import ProductCard from '@/components/ProductCard.vue';
 import AddToCartForm from '@/components/AddToCartForm.vue';
-import { money, type Product } from '@/types/catalog';
-const props = defineProps<{ product: Product; related: Product[] }>();
+import { money, type Product, type ProductCardData } from '@/types/catalog';
+const props = defineProps<{ product: Product; related: ProductCardData[] }>();
 const imageIndex = ref(0);
 const variantId = ref<number | ''>('');
 const variant = computed(() =>

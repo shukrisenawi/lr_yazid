@@ -433,6 +433,23 @@ remain outstanding.
 - The two Bash backup/restore examples passed syntax-only parsing; no backup or
   restore was executed. `schedule:list` verified task definitions, not execution.
 
+## Storefront performance: measured local optimization
+
+- Cart display queries reduced from 45 to 6 for twenty distinct physical products.
+- Twelve gallery-heavy catalog cards reduced from 335,575 to 3,512 JSON bytes.
+  SQLite and isolated MySQL reproduced the optimized values.
+- Batched display reads and compact card projections replace repeated inventory
+  queries/full product serialization. Authoritative checkout/payment locking is
+  unchanged; no persistent cache of stock, prices or VIP authorization was added.
+- Five regression tests (also run on MySQL) cover display parity, fresh mutations,
+  reservation boundaries/isolation, compact cards, cover ordering, complete detail
+  galleries and bounded catalog query growth.
+- Chrome verified filtering, product/related rendering and isolated guest-cart
+  add/update/remove with correct MYR totals and no console errors/warnings.
+  No order/payment was created; the guest test item was removed afterward.
+- See `docs/STOREFRONT_PERFORMANCE.md` for fixture scope and reproducible commands.
+  Production throughput/latency and a new production Lighthouse score are not proven.
+
 ## Verification
 
 - Foundation: 50 backend tests / 169 assertions passed.
@@ -449,8 +466,9 @@ remain outstanding.
 - Composer audit and npm production-dependency audit reported no advisories.
 - Temporary browser test accounts were removed and the browser-created test
   product was archived after verification.
-- Latest checks: 326 backend tests / 2355 assertions passed; twenty-three opt-in MySQL
-  checks / 238 assertions passed separately (22 concurrency tests and one reporting test).
+- Latest checks: 331 backend tests / 2468 assertions passed; 28 opt-in MySQL
+  checks / 356 assertions passed separately (22 concurrency, one reporting and
+  five storefront checks; the final five-check storefront run passed 118 assertions).
   PHPStan and Pint passed.
 - Eighty Vue/component/helper tests, TypeScript, frontend formatting/lint and production build passed.
 - Browser: plan creation and membership-only checkout produced an unpaid RM199

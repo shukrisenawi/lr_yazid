@@ -96,17 +96,12 @@ class CartService
         $lines = [];
         $subtotal = 0;
         $valid = true;
-        foreach ($cart?->items()->with(['product.images', 'variant.image'])->orderBy('id')->get() ?? [] as $item) {
-            $error = null;
-            $price = $item->variant->price_sen ?? $item->product->current_price_sen;
-            $available = 0;
-            try {
-                $selection = $this->inventory->selection($item->product_id, $item->product_variant_id);
-                $available = $selection['available'];
-                $price = $selection['unit_price_sen'];
-                $this->inventory->assertQuantity($item->quantity, $available);
-            } catch (ValidationException $exception) {
-                $error = collect($exception->errors())->flatten()->first();
+        $items = $cart?->items()->with(['product' => fn ($query) => $query->withCount('variants')->with('coverImage'), 'variant.image'])
+            ->orderBy('id')->get() ?? collect();
+        $display = $this->inventory->forCartDisplay($items);
+        foreach ($items as $item) {
+            ['unit_price_sen' => $price, 'available' => $available, 'error' => $error] = $display[$item->id];
+            if ($error !== null) {
                 $valid = false;
             }
             $total = $price * $item->quantity;
@@ -116,7 +111,7 @@ class CartService
                 'type' => $item->product->type,
                 'name' => $item->product->name, 'slug' => $item->product->slug,
                 'variant_name' => $item->variant?->name, 'sku' => $item->variant->sku ?? $item->product->sku,
-                'image_url' => $item->variant->image->url ?? $item->product->images->first()?->url,
+                'image_url' => $item->variant->image->url ?? $item->product->coverImage?->url,
                 'quantity' => $item->quantity, 'available' => $available, 'unit_price_sen' => $price,
                 'line_total_sen' => $total, 'error' => $error,
             ];
