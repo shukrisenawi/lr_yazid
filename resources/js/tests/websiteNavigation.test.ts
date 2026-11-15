@@ -90,6 +90,9 @@ describe('website administration navigation', () => {
         expect(root.querySelector('a[href="/admin/banners"]')).not.toBeNull();
         expect(root.querySelector('a[href="/admin/reports"]')).not.toBeNull();
         expect(
+            root.querySelector('a[href="/admin/commerce-notices"]'),
+        ).not.toBeNull();
+        expect(
             root.querySelector('a[href="/admin/payment-settings"]')
                 ?.textContent,
         ).toBe('ToyyibPay settings');
@@ -103,6 +106,9 @@ describe('website administration navigation', () => {
             ).toBeNull();
             expect(root.querySelector('a[href="/admin/banners"]')).toBeNull();
             expect(root.querySelector('a[href="/admin/reports"]')).toBeNull();
+            expect(
+                root.querySelector('a[href="/admin/commerce-notices"]'),
+            ).toBeNull();
             expect(
                 !!root.querySelector('a[href="/vip/appointments/book"]'),
             ).toBe(isVip);

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Cart;
+use App\Models\CommerceNoticeDelivery;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Product;
@@ -89,6 +90,9 @@ class MySqlCheckoutConcurrencyTest extends TestCase
             sort($results);
             $this->assertSame($callbacks ? ['paid', 'paid'] : ($sameUser ? ['created', 'created'] : ['created', 'rejected']), $results);
             $this->assertSame(1, Order::count());
+            $this->assertSame(1, CommerceNoticeDelivery::where('kind', 'order_placed')->count());
+            $this->assertSame($callbacks ? 1 : 0, CommerceNoticeDelivery::where('kind', 'payment_success')->count());
+            $this->assertSame($callbacks ? 4 : 2, DB::table('jobs')->where('queue', 'commerce-notices')->count());
             $this->assertSame($callbacks ? 0 : 1, (int) StockReservation::where('status', 'active')->sum('quantity'));
             $this->assertSame($callbacks ? 0 : 1, $product->fresh()->stock);
             if ($callbacks) {

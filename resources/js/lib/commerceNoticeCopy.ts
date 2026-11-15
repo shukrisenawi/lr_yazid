@@ -1,0 +1,32 @@
+export const commerceNoticeCopy = {
+    title: 'Commerce notices',
+    search: 'Search customer or order',
+    kind: 'Notice type',
+    delivery: 'Channel status',
+    allKinds: 'All notice types',
+    allStates: 'All channel states',
+    waiting: 'Awaiting any channel',
+    processed: 'Both channels processed',
+    suppressed: 'Any suppressed channel',
+    apply: 'Apply filters',
+    help: 'Read-only tracking for welcome, order and verified payment notices. Queue workers process each channel separately. Awaiting processing can include failed jobs; inspect the queue worker and failed-job log.',
+    transportHelp:
+        'Mail processed means the configured transport accepted the message, including the local log mailer. It does not prove external SMTP delivery or arrival in the recipient inbox.',
+    customer: 'Customer',
+    order: 'Order / payment',
+    notice: 'Notice',
+    queued: 'Queued',
+    database: 'In-app',
+    mail: 'Mail',
+    done: 'Processed',
+    skipped: 'Suppressed',
+    pending: 'Awaiting processing',
+    noOrder: 'Account notice',
+    empty: 'No commerce notices match these filters.',
+} as const;
+export function channelState(
+    sent: string | null,
+    suppressed: string | null,
+): 'done' | 'skipped' | 'pending' {
+    return sent ? 'done' : suppressed ? 'skipped' : 'pending';
+}

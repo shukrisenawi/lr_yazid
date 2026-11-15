@@ -4,8 +4,8 @@ A Laravel 13 + Inertia 3 + Vue 3 / TypeScript application, built incrementally
 against [PROJECT_REQUIREMENTS.md](PROJECT_REQUIREMENTS.md).
 
 **Current scope: foundation, catalog, shopping, payment integration, VIP lifecycle,
-programs, appointment workflows, fulfillment/invoices, CMS and core admin reports.**
-Refunds, remaining commerce notices and advanced customer administration remain unfinished. Payment logic
+programs, appointment workflows, fulfillment/invoices, CMS, core reports and commerce notices.**
+Refund/cancellation administration and advanced customer administration remain unfinished. Payment logic
 has automated tests with mocked provider responses; real ToyyibPay sandbox
 acceptance remains blocked on credentials and a public HTTPS callback URL.
 This is not production-ready. See [implementation status](docs/IMPLEMENTATION_STATUS.md).
@@ -142,12 +142,44 @@ Run the scheduler every minute and supervise the database queue worker:
 
 ```sh
 php artisan schedule:work
-php artisan queue:work database --tries=3
+php artisan queue:work database --queue=commerce-notices,default --tries=3
 ```
 
 Production should use cron `schedule:run` instead of `schedule:work`. Scheduled
 tasks expire reservations, reconcile payments and process VIP expiry/reminders.
 Membership notices use database/mail channels; configure SMTP before launch.
+
+## Commerce notifications
+
+Verified-account welcome, order creation, provider-verified payment success and
+verified unsuccessful payment attempts use database/in-app and mail channels.
+Welcome is triggered by email verification, not by an unverified signup.
+No automatic backfill of past account/payment events is performed.
+Order confirmation explicitly confirms creation only; it is not a paid receipt.
+Sandbox payment notices are labeled as tests.
+
+Commerce jobs use the `commerce-notices` queue. Local `artisan dev` includes this
+queue alongside `default`; production workers must also listen to both (see above).
+Restart existing workers after updating their queue list during deployment.
+The database queue must use the same Laravel DB connection as business writes:
+leave `DB_QUEUE_CONNECTION` unset or match the business `DB_CONNECTION`. A different
+connection is rejected rather than compromising transactional queueing.
+
+Order/payment notice records and queue inserts commit or roll back with their
+business transaction. Owner/event uniqueness prevents repeated checkout/callback
+enqueueing, and stable notification UUIDs protect in-app records on retry. Processed
+channel markers reduce repeats, but external mail still has at-least-once semantics;
+there is no exactly-once recipient-inbox guarantee.
+Queued failures are suppressed if payment state changes or a newer attempt starts.
+Mail is suppressed if its original verified recipient email changes or becomes
+unverified. Suppression reasons remain available for audit.
+
+Admins use `/admin/commerce-notices` to filter by customer/order, event and channel
+state. This is read-only, without resend/payment-mutation controls or exposed secret
+snapshots. Awaiting processing can include failed jobs; inspect worker/failed-job
+logs. A mail processed timestamp includes acceptance by the local log transport and
+does not establish external SMTP delivery. Users read their own notices at
+`/notifications`. Genuine provider/SMTP acceptance remains outstanding.
 
 ## VIP programs
 

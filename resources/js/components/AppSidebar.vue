@@ -20,6 +20,7 @@ import { contentCopy } from '@/lib/contentCopy';
 import { websiteCopy } from '@/lib/websiteCopy';
 import { reportCopy } from '@/lib/reportCopy';
 import { paymentSettingsCopy } from '@/lib/paymentSettingsCopy';
+import { commerceNoticeCopy } from '@/lib/commerceNoticeCopy';
 import type { NavItem } from '@/types';
 
 const page = usePage();
@@ -50,6 +51,11 @@ const mainNavItems = computed<NavItem[]>(() => [
     { title: 'My addresses', href: '/addresses', icon: House },
     ...(page.props.auth.user.role === 'admin'
         ? [
+              {
+                  title: commerceNoticeCopy.title,
+                  href: '/admin/commerce-notices',
+                  icon: LayoutGrid,
+              },
               {
                   title: reportCopy.title,
                   href: '/admin/reports',

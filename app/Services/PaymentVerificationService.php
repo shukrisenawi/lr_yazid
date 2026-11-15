@@ -155,6 +155,9 @@ class PaymentVerificationService
             if ($order->payment_status !== 'paid') {
                 $order->update(['payment_status' => 'paid', 'fulfillment_status' => $reason === null ? ($hasPhysical ? 'new' : null) : 'cancelled']);
             }
+            if ($reason === null) {
+                app(CommerceNotificationService::class)->payment($order, $payment, 'payment_success');
+            }
 
             return $reason === null ? 'paid' : 'requires_review';
         }, 3);
@@ -163,14 +166,19 @@ class PaymentVerificationService
     private function fail(Payment $payment): string
     {
         return DB::transaction(function () use ($payment) {
+            User::whereKey(Order::whereKey($payment->order_id)->value('user_id'))->lockForUpdate()->firstOrFail();
             $order = Order::whereKey($payment->order_id)->lockForUpdate()->firstOrFail();
             $payment = Payment::whereKey($payment->id)->lockForUpdate()->firstOrFail();
             if ($payment->status === 'paid' || $order->payment_status === 'paid') {
                 return 'paid';
             }
+            $failedNow = $payment->status !== 'failed';
             $payment->update(['status' => 'failed']);
             if ($order->payment_status === 'pending') {
                 $order->update(['payment_status' => 'failed']);
+            }
+            if ($failedNow && $order->payment_status === 'failed' && ! $payment->requires_review) {
+                app(CommerceNotificationService::class)->payment($order, $payment, 'payment_failed');
             }
 
             return 'failed';

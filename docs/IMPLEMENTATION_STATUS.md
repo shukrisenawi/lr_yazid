@@ -264,6 +264,41 @@ remain outstanding.
 - Desktop light and 390px mobile dark snapshots checked without document overflow
   or browser console errors. Positive provider requests use automated HTTP fakes only.
 
+## Commerce notifications: Core implemented
+
+- Verified-account welcome, order creation and verified payment success/failure
+  notices use queued database/mail channels. Signup before email verification
+  does not send welcome. No mass backfill of historical events is performed.
+- An owner/event-unique outbox with immutable minimal message/recipient snapshots
+  and stable notification UUIDs prevents duplicate enqueueing/in-app records.
+- Order/payment notices and queue inserts share the business DB transaction,
+  including when the queue's global after-commit setting is enabled.
+  Cross-connection queue configurations are rejected; rollback coverage verifies
+  cart/order/outbox/job consistency.
+- Payment notices originate from authenticated provider reconciliation, never
+  browser-return parameters. Review/late payments do not generate success notices.
+  Sandbox payment messages explicitly say they are tests.
+- Current-state checks suppress stale failure/success messages, changed/unverified
+  mail recipients and newer-attempt failures. Per-channel processed/suppressed
+  timestamps and reasons are retained; completed retries do not create another
+  in-app entry. External mail remains at-least-once, not guaranteed exactly-once.
+- Queued deliveries are configured to discard deleted recipients; welcome-only
+  outbox rows follow nonfinancial account deletion without relaxing order/payment history constraints.
+- Read-only admin `/admin/commerce-notices` has customer/order, event and channel
+  filters. It exposes no secret/recipient snapshots and has no resend/financial
+  mutation actions. Pending processing is not misrepresented as proof of delivery.
+- Local `artisan dev` includes `commerce-notices,default`; production workers need
+  the same queue list and the business DB connection.
+- Browser acceptance used a separate `Commerce Notice QA` customer (ID 5), local
+  signed email verification, a real pending RM99 order and four log/database queue
+  jobs. Welcome/order notices appeared, links worked, and marking read was verified.
+- QA order `YC-20261115-M2HVALCF005L` (ID 3) was cancelled through the customer UI
+  after testing to release reservations; records were retained. No payment was
+  started or fabricated, and the pre-existing administrator cart was untouched.
+- Admin processed-channel filtering, desktop light and 390px dark/mobile table containment were
+  verified. Positive payment notice cases use automated provider HTTP fakes only;
+  local log mail is not real SMTP delivery evidence.
+
 ## Verification
 
 - Foundation: 50 backend tests / 169 assertions passed.
@@ -280,10 +315,10 @@ remain outstanding.
 - Composer audit and npm production-dependency audit reported no advisories.
 - Temporary browser test accounts were removed and the browser-created test
   product was archived after verification.
-- Latest checks: 244 backend tests / 1731 assertions passed; seventeen opt-in MySQL
-  checks / 166 assertions passed separately (16 concurrency tests and one reporting test).
+- Latest checks: 260 backend tests / 1853 assertions passed; eighteen opt-in MySQL
+  checks / 183 assertions passed separately (17 concurrency tests and one reporting test).
   PHPStan and Pint passed.
-- Fifty-seven Vue/component/helper tests, TypeScript, frontend formatting/lint and production build passed.
+- Sixty-one Vue/component/helper tests, TypeScript, frontend formatting/lint and production build passed.
 - Browser: plan creation and membership-only checkout produced an unpaid RM199
   order with no shipping address or fee. Gateway collection remains disabled.
 - Verified activation/renewal/reminder behavior is automated-test coverage, not
@@ -312,7 +347,7 @@ remain outstanding.
 
 ## Remaining phases and acceptance
 
-Remaining commerce notifications, refund/cancellation administration, advanced customer
+Refund/cancellation administration, advanced customer
 administration, deeper reporting/production hardening and
 final deployment acceptance.
 

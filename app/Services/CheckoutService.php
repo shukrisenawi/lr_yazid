@@ -91,6 +91,7 @@ class CheckoutService
                 ]);
             }
             $cart->items()->delete();
+            app(CommerceNotificationService::class)->orderPlaced($order);
 
             return $order;
         }, 3);

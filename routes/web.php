@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentControll
 use App\Http\Controllers\Admin\AppointmentServiceController;
 use App\Http\Controllers\Admin\AppointmentSlotController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CommerceNoticeController;
 use App\Http\Controllers\Admin\ContentPageController as AdminContentPageController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\HomepageBannerController;
@@ -43,6 +44,7 @@ Route::delete('/cart/items/{cartItem}', [CartController::class, 'destroy'])->blo
 Route::delete('/cart', [CartController::class, 'clear'])->block()->name('cart.clear');
 
 Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('commerce-notices', [CommerceNoticeController::class, 'index'])->name('commerce-notices.index');
     Route::get('dashboard', [ReportController::class, 'index'])->name('dashboard');
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/export', [ReportController::class, 'export'])->middleware('throttle:10,1')->name('reports.export');
