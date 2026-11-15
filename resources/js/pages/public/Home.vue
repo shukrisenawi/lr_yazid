@@ -20,47 +20,64 @@ const copy = computed(() => page.props.copy as Record<string, string>);
     <Head title="Home"
         ><meta head-key="description" name="description" :content="copy.intro"
     /></Head>
-    <HomeBanner v-if="banners.length" :banners="banners" />
-    <section
-        v-else
-        class="mx-auto grid max-w-7xl items-center gap-10 px-6 py-16 md:grid-cols-2 md:py-20"
-    >
-        <div>
-            <p
-                class="mb-6 text-xs font-semibold tracking-[0.2em] text-emerald-800 uppercase dark:text-emerald-400"
+    <div v-if="banners.length" class="brand-backdrop">
+        <HomeBanner :banners="banners" />
+    </div>
+    <section v-else class="brand-hero relative isolate overflow-hidden">
+        <div
+            class="relative mx-auto grid max-w-7xl items-center gap-10 px-6 py-12 md:grid-cols-[1.1fr_0.9fr] md:py-16"
+        >
+            <div class="hero-copy">
+                <p
+                    class="mb-5 flex items-center gap-3 text-xs font-semibold tracking-[0.16em] text-primary uppercase"
+                >
+                    <span
+                        class="h-0.5 w-8 bg-[var(--brand-orange)]"
+                        aria-hidden="true"
+                    ></span>
+                    {{ page.props.website.website_name }}
+                </p>
+                <h1
+                    class="max-w-xl text-4xl leading-[1.1] font-semibold tracking-tight sm:text-5xl lg:text-6xl"
+                >
+                    {{ copy.headline }}
+                </h1>
+                <p
+                    class="mt-5 max-w-md text-lg leading-relaxed text-muted-foreground"
+                >
+                    {{ copy.intro }}
+                </p>
+                <Link
+                    href="/products"
+                    class="brand-button mt-7 inline-flex items-center gap-5 rounded-md bg-primary px-6 py-3.5 font-medium text-primary-foreground"
+                >
+                    Browse products
+                    <ArrowUpRight :size="18" />
+                </Link>
+            </div>
+            <div
+                class="hero-art relative mx-auto flex aspect-square w-full max-w-[440px] items-center justify-center"
             >
-                {{ page.props.website.website_name }}
-            </p>
-            <h1
-                class="max-w-lg text-5xl leading-[1.06] font-semibold tracking-tight lg:text-6xl"
-            >
-                {{ copy.headline }}
-            </h1>
-            <p
-                class="mt-6 max-w-md text-lg leading-relaxed text-stone-600 dark:text-stone-400"
-            >
-                {{ copy.intro }}
-            </p>
-            <Link
-                href="/products"
-                class="mt-8 inline-flex items-center gap-5 rounded-md bg-emerald-800 px-6 py-3.5 font-medium text-white transition-colors hover:bg-emerald-900"
-            >
-                Browse products
-                <ArrowUpRight :size="18" />
-            </Link>
-        </div>
-        <div class="relative">
-            <img
-                src="/images/collective.jpg"
-                alt="A bright shared space with natural materials and greenery"
-                width="1000"
-                height="1100"
-                fetchpriority="high"
-                class="aspect-[1.05] w-full rounded-lg object-cover"
-            />
+                <div
+                    class="hero-orbit hero-orbit-outer"
+                    aria-hidden="true"
+                ></div>
+                <div
+                    class="hero-orbit hero-orbit-inner"
+                    aria-hidden="true"
+                ></div>
+                <img
+                    src="/images/brand/logo-mark.png"
+                    alt="csiti.my shopping cart with colourful shopping bags"
+                    width="1027"
+                    height="965"
+                    fetchpriority="high"
+                    class="relative w-[82%] object-contain drop-shadow-xl"
+                />
+            </div>
         </div>
     </section>
-    <section v-if="featured.length" class="mx-auto max-w-7xl px-6 pb-16">
+    <section v-if="featured.length" class="mx-auto max-w-7xl px-6 pt-12 pb-16">
         <div class="mb-8 flex items-center justify-between gap-4">
             <h2 class="text-3xl font-semibold tracking-tight">
                 Selected for your everyday

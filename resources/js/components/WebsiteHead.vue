@@ -12,9 +12,8 @@ const page = usePage();
         <link
             head-key="website-icon"
             rel="icon"
-            :href="page.props.website?.favicon_url || '/favicon.ico'"
-            :type="
-                page.props.website?.favicon_url ? 'image/webp' : 'image/x-icon'
+            :href="
+                page.props.website?.favicon_url || '/images/brand/favicon.png'
             "
         />
     </Head>

@@ -22,20 +22,21 @@
         {{-- Inline style to set the HTML background color based on our theme in app.css --}}
         <style>
             html {
-                background-color: oklch(1 0 0);
+                background-color: #f8fafd;
             }
 
             html.dark {
-                background-color: oklch(0.145 0 0);
+                background-color: #0b1524;
             }
         </style>
 
-        <link rel="icon" href="{{ $page['props']['website']['favicon_url'] ?? '/favicon.ico' }}" type="{{ empty($page['props']['website']['favicon_url']) ? 'image/x-icon' : 'image/webp' }}" data-inertia="website-icon">
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        <meta name="theme-color" content="#073d79">
+        <link rel="icon" href="{{ $page['props']['website']['favicon_url'] ?? '/images/brand/favicon.png' }}" data-inertia="website-icon">
+        <link rel="apple-touch-icon" href="/images/brand/apple-touch-icon.png">
 
         @fonts
         @if(request()->routeIs('home'))
-            <link rel="preload" as="image" href="{{ $page['props']['banners'][0]['image_url'] ?? '/images/collective.jpg' }}" fetchpriority="high">
+            <link rel="preload" as="image" href="{{ $page['props']['banners'][0]['image_url'] ?? '/images/brand/logo-mark.png' }}" fetchpriority="high">
         @endif
 
         @vite(['resources/css/app.css', 'resources/js/app.ts', "resources/js/pages/{$page['component']}.vue"])

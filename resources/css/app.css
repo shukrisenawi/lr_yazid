@@ -64,6 +64,14 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+    /* Existing commerce views use emerald utilities as their accent API.
+       Map that legacy palette to the logo blue so all workflows stay in sync. */
+    --color-emerald-300: #a7cfff;
+    --color-emerald-400: #83b9f5;
+    --color-emerald-500: #438de0;
+    --color-emerald-700: #15569b;
+    --color-emerald-800: #073d79;
+    --color-emerald-900: #082d57;
     --font-sans:
         'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
@@ -118,74 +126,216 @@
 }
 
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
+    --brand-orange: #ff9800;
+    --brand-purple: #800887;
+    --background: #f8fafd;
+    --foreground: #102c4b;
+    --card: #ffffff;
+    --card-foreground: #102c4b;
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
+    --primary: #073d79;
     --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
+    --secondary: #edf3fc;
+    --secondary-foreground: #073d79;
+    --muted: #edf2f8;
+    --muted-foreground: #52657c;
+    --accent: #edf3fc;
+    --accent-foreground: #073d79;
     --destructive: oklch(0.577 0.245 27.325);
     --destructive-foreground: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.87 0 0);
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
+    --border: #dce5f0;
+    --input: #c4d2e3;
+    --ring: #3478bf;
+    --chart-1: #073d79;
+    --chart-2: #800887;
+    --chart-3: #ed7800;
+    --chart-4: #438de0;
+    --chart-5: #ffb700;
     --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar: #f0f5fc;
+    --sidebar-foreground: #193c63;
+    --sidebar-primary: #073d79;
     --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.87 0 0);
+    --sidebar-accent: #deeafa;
+    --sidebar-accent-foreground: #073d79;
+    --sidebar-border: #dce5f0;
+    --sidebar-ring: #3478bf;
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.145 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.145 0 0);
+    --background: #0b1524;
+    --foreground: #edf4fe;
+    --card: #111f32;
+    --card-foreground: #edf4fe;
+    --popover: #111f32;
     --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.985 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
+    --primary: #a7cfff;
+    --primary-foreground: #092849;
+    --secondary: #1a304b;
+    --secondary-foreground: #dceaff;
+    --muted: #1a2a40;
+    --muted-foreground: #a8bbd2;
+    --accent: #1a304b;
+    --accent-foreground: #dceaff;
     --destructive: oklch(0.396 0.141 25.723);
     --destructive-foreground: oklch(0.637 0.237 25.331);
-    --border: oklch(0.269 0 0);
-    --input: oklch(0.269 0 0);
-    --ring: oklch(0.439 0 0);
+    --border: #2a3c53;
+    --input: #415674;
+    --ring: #83b9f5;
     --chart-1: oklch(0.488 0.243 264.376);
     --chart-2: oklch(0.696 0.17 162.48);
     --chart-3: oklch(0.769 0.188 70.08);
     --chart-4: oklch(0.627 0.265 303.9);
     --chart-5: oklch(0.645 0.246 16.439);
-    --sidebar: oklch(0.205 0 0);
+    --sidebar: #101e31;
     --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.985 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(0.269 0 0);
-    --sidebar-ring: oklch(0.439 0 0);
+    --sidebar-primary: #a7cfff;
+    --sidebar-primary-foreground: #092849;
+    --sidebar-accent: #1a304b;
+    --sidebar-accent-foreground: #dceaff;
+    --sidebar-border: #2a3c53;
+    --sidebar-ring: #83b9f5;
+}
+
+.storefront-header {
+    border-top: 3px solid var(--brand-orange);
+}
+
+.brand-backdrop,
+.brand-hero {
+    background-color: var(--background);
+    background-image:
+        radial-gradient(
+            ellipse at 90% 15%,
+            rgb(128 8 135 / 8%),
+            transparent 48%
+        ),
+        radial-gradient(
+            ellipse at 65% 100%,
+            rgb(255 152 0 / 12%),
+            transparent 50%
+        ),
+        linear-gradient(120deg, rgb(67 141 224 / 7%), transparent 60%);
+}
+
+.brand-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: radial-gradient(
+        rgb(21 86 155 / 15%) 1px,
+        transparent 1px
+    );
+    background-size: 24px 24px;
+    mask-image: linear-gradient(to right, transparent 40%, black);
+    pointer-events: none;
+}
+
+.hero-orbit {
+    position: absolute;
+    border: 1px solid rgb(21 86 155 / 15%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.hero-orbit-outer {
+    inset: 0;
+}
+
+.hero-orbit-inner {
+    inset: 9%;
+    border-color: rgb(128 8 135 / 12%);
+    background: rgb(255 255 255 / 35%);
+}
+
+.hero-orbit-outer::after {
+    content: '';
+    position: absolute;
+    top: 12%;
+    right: 11%;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--brand-orange);
+}
+
+.dark .hero-orbit {
+    border-color: rgb(167 207 255 / 20%);
+}
+
+.dark .hero-orbit-inner {
+    background: rgb(167 207 255 / 4%);
+}
+
+.brand-button {
+    white-space: nowrap;
+    transition:
+        transform 180ms ease,
+        box-shadow 180ms ease;
+}
+
+.brand-button:hover {
+    box-shadow: 0 6px 18px rgb(7 61 121 / 18%);
+    transform: translateY(-2px);
+}
+
+.brand-button:active {
+    transform: scale(0.98);
+}
+
+.storefront-links a:hover {
+    text-underline-offset: 5px;
+}
+
+@media (max-width: 767px) {
+    .storefront-links {
+        width: 100%;
+        gap: 0.85rem;
+        font-size: 0.8125rem;
+    }
+
+    .hero-art {
+        max-width: 240px;
+    }
+
+    .brand-hero > div {
+        gap: 1.5rem;
+        padding-block: 2rem;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .hero-copy,
+    .hero-art {
+        animation: brand-enter 650ms ease-out both;
+    }
+
+    .hero-art {
+        animation-delay: 100ms;
+    }
+
+    @keyframes brand-enter {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .brand-button {
+        transition: none;
+    }
+
+    .brand-button:hover {
+        transform: none;
+    }
 }
 
 @layer base {

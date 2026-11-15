@@ -1,42 +1,47 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { ArrowUpRight } from '@lucide/vue';
-import { computed } from 'vue';
+import { ArrowUpRight, Menu, X } from '@lucide/vue';
+import { computed, ref } from 'vue';
 import { Toaster } from '@/components/ui/sonner';
 import { contentCopy } from '@/lib/contentCopy';
 import { websiteCopy } from '@/lib/websiteCopy';
 import WebsiteHead from '@/components/WebsiteHead.vue';
+import BrandLogo from '@/components/BrandLogo.vue';
 const page = usePage();
+const menuOpen = ref(false);
 const copy = computed(() => page.props.copy as Record<string, string>);
 </script>
 
 <template>
     <WebsiteHead />
-    <div
-        class="min-h-dvh bg-stone-50 text-stone-900 dark:bg-stone-950 dark:text-stone-100"
-    >
-        <header class="border-b border-stone-200 dark:border-stone-800">
+    <div class="storefront min-h-dvh bg-background text-foreground">
+        <header class="storefront-header border-b border-border bg-card">
             <nav
-                class="mx-auto flex min-h-20 max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-4"
+                class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-3"
                 aria-label="Main navigation"
             >
-                <Link
-                    href="/"
-                    class="flex max-w-full min-w-0 items-center gap-3 text-xl font-semibold tracking-tight"
-                    ><img
-                        v-if="page.props.website.logo_url"
-                        :src="page.props.website.logo_url"
-                        alt=""
-                        width="40"
-                        height="40"
-                        class="size-10 shrink-0 object-contain"
-                    /><span class="[overflow-wrap:anywhere]"
-                        >{{ page.props.website.website_name
-                        }}<span class="text-emerald-700">.</span></span
-                    ></Link
+                <Link href="/" class="shrink-0 rounded-lg bg-white px-2 py-1"
+                    ><BrandLogo class="h-11 w-32 sm:w-36"
+                /></Link>
+                <button
+                    type="button"
+                    class="flex min-h-11 items-center gap-2 rounded-md border px-3 text-sm font-medium lg:hidden"
+                    aria-controls="storefront-navigation"
+                    :aria-expanded="menuOpen"
+                    @click="menuOpen = !menuOpen"
                 >
+                    <component
+                        :is="menuOpen ? X : Menu"
+                        :size="18"
+                        aria-hidden="true"
+                    />
+                    Menu
+                </button>
                 <div
-                    class="flex flex-wrap items-center gap-x-4 gap-y-3 text-sm"
+                    id="storefront-navigation"
+                    class="storefront-links w-full flex-wrap items-center gap-x-5 gap-y-3 pb-2 text-sm font-medium lg:flex lg:w-auto lg:pb-0"
+                    :class="menuOpen ? 'flex' : 'hidden'"
+                    @click="menuOpen = false"
                 >
                     <Link href="/" class="hover:underline">{{
                         copy.home
@@ -63,7 +68,7 @@ const copy = computed(() => page.props.copy as Record<string, string>);
                         }}</Link>
                         <Link
                             href="/register"
-                            class="inline-flex items-center gap-2 rounded-md bg-emerald-800 px-4 py-2.5 font-medium text-white hover:bg-emerald-900"
+                            class="brand-button inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2.5 font-medium text-primary-foreground"
                             >{{ copy.register }} <ArrowUpRight :size="16"
                         /></Link>
                     </template>
@@ -72,8 +77,11 @@ const copy = computed(() => page.props.copy as Record<string, string>);
         </header>
         <main><slot /></main>
         <footer
-            class="mx-auto flex max-w-7xl flex-wrap justify-between gap-4 border-t border-stone-200 px-6 py-8 text-sm text-stone-600 dark:border-stone-800 dark:text-stone-400"
+            class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 border-t px-6 py-8 text-sm text-muted-foreground"
         >
+            <Link href="/" class="rounded-lg bg-white p-2"
+                ><BrandLogo class="h-12 w-36"
+            /></Link>
             <span class="max-w-full [overflow-wrap:anywhere]"
                 >{{ page.props.website.website_name }} &copy;
                 {{ new Date().getFullYear() }}</span
