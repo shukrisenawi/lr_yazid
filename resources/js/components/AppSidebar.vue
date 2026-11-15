@@ -1,6 +1,20 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { House, LayoutGrid, ShieldCheck } from '@lucide/vue';
+import {
+    Bell,
+    CalendarDays,
+    ChartNoAxesCombined,
+    CreditCard,
+    House,
+    LayoutGrid,
+    MapPin,
+    Package,
+    Settings,
+    ShieldCheck,
+    ShoppingBag,
+    ShoppingCart,
+    Users,
+} from '@lucide/vue';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
@@ -149,10 +163,59 @@ const footerNavItems: NavItem[] = [
         icon: House,
     },
 ];
+
+const navigationGroups = computed(() => {
+    const items = mainNavItems.value.map((item) => ({
+        ...item,
+        icon: item.href.toString().includes('appointment')
+            ? CalendarDays
+            : item.href.toString().includes('payment')
+              ? CreditCard
+              : item.href.toString().includes('report')
+                ? ChartNoAxesCombined
+                : item.href.toString().includes('customer')
+                  ? Users
+                  : item.href.toString().includes('order')
+                    ? ShoppingBag
+                    : item.href.toString().includes('product')
+                      ? Package
+                      : item.href.toString().includes('notification')
+                        ? Bell
+                        : item.href.toString().includes('cart')
+                          ? ShoppingCart
+                          : item.href.toString().includes('address')
+                            ? MapPin
+                            : item.href.toString().includes('settings')
+                              ? Settings
+                              : item.icon,
+    }));
+    const admin = items.filter((item) =>
+        item.href.toString().startsWith('/admin'),
+    );
+    const account = items.filter(
+        (item) => !item.href.toString().startsWith('/admin'),
+    );
+    return page.props.auth.user.role === 'admin'
+        ? [
+              {
+                  label: 'Administration',
+                  items: [
+                      ...admin.filter(
+                          (item) => item.href === '/admin/dashboard',
+                      ),
+                      ...admin.filter(
+                          (item) => item.href !== '/admin/dashboard',
+                      ),
+                  ],
+              },
+              { label: 'My account', items: account },
+          ]
+        : [{ label: 'My account', items: account }];
+});
 </script>
 
 <template>
-    <Sidebar collapsible="icon" variant="inset">
+    <Sidebar collapsible="icon" variant="sidebar" class="dashboard-sidebar">
         <SidebarHeader>
             <SidebarMenu>
                 <SidebarMenuItem>
@@ -166,7 +229,12 @@ const footerNavItems: NavItem[] = [
         </SidebarHeader>
 
         <SidebarContent>
-            <NavMain :items="mainNavItems" />
+            <NavMain
+                v-for="group in navigationGroups"
+                :key="group.label"
+                :items="group.items"
+                :label="group.label"
+            />
         </SidebarContent>
 
         <SidebarFooter>

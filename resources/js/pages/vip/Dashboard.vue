@@ -17,7 +17,7 @@ defineProps<{
 </script>
 <template>
     <Head title="VIP Dashboard" />
-    <div class="p-6 md:p-10">
+    <div class="dashboard-page dashboard-report">
         <p class="text-sm font-medium text-emerald-700 dark:text-emerald-400">
             Active VIP Member
         </p>

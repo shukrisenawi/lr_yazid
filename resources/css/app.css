@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import './dashboard.css';
 
 .rich-content img[data-align='left'] {
     display: block;

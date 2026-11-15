@@ -16,11 +16,15 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-    <AppShell variant="sidebar">
+    <AppShell variant="sidebar" class="velzon-shell">
         <AppSidebar />
         <AppContent variant="sidebar" class="min-w-0 overflow-x-clip">
             <AppSidebarHeader :breadcrumbs="breadcrumbs" />
             <slot />
+            <footer class="dashboard-footer">
+                <span>{{ new Date().getFullYear() }} © Csiti.my</span>
+                <span>Your account. Everything in one place.</span>
+            </footer>
         </AppContent>
         <Toaster />
     </AppShell>
