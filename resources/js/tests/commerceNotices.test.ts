@@ -74,9 +74,7 @@ describe('commerce notice tracking', () => {
     it('renders audit metadata with escaped customer names and safe order links', () => {
         const root = mount();
         expect(root.textContent).toContain('Recipient email changed');
-        expect(root.textContent).toContain(
-            'does not prove external SMTP delivery',
-        );
+        expect(root.textContent).toContain('does not prove external delivery');
         expect(root.querySelector('script')).toBeNull();
         expect(root.textContent).toContain('<script>Customer</script>');
         expect(root.querySelector('a')?.getAttribute('href')).toBe(

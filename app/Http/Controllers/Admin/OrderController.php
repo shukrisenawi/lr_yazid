@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Services\CheckoutService;
 use App\Services\OrderFulfillmentService;
 use App\Support\CsvCell;
 use Illuminate\Database\Eloquent\Builder;
@@ -28,7 +29,19 @@ class OrderController extends Controller
 
     public function show(Order $order): Response
     {
-        return Inertia::render('admin/orders/Show', ['order' => $order->load(['items', 'payments', 'fulfillmentHistory', 'invoice'])]);
+        return Inertia::render('admin/orders/Show', ['order' => $order->load(['items', 'payments', 'fulfillmentHistory', 'invoice', 'cancellation']),
+            'canCancel' => in_array($order->payment_status, ['pending', 'failed'], true)
+                && in_array($order->fulfillment_status, [null, 'new'], true)
+                && ! $order->payments->contains('status', 'paid') && ! $order->payments->contains('requires_review', true)]);
+    }
+
+    public function cancel(Request $request, Order $order, CheckoutService $service): RedirectResponse
+    {
+        $data = $request->validate(['reason' => ['required', 'string', 'min:5', 'max:1000']]);
+        $service->cancel($order, $data['reason'], $request->user());
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('order_cancellation.saved')]);
+
+        return back();
     }
 
     public function update(Request $request, Order $order, OrderFulfillmentService $service): RedirectResponse

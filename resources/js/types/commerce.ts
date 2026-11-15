@@ -44,6 +44,15 @@ export type OrderItem = {
     line_total_sen: number;
 };
 export type Order = {
+    cancellation?: {
+        id: number;
+        actor_id: number | null;
+        source: string;
+        previous_payment_status: string;
+        previous_fulfillment_status: string | null;
+        reason: string;
+        created_at: string;
+    } | null;
     invoice?: { id: number; reference: string } | null;
     courier_name?: string | null;
     tracking_number?: string | null;

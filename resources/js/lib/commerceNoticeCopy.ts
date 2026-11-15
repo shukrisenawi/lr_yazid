@@ -11,7 +11,7 @@ export const commerceNoticeCopy = {
     apply: 'Apply filters',
     help: 'Read-only tracking for welcome, order and verified payment notices. Queue workers process each channel separately. Awaiting processing can include failed jobs; inspect the queue worker and failed-job log.',
     transportHelp:
-        'Mail processed means the configured transport accepted the message, including the local log mailer. It does not prove external SMTP delivery or arrival in the recipient inbox.',
+        'Mail processed means the configured transport accepted the message, including the local log mailer. It does not prove external delivery or arrival in the recipient inbox.',
     customer: 'Customer',
     order: 'Order / payment',
     notice: 'Notice',

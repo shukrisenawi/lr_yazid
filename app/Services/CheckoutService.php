@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\Address;
 use App\Models\Cart;
 use App\Models\CommerceSetting;
@@ -97,13 +98,29 @@ class CheckoutService
         }, 3);
     }
 
-    public function cancel(Order $order, string $reason = 'customer_cancelled'): void
+    public function cancel(Order $order, string $reason = 'customer_cancelled', ?User $admin = null): void
     {
-        DB::transaction(function () use ($order, $reason) {
+        if ($admin !== null) {
+            abort_unless($admin->role === UserRole::Admin, 403);
+            $reason = trim($reason);
+            if (mb_strlen($reason) < 5 || mb_strlen($reason) > 1000) {
+                throw ValidationException::withMessages(['reason' => __('order_cancellation.reason_invalid')]);
+            }
+        }
+        DB::transaction(function () use ($order, $reason, $admin) {
+            // Match settlement's owner -> order -> payment lock order.
+            User::whereKey(Order::whereKey($order->id)->value('user_id'))->lockForUpdate()->firstOrFail();
             $order = Order::whereKey($order->id)->lockForUpdate()->firstOrFail();
-            if (! in_array($order->payment_status, ['pending', 'failed'], true)) {
+            $payments = $order->payments()->lockForUpdate()->get();
+            if (! in_array($order->payment_status, ['pending', 'failed'], true)
+                || $payments->contains('status', 'paid') || $payments->contains('requires_review', true)
+                || ! in_array($order->fulfillment_status, [null, 'new'], true)) {
                 throw ValidationException::withMessages(['order' => __('shop.cannot_cancel')]);
             }
+            $source = $admin !== null ? 'admin' : ($reason === 'reservation_expired' ? 'expiry' : 'customer');
+            $order->cancellation()->create(['actor_id' => $admin->id ?? ($source === 'customer' ? $order->user_id : null),
+                'source' => $source, 'previous_payment_status' => $order->payment_status,
+                'previous_fulfillment_status' => $order->fulfillment_status, 'reason' => $reason]);
             $order->reservations()->where('status', 'active')->update(['status' => 'released']);
             $order->update(['payment_status' => 'cancelled', 'fulfillment_status' => 'cancelled', 'cancellation_reason' => $reason]);
         }, 3);

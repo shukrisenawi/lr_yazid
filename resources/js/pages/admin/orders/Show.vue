@@ -3,9 +3,10 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import OrderSummary from '@/components/OrderSummary.vue';
 import { orderCopy as copy } from '@/lib/orderCopy';
 import { documentCopy } from '@/lib/documentCopy';
+import { orderCancellationCopy as cancellationCopy } from '@/lib/orderCancellationCopy';
 import { money } from '@/types/catalog';
 import { dateTime, type Order } from '@/types/commerce';
-const props = defineProps<{ order: Order }>();
+const props = defineProps<{ order: Order; canCancel: boolean }>();
 const form = useForm({
     fulfillment_status: props.order.fulfillment_status ?? 'new',
     courier_name: props.order.courier_name ?? '',
@@ -16,6 +17,12 @@ function print() {
     window.print();
 }
 const invoiceForm = useForm({});
+const cancellationForm = useForm({ reason: '' });
+function cancelOrder() {
+    if (window.confirm(cancellationCopy.confirm)) {
+        cancellationForm.post(`/admin/orders/${props.order.id}/cancel`);
+    }
+}
 </script>
 <template>
     <Head :title="order.reference" />
@@ -105,6 +112,7 @@ const invoiceForm = useForm({});
         <form
             v-if="
                 order.shipping_address &&
+                order.payment_status === 'paid' &&
                 order.fulfillment_status !== 'delivered'
             "
             class="mt-8 space-y-5 rounded-xl border p-6 print:hidden"
@@ -158,6 +166,67 @@ const invoiceForm = useForm({});
                 {{ copy.save }}
             </button>
         </form>
+        <form
+            v-if="canCancel"
+            class="mt-8 space-y-4 rounded-xl border p-6 print:hidden"
+            @submit.prevent="cancelOrder"
+        >
+            <h2 class="text-xl font-semibold">{{ cancellationCopy.title }}</h2>
+            <p class="text-sm text-muted-foreground">
+                {{ cancellationCopy.help }}
+            </p>
+            <label class="grid gap-2 text-sm"
+                >{{ cancellationCopy.reason }}
+                <textarea
+                    v-model="cancellationForm.reason"
+                    required
+                    minlength="5"
+                    maxlength="1000"
+                    rows="3"
+                    class="rounded-md border bg-transparent p-3"
+                />
+            </label>
+            <p
+                v-if="Object.keys(cancellationForm.errors).length"
+                role="alert"
+                class="text-sm text-red-700 dark:text-red-400"
+            >
+                {{ Object.values(cancellationForm.errors).join(' ') }}
+            </p>
+            <button
+                :disabled="cancellationForm.processing"
+                class="rounded-md border px-5 py-3 text-sm disabled:opacity-50"
+            >
+                {{ cancellationCopy.submit }}
+            </button>
+        </form>
+        <section
+            v-if="order.cancellation || order.cancellation_reason"
+            class="mt-8 rounded-xl border p-6 print:hidden"
+        >
+            <h2 class="text-xl font-semibold">
+                {{ cancellationCopy.history }}
+            </h2>
+            <template v-if="order.cancellation">
+                <p class="mt-3 text-sm">
+                    {{ order.cancellation.source }} ·
+                    {{ dateTime(order.cancellation.created_at) }} ·
+                    {{ cancellationCopy.actor }} #{{
+                        order.cancellation.actor_id ?? '—'
+                    }}
+                </p>
+                <p class="mt-3 text-sm">
+                    {{ cancellationCopy.previous }}:
+                    {{ order.cancellation.previous_payment_status }} /
+                    {{ order.cancellation.previous_fulfillment_status ?? '—' }}
+                </p>
+            </template>
+            <p
+                class="mt-3 text-sm [overflow-wrap:anywhere] whitespace-pre-line"
+            >
+                {{ order.cancellation?.reason ?? order.cancellation_reason }}
+            </p>
+        </section>
         <section class="mt-8 print:hidden">
             <h2 class="text-xl font-semibold">{{ copy.history }}</h2>
             <ol class="mt-4 space-y-3">

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Enums\UserRole;
+use App\Mail\PhpMailTransport;
 use App\Models\AppointmentNoticeDelivery;
 use App\Models\CommerceNoticeDelivery;
 use App\Models\MembershipReminder;
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -44,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        Mail::extend('mail', fn () => new PhpMailTransport);
         if ($this->app->runningInConsole() && $this->app->environment('local')) {
             DevCommands::artisan('queue:listen database --queue=commerce-notices,default --tries=1 --timeout=0', 'queue');
         }

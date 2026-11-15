@@ -58,4 +58,10 @@ class Order extends Model
     {
         return $this->hasOne(Invoice::class);
     }
+
+    /** @return HasOne<OrderCancellation, $this> */
+    public function cancellation(): HasOne
+    {
+        return $this->hasOne(OrderCancellation::class);
+    }
 }

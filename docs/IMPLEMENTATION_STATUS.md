@@ -299,6 +299,35 @@ remain outstanding.
   verified. Positive payment notice cases use automated provider HTTP fakes only;
   local log mail is not real SMTP delivery evidence.
 
+## PHP mail and unpaid order cancellation: Core implemented
+
+- `MAIL_MAILER=mail` registers a direct PHP `mail()` transport without application
+  SMTP credentials. Server `php.ini` supplies the mail service. MIME HTML/text and
+  attachments are preserved; unsupported Bcc, To-less, raw MIME and custom
+  recipient envelopes fail closed. Failed hand-offs throw and remain retryable
+  without a processed timestamp. Successful hand-off is not inbox-delivery proof.
+- Local QA remains on the log mailer deliberately. CLI PHP has `mail()` available,
+  `SMTP=localhost`, port 25 and no sendmail path; external delivery is unverified.
+  Production must configure both web and worker PHP and use `MAIL_MAILER=mail`.
+- Administrator unpaid cancellation has a required customer-visible reason,
+  confirmation and a unique audit row with actor/source/previous states/time.
+  Customer/expiry paths share the same transactional audit and stock release.
+  Historical cancellations are not backfilled with invented actors.
+- Owner -> order -> payment locking serializes cancellation with settlement.
+  Paid/review/fulfillment-progress cases are rejected; reservation release never
+  increments physical inventory or deletes financial records.
+- Existing provider bills are not voided and no refund is issued. Verified money
+  received after cancellation remains recorded as paid with review required,
+  fulfillment cancelled, no stock consumption and no automatic VIP activation.
+- Chrome acceptance: isolated local QA administrator ID 6 cancelled customer QA
+  order ID 5 (`YC-20261115-IIDEIREQSIAV`, RM99). Its audit reason/actor, customer
+  reason display, one released reservation and zero payments were verified.
+  Desktop light and 390px dark/mobile audit views had no document overflow or console errors.
+  No real provider payment/mail occurred. Existing orders/cart were not modified.
+- Native mail tests use injected hand-off callbacks, not external delivery.
+  MySQL independent-process tests cover duplicate cancellation and a verified
+  settlement/cancellation race; frontend tests cover confirmation and escaped audit.
+
 ## Verification
 
 - Foundation: 50 backend tests / 169 assertions passed.
@@ -315,10 +344,10 @@ remain outstanding.
 - Composer audit and npm production-dependency audit reported no advisories.
 - Temporary browser test accounts were removed and the browser-created test
   product was archived after verification.
-- Latest checks: 260 backend tests / 1853 assertions passed; eighteen opt-in MySQL
-  checks / 183 assertions passed separately (17 concurrency tests and one reporting test).
+- Latest checks: 273 backend tests / 1944 assertions passed; twenty opt-in MySQL
+  checks / 207 assertions passed separately (19 concurrency tests and one reporting test).
   PHPStan and Pint passed.
-- Sixty-one Vue/component/helper tests, TypeScript, frontend formatting/lint and production build passed.
+- Sixty-five Vue/component/helper tests, TypeScript, frontend formatting/lint and production build passed.
 - Browser: plan creation and membership-only checkout produced an unpaid RM199
   order with no shipping address or fee. Gateway collection remains disabled.
 - Verified activation/renewal/reminder behavior is automated-test coverage, not
@@ -347,7 +376,7 @@ remain outstanding.
 
 ## Remaining phases and acceptance
 
-Refund/cancellation administration, advanced customer
+Manual refund administration, advanced customer
 administration, deeper reporting/production hardening and
 final deployment acceptance.
 

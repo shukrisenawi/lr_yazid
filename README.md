@@ -5,7 +5,7 @@ against [PROJECT_REQUIREMENTS.md](PROJECT_REQUIREMENTS.md).
 
 **Current scope: foundation, catalog, shopping, payment integration, VIP lifecycle,
 programs, appointment workflows, fulfillment/invoices, CMS, core reports and commerce notices.**
-Refund/cancellation administration and advanced customer administration remain unfinished. Payment logic
+Manual refund administration and advanced customer administration remain unfinished. Payment logic
 has automated tests with mocked provider responses; real ToyyibPay sandbox
 acceptance remains blocked on credentials and a public HTTPS callback URL.
 This is not production-ready. See [implementation status](docs/IMPLEMENTATION_STATUS.md).
@@ -147,7 +147,46 @@ php artisan queue:work database --queue=commerce-notices,default --tries=3
 
 Production should use cron `schedule:run` instead of `schedule:work`. Scheduled
 tasks expire reservations, reconcile payments and process VIP expiry/reminders.
-Membership notices use database/mail channels; configure SMTP before launch.
+Membership notices use database/mail channels; configure server PHP mail before launch.
+
+### PHP mail delivery (no application SMTP credentials)
+
+Set `MAIL_MAILER=mail` and a real `MAIL_FROM_ADDRESS` / `MAIL_FROM_NAME` on the
+deployment server. The application calls PHP `mail()` directly; it does not read
+`MAIL_HOST`, `MAIL_USERNAME` or `MAIL_PASSWORD` for this transport.
+Configure the delivery agent in server `php.ini`: Windows uses `SMTP`/`smtp_port`
+or a configured `sendmail_path`; Unix normally requires a working `sendmail_path`.
+Configure both web PHP and queue-worker/CLI PHP, clear/rebuild Laravel's config
+cache and restart workers after deployment.
+
+The application's current notices use To recipients. This transport deliberately
+rejects Bcc, To-less messages, raw MIME and custom recipient envelopes rather than
+risk silently redirecting or exposing recipients. Multipart HTML/text and MIME
+attachments are preserved. A failed `mail()` hand-off throws so queued notices
+can retry; a successful return means server hand-off only, not inbox delivery.
+
+Development `.env.example` intentionally keeps `MAIL_MAILER=log` to prevent QA
+mail leaving the machine. Local PHP currently has `SMTP=localhost`, port 25 and
+no sendmail path; the availability of the `mail()` function alone does not prove
+that a working mail service exists. Real recipient delivery still requires
+deployment acceptance; no application SMTP account is required.
+
+## Unpaid order cancellation
+
+Administrators cancel eligible unpaid orders from `/admin/orders/{order}` with a
+required 5–1,000 character reason and explicit confirmation. The reason is visible
+to the customer. Paid/refunded/cancelled orders, payment review cases, paid attempts
+and orders with fulfillment progress cannot use this action.
+
+Owner/order/payment locks serialize cancellation against verified settlement.
+Active reservations are released without increasing physical stock. Snapshots,
+payment attempts and history remain intact. A unique cancellation record stores
+source (`admin`, `customer` or `expiry`), actor, previous statuses, reason and time.
+Existing historical cancellations keep their original reason; no actors are fabricated.
+
+Cancellation does not void an existing ToyyibPay bill or issue a refund. A later
+verified payment is recorded as received but requires review; fulfillment stays
+cancelled, inventory is not consumed and membership is not activated.
 
 ## Commerce notifications
 
@@ -178,8 +217,8 @@ Admins use `/admin/commerce-notices` to filter by customer/order, event and chan
 state. This is read-only, without resend/payment-mutation controls or exposed secret
 snapshots. Awaiting processing can include failed jobs; inspect worker/failed-job
 logs. A mail processed timestamp includes acceptance by the local log transport and
-does not establish external SMTP delivery. Users read their own notices at
-`/notifications`. Genuine provider/SMTP acceptance remains outstanding.
+does not establish external delivery. Users read their own notices at
+`/notifications`. Genuine provider/server-mail acceptance remains outstanding.
 
 ## VIP programs
 
