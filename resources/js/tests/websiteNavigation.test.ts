@@ -88,6 +88,7 @@ describe('website administration navigation', () => {
             root.querySelector('a[href="/admin/website-settings"]'),
         ).not.toBeNull();
         expect(root.querySelector('a[href="/admin/banners"]')).not.toBeNull();
+        expect(root.querySelector('a[href="/admin/reports"]')).not.toBeNull();
     });
     it.each([false, true])(
         'is hidden from customers, including VIP customers (%s)',
@@ -97,6 +98,7 @@ describe('website administration navigation', () => {
                 root.querySelector('a[href="/admin/website-settings"]'),
             ).toBeNull();
             expect(root.querySelector('a[href="/admin/banners"]')).toBeNull();
+            expect(root.querySelector('a[href="/admin/reports"]')).toBeNull();
             expect(
                 !!root.querySelector('a[href="/vip/appointments/book"]'),
             ).toBe(isVip);

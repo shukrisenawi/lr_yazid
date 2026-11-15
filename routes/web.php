@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\MembershipPlanController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\ShippingSettingsController;
 use App\Http\Controllers\Admin\VipProgramController as AdminVipProgramController;
 use App\Http\Controllers\Admin\WebsiteSettingController;
@@ -27,9 +28,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\VipProgramController;
-use App\Models\User;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', [CatalogController::class, 'home'])->name('home');
 Route::get('/pages/{slug}', [ContentPageController::class, 'show'])->name('content.show');
@@ -44,6 +43,9 @@ Route::delete('/cart/items/{cartItem}', [CartController::class, 'destroy'])->blo
 Route::delete('/cart', [CartController::class, 'clear'])->block()->name('cart.clear');
 
 Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('dashboard', [ReportController::class, 'index'])->name('dashboard');
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/export', [ReportController::class, 'export'])->middleware('throttle:10,1')->name('reports.export');
     Route::get('website-settings', [WebsiteSettingController::class, 'edit'])->name('website-settings.edit');
     Route::put('website-settings', [WebsiteSettingController::class, 'update'])->name('website-settings.update');
     Route::resource('banners', HomepageBannerController::class)->except(['show', 'destroy']);
@@ -127,11 +129,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/notifications/{notification}/read', [NotificationController::class, 'read'])->whereUuid('notification')->name('notifications.read');
     Route::get('vip/dashboard', [MembershipController::class, 'dashboard'])
         ->middleware('can:vip')->name('vip.dashboard');
-    Route::get('admin/dashboard', fn () => Inertia::render('admin/Dashboard', [
-        'customers' => User::where('role', 'customer')->count(),
-        'activeVipMembers' => User::whereHas('memberships', fn ($query) => $query
-            ->where('status', 'active')->where('starts_at', '<=', now())->where('expires_at', '>', now()))->count(),
-    ]))->middleware('can:admin')->name('admin.dashboard');
 });
 
 require __DIR__.'/settings.php';

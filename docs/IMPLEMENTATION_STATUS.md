@@ -194,6 +194,7 @@ remain outstanding.
 - Desktop light and 390px mobile dark inspected without document overflow.
   Local public-page Lighthouse: performance 91, accessibility 100, best practices
   100, SEO 100. This is a local content-page check, not whole-site production acceptance.
+
 ## Homepage banners and website settings implemented
 
 - Administrator-managed raster image uploads, title/subtitle, accessible image
@@ -219,6 +220,29 @@ remain outstanding.
   practices 100, SEO 100. The development-server performance target remains unmet;
   these checks do not establish whole-site production readiness.
 
+## Administrator dashboard and reporting: Core implemented
+
+- Dashboard/report date filters (inclusive MYT, maximum 366 days), Production by
+  default and an explicitly labeled Sandbox test-data view.
+- Financial aggregates require a single amount-matched paid MYR order/payment,
+  provider-check timestamp, transaction reference and paid timestamp, without any
+  review flags or duplicate paid attempts. Pending/failed/refunded records are excluded.
+- Collected sales include shipping; membership item revenue is a component of that
+  total. No profit, net-refund ledger or accounting/regulatory compliance is claimed.
+- Current customer/VIP/product/order/program/appointment counts are separated from
+  historical period figures. VIP customers are distinct and expiry is exclusive.
+- Accessible financial bars and selectable activity charts, monthly tables, appointment
+  request-cohort status breakdown and aggregate-only CSV exports with exact money.
+  Exports regenerate applied filters with their own generation timestamp.
+- Reporting indexes support payment-period/duplicate checks and order/request cohorts.
+- Browser acceptance: report/dashboard date/environment submissions, Sandbox warning,
+  real zero-sales state, filter-preserving report links and CSV status/type/content.
+  Activity-series switching, desktop light and mobile dark layouts were checked;
+  the monthly table scrolls within its container without document overflow.
+  Local unpaid QA orders remain unpaid; no fake live sales were introduced.
+- Positive financial/membership aggregates are covered in SQLite tests and a disposable
+  MySQL reporting database. This is not evidence of genuine ToyyibPay payment acceptance.
+
 ## Verification
 
 - Foundation: 50 backend tests / 169 assertions passed.
@@ -235,9 +259,10 @@ remain outstanding.
 - Composer audit and npm production-dependency audit reported no advisories.
 - Temporary browser test accounts were removed and the browser-created test
   product was archived after verification.
-- Latest checks: 210 backend tests / 1503 assertions passed; fourteen opt-in MySQL
-  concurrency tests / 135 assertions passed separately. PHPStan and Pint passed.
-- Forty-seven Vue/component/helper tests, TypeScript, frontend formatting/lint and production build passed.
+- Latest checks: 220 backend tests / 1600 assertions passed; fifteen opt-in MySQL
+  checks / 144 assertions passed separately (14 concurrency tests and one reporting test).
+  PHPStan and Pint passed.
+- Fifty-three Vue/component/helper tests, TypeScript, frontend formatting/lint and production build passed.
 - Browser: plan creation and membership-only checkout produced an unpaid RM199
   order with no shipping address or fee. Gateway collection remains disabled.
 - Verified activation/renewal/reminder behavior is automated-test coverage, not
@@ -267,7 +292,7 @@ remain outstanding.
 ## Remaining phases and acceptance
 
 Remaining commerce notifications, refund/cancellation administration, advanced customer
-administration, reports, production hardening and
+administration, deeper reporting/production hardening and
 final deployment acceptance.
 
 Continue in roadmap order. ToyyibPay sandbox acceptance will require sandbox

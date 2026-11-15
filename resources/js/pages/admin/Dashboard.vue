@@ -1,31 +1,29 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
-defineProps<{ customers: number; activeVipMembers: number }>();
+import { Head, Link } from '@inertiajs/vue3';
+import ReportFilters from '@/components/ReportFilters.vue';
+import ReportOverview from '@/components/ReportOverview.vue';
+import ReportMonthly from '@/components/ReportMonthly.vue';
+import { reportCopy as copy } from '@/lib/reportCopy';
+import { computed } from 'vue';
+import type { AdminReport } from '@/types/reports';
+const props = defineProps<{ report: AdminReport }>();
+const reportUrl = computed(
+    () =>
+        `/admin/reports?${new URLSearchParams(props.report.filters).toString()}`,
+);
 </script>
 <template>
-    <Head title="Administration" />
-    <div class="p-6 md:p-10">
-        <h1 class="text-3xl font-semibold tracking-tight">Administration</h1>
-        <p class="mt-3 text-muted-foreground">
-            An overview of your customer community.
-        </p>
-        <div class="mt-8 grid max-w-3xl gap-5 sm:grid-cols-2">
-            <section class="rounded-xl border p-6">
-                <h2 class="text-sm text-muted-foreground">Total customers</h2>
-                <p class="mt-4 text-4xl font-semibold">{{ customers }}</p>
-            </section>
-            <section class="rounded-xl border p-6">
-                <h2 class="text-sm text-muted-foreground">
-                    Active VIP members
-                </h2>
-                <p class="mt-4 text-4xl font-semibold">
-                    {{ activeVipMembers }}
-                </p>
-            </section>
-        </div>
-        <p class="mt-8 text-sm text-muted-foreground">
-            Product, order and appointment management will appear here as their
-            modules are released.
-        </p>
+    <Head :title="copy.dashboard" />
+    <div class="mx-auto w-full max-w-7xl min-w-0 p-6 md:p-10">
+        <h1 class="text-3xl font-semibold tracking-tight">
+            {{ copy.dashboard }}
+        </h1>
+        <Link :href="reportUrl" class="mt-4 inline-block text-sm underline">{{
+            copy.view
+        }}</Link
+        ><ReportFilters
+            :filters="report.filters"
+            action="/admin/dashboard"
+        /><ReportOverview :report="report" /><ReportMonthly :report="report" />
     </div>
 </template>

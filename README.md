@@ -4,8 +4,8 @@ A Laravel 13 + Inertia 3 + Vue 3 / TypeScript application, built incrementally
 against [PROJECT_REQUIREMENTS.md](PROJECT_REQUIREMENTS.md).
 
 **Current scope: foundation, catalog, shopping, payment integration, VIP lifecycle,
-programs and appointment booking/approval/rescheduling.**
-CMS/reporting and complete order/customer administration remain unfinished. Payment logic
+programs, appointment workflows, fulfillment/invoices, CMS and core admin reports.**
+Refunds, remaining commerce notices and advanced customer administration remain unfinished. Payment logic
 has automated tests with mocked provider responses; real ToyyibPay sandbox
 acceptance remains blocked on credentials and a public HTTPS callback URL.
 This is not production-ready. See [implementation status](docs/IMPLEMENTATION_STATUS.md).
@@ -88,7 +88,8 @@ npm test
 npm run build
 ```
 
-Most tests use isolated SQLite. Opt-in concurrent checkout/payment/program/appointment tests create
+Most tests use isolated SQLite. Opt-in checkout/payment/program/appointment concurrency
+and financial reporting checks create
 and drop uniquely named disposable MySQL databases, never the application database.
 The database user needs CREATE/DROP DATABASE privileges:
 
@@ -188,6 +189,29 @@ blocked; fulfillment never marks payments paid or modifies stock. Customer order
 pages show tracking. Shipped, tracking-correction and delivered notices are queued
 once per actual fulfillment change and track database/mail delivery. Email delivery
 is at-least-once; external SMTP acceptance remains outstanding.
+
+## Administrator dashboards and reports
+
+Use `/admin/dashboard` or `/admin/reports` with inclusive MYT date filters (maximum
+366 days) and a Production/Sandbox payment selector. Production is the default.
+Financial summaries group provider-checked payments by payment date, require one
+amount-matched paid MYR transaction per paid order and exclude review flags,
+duplicates, pending/failed/refunded orders and missing verification markers.
+Collected sales include shipping; membership item revenue is a component, not an
+additional total. This is not a profit statement or a net-refund/accounting ledger.
+
+Current operational counts are explicitly separate from historical period metrics.
+They include all environments and manual memberships; review/undated-payment counts
+use the selected environment. VIP counts are distinct customers with timestamp-based
+validity. Expired VIPs are included within customers without active VIP.
+
+Monthly charts and tables show collected sales, membership revenue, activation
+customers, renewals, order creation and appointment requests. Appointment status
+breakdowns reflect the current status of requests created in the date range.
+Activation customer counts are unique per period/month and are not always additive.
+CSV export regenerates the same applied filters with its own generation timestamp,
+uses exact MYR decimals and contains aggregates only, not customer details/secrets.
+No real provider payment or external SMTP delivery is implied by reporting tests.
 
 ## Website content
 
