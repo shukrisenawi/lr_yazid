@@ -23,7 +23,7 @@ const InvoiceLayout = defineAsyncComponent(
     () => import('@/layouts/InvoiceLayout.vue'),
 );
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || 'Csiti.my';
 
 void createInertiaApp({
     title: (title, page) => websiteTitle(title, page.props.website, appName),

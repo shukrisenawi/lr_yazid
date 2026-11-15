@@ -7,6 +7,7 @@ use App\Models\HomepageBanner;
 use App\Models\User;
 use App\Models\WebsiteSetting;
 use App\Services\WebsiteContentService;
+use Illuminate\Database\Migrations\Migration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -55,11 +56,11 @@ class WebsiteContentTest extends TestCase
     public function test_general_settings_have_safe_defaults_before_any_admin_visit(): void
     {
         $this->get('/')->assertSee('data-inertia="website-icon"', false)->assertInertia(fn (Assert $view) => $view
-            ->where('website.website_name', 'Yazid Collective')->where('website.logo_url', null)
+            ->where('website.website_name', 'Csiti.my')->where('website.logo_url', null)
             ->where('website.favicon_url', null)->has('website.social_links', 0)->has('banners', 0));
         $this->assertDatabaseCount('website_settings', 0);
         $this->actingAs($this->admin)->get('/admin/website-settings')->assertInertia(fn (Assert $view) => $view
-            ->where('settings.version', 1)->where('settings.website_name', 'Yazid Collective'));
+            ->where('settings.version', 1)->where('settings.website_name', 'Csiti.my'));
     }
 
     public function test_settings_singleton_keeps_its_fixed_key_after_reinitialization(): void
@@ -67,6 +68,25 @@ class WebsiteContentTest extends TestCase
         WebsiteSetting::current()->delete();
         $this->assertSame(1, WebsiteSetting::current()->id);
         $this->assertDatabaseCount('website_settings', 1);
+    }
+
+    public function test_brand_migration_updates_the_old_name_but_preserves_custom_names(): void
+    {
+        $settings = WebsiteSetting::current();
+        $settings->update(['website_name' => 'Yazid Collective']);
+
+        /** @var Migration $migration */
+        $migration = require database_path('migrations/2026_11_15_000023_update_default_website_name.php');
+        $migration->up();
+
+        $this->assertSame('Csiti.my', $settings->fresh()->website_name);
+        $this->assertSame(2, $settings->fresh()->version);
+
+        $settings->update(['website_name' => 'Custom Store']);
+        $migration->up();
+
+        $this->assertSame('Custom Store', $settings->fresh()->website_name);
+        $this->assertSame(2, $settings->fresh()->version);
     }
 
     public function test_only_verified_admins_can_manage_website_settings_and_banners(): void

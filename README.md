@@ -1,4 +1,4 @@
-# Yazid Collective
+# Csiti.my
 
 A Laravel 13 + Inertia 3 + Vue 3 / TypeScript application, built incrementally
 against [PROJECT_REQUIREMENTS.md](PROJECT_REQUIREMENTS.md).

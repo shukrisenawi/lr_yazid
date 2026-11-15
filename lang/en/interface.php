@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'brand' => 'Yazid Collective',
+    'brand' => 'Csiti.my',
     'home' => 'Home',
     'account' => 'My Account',
     'login' => 'Log in',
