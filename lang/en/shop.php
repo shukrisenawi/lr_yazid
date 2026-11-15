@@ -18,6 +18,6 @@ return [
     'address_saved' => 'Shipping address saved.',
     'address_deleted' => 'Shipping address removed.',
     'settings_saved' => 'Shipping settings saved.',
-    'account_orders' => 'Accounts with order or membership history cannot be deleted here. Please contact support.',
+    'account_orders' => 'Accounts with business history or administrator access cannot be deleted here. Please contact support.',
     'membership_unavailable' => 'Membership checkout is not available yet.',
 ];

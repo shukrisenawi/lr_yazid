@@ -110,9 +110,28 @@ remain outstanding.
 - Approved-appointment guards prevent silent slot changes/date blocking;
   any appointment history prevents deletion. Removing a date block does not
   automatically reactivate disabled slots.
-- Appointment schema is present for the next workflow, but customer submission,
-  administrator approval, calendars, rescheduling, status history and reminders
-  are **not implemented**. No customer-facing booking action is advertised.
+- The customer workflow is implemented in Phase 7B below.
+
+## Phase 7B: Appointment workflow core implemented
+
+- VIP monthly booking calendar with dynamic date/slot selection and server-side
+  membership, advance/notice, capacity, conflict and active-booking-limit checks.
+- Idempotent submissions start Pending Approval; pending requests do not reserve capacity.
+- Administrator request filters/details and month/week/day/list calendar with
+  blocked dates, full slots and links to review. Calendar results are capped at
+  500 entries with a visible limit warning; the request list is paginated.
+- Row-locked approval/rejection, cancellation, completion and no-show transitions.
+- Same-service rescheduling preserves the original approval until an atomic move.
+  Administrator alternatives need customer consent followed by administrator approval.
+- Owner-only history remains accessible after expiry; expired customers cannot
+  submit new bookings or reschedule. Cancellation cutoff is server-enforced;
+  administrators can cancel with a reason.
+- Immutable schedule/location and history-time snapshots; reviewer/actor audit records.
+- Transactional, deduplicated database/mail notices and scheduled 24-hour/1-hour
+  reminders. Stale reminder deliveries are suppressed after cancellation/time changes.
+- Active booking/reschedule slots and retained history are protected from unsafe edits/deletion.
+- Administrator accounts and accounts with retained appointment/business history
+  cannot self-delete through profile settings.
 
 ## Verification
 
@@ -130,9 +149,9 @@ remain outstanding.
 - Composer audit and npm production-dependency audit reported no advisories.
 - Temporary browser test accounts were removed and the browser-created test
   product was archived after verification.
-- Latest checks: 146 backend tests / 740 assertions passed; seven opt-in MySQL
-  concurrency tests / 69 assertions passed separately. PHPStan and Pint passed.
-- Twenty-one Vue component tests, TypeScript, frontend formatting/lint and production build passed.
+- Latest checks: 169 backend tests / 949 assertions passed; twelve opt-in MySQL
+  concurrency tests / 113 assertions passed separately. PHPStan and Pint passed.
+- Thirty-one Vue component tests, TypeScript, frontend formatting/lint and production build passed.
 - Browser: plan creation and membership-only checkout produced an unpaid RM199
   order with no shipping address or fee. Gateway collection remains disabled.
 - Verified activation/renewal/reminder behavior is automated-test coverage, not
@@ -149,11 +168,19 @@ remain outstanding.
   blocked date, read-only generation preview and generation of 20 slots.
   Break and blocked-day skip counts matched expectations; mobile 390px inspection
   showed no document overflow or console errors.
+- Workflow browser acceptance: pending booking, approval, requested/approved move,
+  administrator alternative, customer acceptance, rejection preserving the existing
+  approval, cancellation and retained audit history. QA booking
+  `APT-ZPDP37ITGHU7AJDU1YXL` was cancelled after acceptance, not deleted.
+- Administrator request filtering and calendar views, notification reading and
+  local database/log-mail delivery checked. Reminders and completion/no-show time
+  rules have automated-test coverage; real SMTP delivery is not claimed.
+- MySQL races verify duplicate submissions/approvals, same-user overlapping services,
+  final approved place and final reschedule place, alongside previous commerce tests.
 
 ## Remaining phases and acceptance
 
-Customer appointment submission/approval/calendars/rescheduling/reminders,
-remaining commerce notifications, administrator order/customer management,
+Remaining commerce notifications, administrator order/customer management,
 CMS, reports, production hardening and final deployment acceptance.
 
 Continue in roadmap order. ToyyibPay sandbox acceptance will require sandbox

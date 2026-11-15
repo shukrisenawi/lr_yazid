@@ -28,6 +28,16 @@ const mainNavItems = computed<NavItem[]>(() => [
     { title: 'My orders', href: '/orders', icon: LayoutGrid },
     { title: 'My membership', href: '/membership', icon: ShieldCheck },
     { title: 'My Programs', href: '/my-programs', icon: LayoutGrid },
+    { title: 'My Appointments', href: '/appointments', icon: LayoutGrid },
+    ...(page.props.auth.isVip
+        ? [
+              {
+                  title: 'Book Appointment',
+                  href: '/vip/appointments/book',
+                  icon: ShieldCheck,
+              },
+          ]
+        : []),
     ...(page.props.auth.isVip
         ? [{ title: 'VIP Programs', href: '/vip/programs', icon: ShieldCheck }]
         : []),
@@ -36,6 +46,16 @@ const mainNavItems = computed<NavItem[]>(() => [
     { title: 'My addresses', href: '/addresses', icon: House },
     ...(page.props.auth.user.role === 'admin'
         ? [
+              {
+                  title: 'Appointment Requests',
+                  href: '/admin/appointments',
+                  icon: LayoutGrid,
+              },
+              {
+                  title: 'Appointment Calendar',
+                  href: '/admin/appointments/calendar',
+                  icon: LayoutGrid,
+              },
               {
                   title: 'Appointment services',
                   href: '/admin/appointment-services',

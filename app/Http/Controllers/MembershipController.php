@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appointment;
 use App\Models\MembershipPlan;
 use App\Models\MembershipTransaction;
 use App\Models\VipProgram;
@@ -27,6 +28,8 @@ class MembershipController extends Controller
             ->where('starts_at', '<=', now())->where('expires_at', '>', now())->orderByDesc('expires_at')->firstOrFail();
 
         return Inertia::render('vip/Dashboard', [
+            'upcomingAppointments' => Appointment::where('user_id', $request->user()->id)->whereIn('status', ['pending', 'approved'])
+                ->where('scheduled_ends_at', '>', now())->orderBy('scheduled_starts_at')->limit(5)->get(),
             'upcomingPrograms' => VipProgram::where('status', 'published')->where('starts_at', '>', now())->with('images')
                 ->withCount(['registrations as registered_count' => fn ($query) => $query->where('status', 'registered')])
                 ->orderBy('starts_at')->limit(3)->get(),

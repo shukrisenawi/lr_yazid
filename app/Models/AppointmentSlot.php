@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * @property CarbonImmutable $starts_at
  * @property CarbonImmutable $ends_at
+ * @property int $approved_count
  */
 class AppointmentSlot extends Model
 {
@@ -30,5 +31,29 @@ class AppointmentSlot extends Model
     public function appointments(): HasMany
     {
         return $this->hasMany(Appointment::class);
+    }
+
+    /** @return HasMany<AppointmentRescheduleRequest, $this> */
+    public function targetReschedules(): HasMany
+    {
+        return $this->hasMany(AppointmentRescheduleRequest::class, 'target_slot_id');
+    }
+
+    /** @return HasMany<AppointmentRescheduleRequest, $this> */
+    public function originalReschedules(): HasMany
+    {
+        return $this->hasMany(AppointmentRescheduleRequest::class, 'original_slot_id');
+    }
+
+    /** @return HasMany<AppointmentStatusHistory, $this> */
+    public function previousHistories(): HasMany
+    {
+        return $this->hasMany(AppointmentStatusHistory::class, 'previous_slot_id');
+    }
+
+    /** @return HasMany<AppointmentStatusHistory, $this> */
+    public function newHistories(): HasMany
+    {
+        return $this->hasMany(AppointmentStatusHistory::class, 'new_slot_id');
     }
 }

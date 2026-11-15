@@ -4,8 +4,8 @@ A Laravel 13 + Inertia 3 + Vue 3 / TypeScript application, built incrementally
 against [PROJECT_REQUIREMENTS.md](PROJECT_REQUIREMENTS.md).
 
 **Current scope: foundation, catalog, shopping, payment integration, VIP lifecycle,
-programs and appointment scheduling administration.**
-Customer appointment booking/approval and CMS/reporting are not implemented yet. Payment logic
+programs and appointment booking/approval/rescheduling.**
+CMS/reporting and complete order/customer administration remain unfinished. Payment logic
 has automated tests with mocked provider responses; real ToyyibPay sandbox
 acceptance remains blocked on credentials and a public HTTPS callback URL.
 This is not production-ready. See [implementation status](docs/IMPLEMENTATION_STATUS.md).
@@ -88,7 +88,7 @@ npm test
 npm run build
 ```
 
-Most tests use isolated SQLite. Opt-in concurrent checkout/payment tests create
+Most tests use isolated SQLite. Opt-in concurrent checkout/payment/program/appointment tests create
 and drop uniquely named disposable MySQL databases, never the application database.
 The database user needs CREATE/DROP DATABASE privileges:
 
@@ -147,11 +147,28 @@ Generation skips breaks, blocked/non-working dates and overlapping existing slot
 repeating a run does not create duplicates. Runs are limited to 93 days and 5,000
 new slots, with configuration/count history retained.
 
-Approved appointments protect their slots against schedule/availability changes
-and date blocking; any appointment history prevents slot deletion. Unblocking a
-date does not automatically re-enable its disabled slots. Customer booking,
-approval, calendars, rescheduling and reminders are the next unfinished workflow;
-persisted policy settings are not yet a claim of a working booking portal.
+Active bookings and pending reschedule requests protect their slots against silent
+schedule changes; approved appointments also prevent date blocking. Any booking,
+reschedule or status history prevents slot deletion. Unblocking a date does not
+automatically re-enable its disabled slots.
+
+Active VIPs book through `/vip/appointments/book`. All requests start as Pending
+Approval and do not reserve capacity. `/appointments` retains owner-scoped history
+after membership expiry. Administrators use `/admin/appointments` and
+`/admin/appointments/calendar` (month/week/day/list) to review requests, propose
+alternatives, approve/reject/cancel and mark completed/no-show.
+
+Approval rechecks current membership through the appointment end, availability,
+capacity and overlapping active requests across services. Same-service rescheduling
+keeps the original approval until an atomic move is approved. Administrator
+alternatives require customer consent followed by administrator approval.
+Schedule/location snapshots and timestamped actor/status history are retained.
+
+`appointments:send-reminders` runs every five minutes for deduplicated 24-hour and
+1-hour notices. Database/mail delivery is tracked; stale reminders are suppressed
+after cancellation or a change of appointment time. Configure SMTP and supervise
+workers before launch. The database queue must share the business database
+connection for transactional enqueueing. External SMTP delivery remains unverified.
 
 ## Deployment foundation
 

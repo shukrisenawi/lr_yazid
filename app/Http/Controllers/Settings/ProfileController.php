@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Settings;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\ProfileDeleteRequest;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
+use App\Models\Appointment;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -50,7 +52,8 @@ class ProfileController extends Controller
     public function destroy(ProfileDeleteRequest $request): RedirectResponse
     {
         $user = $request->user();
-        if ($user->orders()->exists() || $user->memberships()->exists()) {
+        if ($user->role === UserRole::Admin || $user->orders()->exists() || $user->memberships()->exists()
+            || Appointment::where('user_id', $user->id)->exists()) {
             throw ValidationException::withMessages(['password' => __('shop.account_orders')]);
         }
 

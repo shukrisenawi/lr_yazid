@@ -90,6 +90,7 @@ Each phase requires backend tests, TypeScript checks, a production asset build,
 and browser verification (including real form submission).
 External payment tests require sandbox credentials and a reachable callback URL.
 No live payment is performed during development.
+
 ## Scheduling consistency
 
 Appointment scheduling operations acquire the appointment service row before
@@ -98,11 +99,15 @@ lock so half-open intervals `[starts_at, ends_at)` cannot overlap within a servi
 Disabled slots also participate in overlap checks. Generation never rewrites
 existing slots and records each committed run.
 
-The forthcoming booking/approval workflow must preserve this hierarchy:
+The booking/approval workflow uses owner and service root locks:
 customer row -> service row(s), ordered by ID -> slot row(s), ordered by ID ->
 appointment records -> membership eligibility records. Recheck current membership,
 blocked dates, slot/service availability, approved capacity and user time conflicts
 inside the same transaction using current/locking reads, not stale MySQL
 REPEATABLE READ snapshots. Pending requests must not reserve approved capacity.
-Rescheduling must lock both services/slots in deterministic order and leave the
-original approved appointment unchanged until the move is approved.
+Rescheduling is restricted to the same service and locks affected slots in ID
+order. The original approved appointment remains unchanged until the move is
+approved. Booking UUIDs and unique active-slot keys protect duplicate submissions.
+History and reschedule-target timestamps are snapshots, not mutable slot lookups.
+Notification outbox rows and database queue inserts share the business transaction.
+External mail delivery is at-least-once; provider SMTP idempotency is not assumed.

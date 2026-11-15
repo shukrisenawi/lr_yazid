@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Models\AppointmentBlockedDate;
+use App\Models\AppointmentRescheduleRequest;
 use App\Models\AppointmentService;
 use App\Models\AppointmentSlot;
+use App\Models\AppointmentStatusHistory;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -30,7 +32,8 @@ class AppointmentSchedulingService
                 throw ValidationException::withMessages(['slot' => __('appointment.inactive')]);
             }
             if ($slot->exists && $slot->isDirty(['starts_at', 'ends_at', 'capacity', 'location', 'status'])
-                && $slot->appointments()->where('status', 'approved')->lockForUpdate()->first()) {
+                && ($slot->appointments()->whereIn('status', ['pending', 'approved'])->lockForUpdate()->first()
+                    || AppointmentRescheduleRequest::where('target_slot_id', $slot->id)->whereIn('status', ['pending', 'proposed'])->lockForUpdate()->first())) {
                 throw ValidationException::withMessages(['slot' => __('appointment.booked')]);
             }
             if ($slot->status === 'available' && $service->blockedDates()->whereBetween('date', [
@@ -54,7 +57,9 @@ class AppointmentSchedulingService
         DB::transaction(function () use ($service, $slot) {
             AppointmentService::whereKey($service->id)->lockForUpdate()->firstOrFail();
             $slot = $service->slots()->whereKey($slot->id)->lockForUpdate()->firstOrFail();
-            if ($slot->appointments()->lockForUpdate()->first()) {
+            if ($slot->appointments()->lockForUpdate()->first()
+                || AppointmentRescheduleRequest::where('original_slot_id', $slot->id)->orWhere('target_slot_id', $slot->id)->lockForUpdate()->first()
+                || AppointmentStatusHistory::where('previous_slot_id', $slot->id)->orWhere('new_slot_id', $slot->id)->lockForUpdate()->first()) {
                 throw ValidationException::withMessages(['slot' => __('appointment.used')]);
             }
             $slot->delete();

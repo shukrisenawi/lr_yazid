@@ -13,6 +13,10 @@ export type AppointmentService = {
     maximum_active_bookings: number;
 };
 export type AppointmentSlot = {
+    target_reschedules_exists?: boolean;
+    original_reschedules_exists?: boolean;
+    previous_histories_exists?: boolean;
+    new_histories_exists?: boolean;
     id: number;
     starts_at: string;
     ends_at: string;
@@ -31,4 +35,59 @@ export type SlotGeneration = {
     blocked_days: number;
     past: number;
     slots: { starts_at: string; ends_at: string }[];
+};
+export type AvailableAppointmentSlot = {
+    id: number;
+    starts_at: string;
+    ends_at: string;
+    location: string;
+    remaining: number;
+    capacity: number;
+    available: boolean;
+    reason: string | null;
+};
+export type Appointment = {
+    id: number;
+    reference: string;
+    status: string;
+    purpose: string;
+    notes: string | null;
+    scheduled_starts_at: string;
+    scheduled_ends_at: string;
+    service_name: string;
+    location: string;
+    appointment_service_id: number;
+    appointment_slot_id: number;
+    admin_remarks: string | null;
+    cancellation_reason: string | null;
+    created_at: string;
+    pending_reschedules_count?: number;
+    user?: {
+        id?: number;
+        name: string;
+        email?: string;
+        phone?: string | null;
+        vip_expires_at?: string | null;
+    };
+    histories?: {
+        previous_starts_at?: string | null;
+        new_starts_at?: string | null;
+        id: number;
+        event: string;
+        previous_status: string | null;
+        new_status: string;
+        changed_by: number;
+        remarks: string | null;
+        created_at: string;
+    }[];
+    reschedule_requests?: {
+        id: number;
+        status: string;
+        origin: string;
+        reason: string;
+        review_remarks: string | null;
+        target_starts_at: string;
+        target_ends_at: string;
+        target_location: string;
+    }[];
 };

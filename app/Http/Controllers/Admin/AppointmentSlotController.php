@@ -22,7 +22,7 @@ class AppointmentSlotController extends Controller
 
         return Inertia::render('admin/appointments/Slots', [
             'service' => $appointmentService,
-            'slots' => $appointmentService->slots()->withCount('appointments')
+            'slots' => $appointmentService->slots()->withCount('appointments')->withExists(['targetReschedules', 'originalReschedules', 'previousHistories', 'newHistories'])
                 ->when($filters['from'] ?? null, fn ($query, $date) => $query->where('starts_at', '>=', $date.' 00:00:00'))
                 ->when($filters['to'] ?? null, fn ($query, $date) => $query->where('starts_at', '<=', $date.' 23:59:59'))
                 ->when($filters['status'] ?? null, fn ($query, $status) => $query->where('status', $status))

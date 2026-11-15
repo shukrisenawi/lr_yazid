@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Admin\AppointmentServiceController;
 use App\Http\Controllers\Admin\AppointmentSlotController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ShippingSettingsController;
 use App\Http\Controllers\Admin\VipProgramController as AdminVipProgramController;
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CheckoutController;
@@ -34,6 +36,12 @@ Route::delete('/cart/items/{cartItem}', [CartController::class, 'destroy'])->blo
 Route::delete('/cart', [CartController::class, 'clear'])->block()->name('cart.clear');
 
 Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');
+    Route::get('appointments/calendar', [AdminAppointmentController::class, 'calendar'])->name('appointments.calendar');
+    Route::get('appointments/{appointment}', [AdminAppointmentController::class, 'show'])->name('appointments.show');
+    Route::put('appointments/{appointment}', [AdminAppointmentController::class, 'update'])->name('appointments.update');
+    Route::post('appointments/{appointment}/propose', [AdminAppointmentController::class, 'propose'])->name('appointments.propose');
+    Route::put('appointment-reschedules/{rescheduleRequest}', [AdminAppointmentController::class, 'reviewReschedule'])->name('appointments.reschedules.review');
     Route::resource('appointment-services', AppointmentServiceController::class)->only(['index', 'store', 'update']);
     Route::prefix('appointment-services/{appointmentService}')->name('appointment-services.')->group(function () {
         Route::get('slots', [AppointmentSlotController::class, 'index'])->name('slots.index');
@@ -68,6 +76,13 @@ Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('adm
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/vip/appointments/book', [AppointmentController::class, 'calendar'])->middleware('can:vip')->name('appointments.book');
+    Route::post('/vip/appointments', [AppointmentController::class, 'store'])->middleware(['can:vip', 'throttle:20,1'])->name('appointments.store');
+    Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
+    Route::get('/appointments/{appointment}', [AppointmentController::class, 'show'])->name('appointments.show');
+    Route::post('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel'])->name('appointments.cancel');
+    Route::post('/appointments/{appointment}/reschedule', [AppointmentController::class, 'reschedule'])->middleware(['can:vip', 'throttle:20,1'])->name('appointments.reschedule');
+    Route::post('/appointment-reschedules/{rescheduleRequest}/respond', [AppointmentController::class, 'respond'])->name('appointments.reschedules.respond');
     Route::get('/my-programs', [VipProgramController::class, 'mine'])->name('programs.mine');
     Route::post('/my-programs/{registration}/cancel', [VipProgramController::class, 'cancel'])->name('programs.cancel');
     Route::middleware('can:vip')->prefix('vip/programs')->name('vip.programs.')->group(function () {

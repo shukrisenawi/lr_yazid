@@ -205,7 +205,13 @@ function remove(id: number) {
                                     >
                                         {{ copy.edit }}</button
                                     ><button
-                                        v-if="!row.appointments_count"
+                                        v-if="
+                                            !row.appointments_count &&
+                                            !row.target_reschedules_exists &&
+                                            !row.original_reschedules_exists &&
+                                            !row.previous_histories_exists &&
+                                            !row.new_histories_exists
+                                        "
                                         :disabled="action.processing"
                                         class="whitespace-nowrap underline"
                                         @click="remove(row.id)"
