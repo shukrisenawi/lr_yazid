@@ -32,13 +32,19 @@ php artisan migrate
 php artisan storage:link
 npm install
 npm run build
-php artisan app:create-admin
+php artisan db:seed
 php artisan serve
 ```
 
 Open http://localhost:8000. Use `npm run dev` for asset development.
-The administrator command prompts for a unique email and a hidden strong
-password. It does not overwrite existing accounts. Never commit `.env`.
+In local/testing only, `php artisan db:seed` (or
+`php artisan db:seed --class=AdminSeeder`) creates the verified default admin:
+email `admin@csiti.my`, password `123..` (two literal dots).
+This deliberately weak account is for development only. Reseeding does not reset
+an existing admin's password, modify other admins, or promote a conflicting customer.
+The seeder does nothing in production/staging, even with `--force`.
+For production, use `php artisan app:create-admin`, which prompts for a unique email
+and a hidden strong password without overwriting existing accounts. Never commit `.env`.
 Registration always creates customers, regardless of submitted role fields.
 
 ## Authentication

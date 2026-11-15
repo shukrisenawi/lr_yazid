@@ -14,6 +14,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Provision administrators with app:create-admin; never seed shared passwords.
+        $this->call(AdminSeeder::class);
     }
 }
