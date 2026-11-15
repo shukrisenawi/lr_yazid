@@ -1,12 +1,18 @@
 <?php
 
+use App\Http\Middleware\EnforceProductionOrigin;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\TrustConfiguredProxies;
+use App\Support\HttpSecurity;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
+use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,6 +21,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->prepend(SecurityHeaders::class);
+        $middleware->replace(TrustProxies::class, TrustConfiguredProxies::class);
+        $middleware->append(EnforceProductionOrigin::class);
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
         $middleware->preventRequestForgery(except: ['payments/toyyibpay/callback']);
 
@@ -25,6 +34,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->respond(fn (Response $response) => HttpSecurity::apply($response, request()));
         $exceptions->dontFlash(['sandbox_secret_key', 'production_secret_key', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token']);
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*', 'payments/toyyibpay/callback') || $request->expectsJson(),

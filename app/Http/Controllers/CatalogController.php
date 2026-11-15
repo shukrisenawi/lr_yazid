@@ -30,6 +30,10 @@ class CatalogController extends Controller
             'min' => ['nullable', 'integer', 'min:0'],
             'max' => ['nullable', 'integer', 'min:0'],
         ]);
+        // An empty PHP array becomes [] in JSON; its JS `.sort` is a function.
+        // Materialize defaults so first-visit filter props are always an object.
+        $filters = [...['search' => null, 'category' => null, 'sort' => 'newest', 'min' => null, 'max' => null], ...$filters];
+        $filters['sort'] ??= 'newest';
         $query = Product::with(['images', 'category'])->withCount('variants')->where('status', 'active')
             ->when($filters['search'] ?? null, fn ($q, $value) => $q->where('name', 'like', '%'.$value.'%'))
             ->when($filters['category'] ?? null, fn ($q, $value) => $q->where('category_id', $value));
@@ -39,7 +43,7 @@ class CatalogController extends Controller
                 $query->whereRaw("($priceSql) $operator CAST(? AS DECIMAL(20,0))", [now(), now(), $filters[$key]]);
             }
         }
-        match ($filters['sort'] ?? 'newest') {
+        match ($filters['sort']) {
             'price_asc' => $query->orderByRaw("($priceSql) ASC", [now(), now()]),
             'price_desc' => $query->orderByRaw("($priceSql) DESC", [now(), now()]),
             default => $query->latest(),

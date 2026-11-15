@@ -7,17 +7,18 @@ const props = defineProps<{
     products: Paginated<Product>;
     categories: Category[];
     filters: {
-        search?: string;
-        category?: number;
-        sort?: string;
-        min?: number;
-        max?: number;
+        search?: string | null;
+        category?: number | string | null;
+        sort?: string | null;
+        min?: number | string | null;
+        max?: number | string | null;
     };
 }>();
 const form = useForm({
     search: props.filters.search ?? '',
     category: props.filters.category ?? '',
-    sort: props.filters.sort ?? 'newest',
+    sort:
+        typeof props.filters.sort === 'string' ? props.filters.sort : 'newest',
     min: props.filters.min ?? '',
     max: props.filters.max ?? '',
 });

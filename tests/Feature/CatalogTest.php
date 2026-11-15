@@ -96,6 +96,13 @@ class CatalogTest extends TestCase
         $this->assertNotSame($product->sku, $copy->sku);
     }
 
+    public function test_first_catalog_visit_always_provides_object_filter_defaults(): void
+    {
+        $this->get('/products')->assertInertia(fn (Assert $page) => $page->where('filters.sort', 'newest')
+            ->where('filters.search', null)->where('filters.min', null)->where('filters.max', null)->where('filters.category', null));
+        $this->get('/products?sort=')->assertInertia(fn (Assert $page) => $page->where('filters.sort', 'newest'));
+    }
+
     public function test_search_filters_sort_and_pagination_are_server_driven(): void
     {
         $category = Category::create(['name' => 'Essentials', 'slug' => 'essentials']);

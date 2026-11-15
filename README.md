@@ -403,13 +403,39 @@ are described above; no automatic refund API is implemented.
 
 ## Deployment foundation
 
-Serve only `public/`, enable HTTPS, disable `APP_DEBUG`, set `APP_ENV=production`,
-use secure database credentials and `SESSION_SECURE_COOKIE=true`.
-Configure SMTP, backups and a supervised queue worker before enabling queued
-business notifications. Run `php artisan migrate --force`, `npm ci`,
-`npm run build`, and `php artisan optimize` during deployment.
-Do not deploy as a production store until later phases and sandbox payment
-acceptance tests are complete.
+See [docs/DEPLOYMENT_RUNBOOK.md](docs/DEPLOYMENT_RUNBOOK.md) for the release,
+proxy/TLS, supervised worker, cron, encrypted backup and isolated-restore checklist.
+The examples are operator instructions, not installed infrastructure or proof of
+an actual backup/restore, provider payment or mail delivery.
+
+```sh
+php artisan app:check-deployment
+php artisan app:check-deployment --json
+```
+
+These commands are read-only and emit no credentials, DB exception text or private
+job payloads. Exit 1 means automatic checks failed; exit 0 is not go-live approval:
+the report always lists separate manual acceptance requirements. Local development
+is expected to fail production checks. Do not enable payment collection or invoice
+issuance just to make the report pass.
+
+Production HTTP requests must use the HTTPS host/port in `APP_URL`; other origins
+return 400. Handle HTTP/alias redirects at the web server. Behind TLS termination,
+configure explicit `TRUSTED_PROXIES` IPs/CIDRs and sanitized forwarded scheme/port/IP.
+Wildcards, hostnames and `/0` are rejected; forwarded Host is not trusted.
+Use Secure/HttpOnly/encrypted database sessions with SameSite=Lax. Session encryption
+defaults on and Secure cookies default on in Production; configure the real host
+explicitly and inspect actual cookies, not just configuration.
+
+Dynamic responses have private/no-store, nosniff, frame-denial, no-referrer and a
+baseline CSP. This includes public Inertia pages with personalized auth/cart props
+and handled errors. It is not a complete script-source CSP. Static hashed assets
+may be cached separately at the web server. HSTS is only emitted for secure
+production requests, without subdomain/preload assumptions.
+
+Configure server PHP `mail()`, supervised workers on `commerce-notices,default`,
+scheduler execution and verified off-host backups before launch. Real Sandbox,
+mail-inbox, restore and production performance acceptance remain outstanding.
 
 ## Design and planning
 

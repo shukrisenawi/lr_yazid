@@ -389,6 +389,50 @@ remain outstanding.
   browser console warnings/errors. MySQL independent-process editing verifies one
   successful correction/version/audit and one conflict, not a lost update.
 
+## Production hardening: Baseline implemented, external acceptance pending
+
+- Dynamic HTTP responses receive nosniff, frame denial, no-referrer, restricted
+  camera/microphone/geolocation, private/no-store and a baseline CSP. Even public
+  Inertia HTML contains auth/cart personalization and is not publicly cacheable.
+  Handled errors and redirects receive the same policy; static assets are separate.
+  This CSP is not a complete script-source XSS policy and preserves existing
+  stronger application policies.
+- Production requests must match the configured HTTPS host/port. Explicit bounded
+  proxy IP/CIDR trust replaces automatic/wildcard/platform-hostname trust; malformed
+  lists fail closed and forwarded Host is ignored. Trusted scheme/port/IP handling,
+  forged Host, wrong ports, insecure requests and spoofed forwarding are tested.
+- HSTS applies only to secure Production requests, without subdomain/preload
+  assumptions. Session encryption defaults on and secure cookies default on in
+  Production. Untrusted appearance-cookie values are limited to known themes.
+- Read-only `app:check-deployment [--json]` reports configuration, runtime/schema,
+  queue/session/cache storage, asset, mail, gateway and issuer screening with
+  explicit limitations. It never writes singleton settings, migrates, clears
+  caches, processes queues, contacts the provider, sends mail or creates backups.
+  Diagnostics exclude credentials, DB error text and failed-job payloads.
+- Exit 0 means automatic checks only, never go-live approval. Public TLS/callback
+  reachability, mail arrival, worker/scheduler supervision, restore success,
+  legal/seller content and production performance remain manual acceptance items.
+- Local audit correctly failed Production screening (10 automatic failures,
+  one Sandbox warning), rather than silently enabling collection/invoices or
+  changing development configuration. Composer audit and npm production audit
+  found no vulnerability advisories during this phase.
+- `docs/DEPLOYMENT_RUNBOOK.md` adds reviewed operational instructions for canonical
+  ingress, non-executable raster uploads, static caching, controlled releases,
+  Supervisor/cron, encrypted off-host backups and isolated restore drills.
+  These examples do not install or prove those services. Restores must be isolated
+  from production/provider/mail; DB gateway settings override environment defaults.
+- Browser acceptance verified a real product-filter submission, local QA login
+  and authenticated order viewing with the new headers. An intentional missing
+  route returned a protected 404; that expected resource error was the only
+  console error, with no CSP/script warnings. No cart, payment or stock mutation
+  was used for the header checks.
+- First-visit catalog QA exposed an empty-filter-array/JavaScript `.sort` collision.
+  The server now always returns explicit object defaults and the client rejects
+  non-string sort initialization; backend and frontend regressions cover the
+  initial visit, null filters, selected sorts and zero price boundaries.
+- The two Bash backup/restore examples passed syntax-only parsing; no backup or
+  restore was executed. `schedule:list` verified task definitions, not execution.
+
 ## Verification
 
 - Foundation: 50 backend tests / 169 assertions passed.
@@ -405,10 +449,10 @@ remain outstanding.
 - Composer audit and npm production-dependency audit reported no advisories.
 - Temporary browser test accounts were removed and the browser-created test
   product was archived after verification.
-- Latest checks: 295 backend tests / 2189 assertions passed; twenty-three opt-in MySQL
+- Latest checks: 326 backend tests / 2355 assertions passed; twenty-three opt-in MySQL
   checks / 238 assertions passed separately (22 concurrency tests and one reporting test).
   PHPStan and Pint passed.
-- Seventy-seven Vue/component/helper tests, TypeScript, frontend formatting/lint and production build passed.
+- Eighty Vue/component/helper tests, TypeScript, frontend formatting/lint and production build passed.
 - Browser: plan creation and membership-only checkout produced an unpaid RM199
   order with no shipping address or fee. Gateway collection remains disabled.
 - Verified activation/renewal/reminder behavior is automated-test coverage, not
