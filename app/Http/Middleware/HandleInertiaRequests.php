@@ -45,6 +45,7 @@ class HandleInertiaRequests extends Middleware
             'copy' => __('interface'),
             'footerPages' => fn () => ContentPage::where('status', 'published')->where('show_in_footer', true)->orderBy('title')->get(['title', 'slug']),
             'cartCount' => fn () => app(CartService::class)->count($request),
+            'unreadNotificationCount' => fn () => $request->user()?->unreadNotifications()->count() ?? 0,
             'auth' => [
                 'isVip' => $request->user()?->hasActiveMembership() ?? false,
                 'user' => $request->user()?->only(['id', 'name', 'email', 'phone', 'role', 'email_verified_at', 'created_at', 'updated_at', 'profile_version']),

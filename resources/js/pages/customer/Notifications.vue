@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import Pagination from '@/components/Pagination.vue';
 import type { Paginated } from '@/types/catalog';
 import { dateTime } from '@/types/commerce';
@@ -12,6 +12,7 @@ defineProps<{
     }>;
 }>();
 const form = useForm({});
+const page = usePage();
 </script>
 <template>
     <Head title="Notifications" />
@@ -19,11 +20,7 @@ const form = useForm({});
         <div class="flex flex-wrap justify-between gap-4">
             <h1 class="text-3xl font-semibold">Notifications</h1>
             <button
-                v-if="
-                    notifications.data.some(
-                        (notification) => !notification.read_at,
-                    )
-                "
+                v-if="page.props.unreadNotificationCount > 0"
                 :disabled="form.processing"
                 class="text-sm underline"
                 @click="form.post('/notifications/read-all')"

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
+import NotificationBell from '@/components/NotificationBell.vue';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import type { BreadcrumbItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Bell, House, Moon, Sun } from '@lucide/vue';
+import { House, Moon, Sun } from '@lucide/vue';
 import { useAppearance } from '@/composables/useAppearance';
 import { useInitials } from '@/composables/useInitials';
 
@@ -60,12 +61,7 @@ withDefaults(
                     class="size-5"
                 />
             </button>
-            <Link
-                href="/notifications"
-                class="dashboard-icon-button"
-                aria-label="Notifications"
-                ><Bell class="size-5"
-            /></Link>
+            <NotificationBell />
             <Link href="/settings/profile" class="dashboard-header-user">
                 <span class="dashboard-avatar">{{
                     getInitials(page.props.auth.user.name)

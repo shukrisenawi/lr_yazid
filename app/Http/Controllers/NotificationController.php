@@ -18,13 +18,13 @@ class NotificationController extends Controller
     {
         $request->user()->notifications()->whereKey($notification)->firstOrFail()->markAsRead();
 
-        return back();
+        return to_route('notifications.index');
     }
 
     public function readAll(Request $request): RedirectResponse
     {
         $request->user()->unreadNotifications()->update(['read_at' => now()]);
 
-        return back();
+        return to_route('notifications.index');
     }
 }
