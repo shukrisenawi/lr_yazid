@@ -77,11 +77,37 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->post(route('login.store'), [
+        $response = $this->withSession(['_previous.url' => route('home')])->post(route('login.store'), [
             'email' => $user->email,
             'password' => 'wrong-password',
         ]);
 
+        $response->assertRedirect(route('login'));
+        $response->assertSessionHasErrors('email');
+        $this->assertGuest();
+    }
+
+    public function test_invalid_login_input_returns_to_login_instead_of_the_previous_page(): void
+    {
+        $response = $this->withSession(['_previous.url' => route('home')])->post(route('login.store'), [
+            'email' => '',
+            'password' => '',
+        ]);
+
+        $response->assertRedirect(route('login'));
+        $response->assertSessionHasErrors(['email', 'password']);
+        $this->assertGuest();
+    }
+
+    public function test_invalid_json_login_returns_validation_errors(): void
+    {
+        $response = $this->postJson(route('login.store'), [
+            'email' => 'missing-user@example.test',
+            'password' => 'wrong-password',
+        ]);
+
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors('email');
         $this->assertGuest();
     }
 

@@ -12,6 +12,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -34,6 +35,11 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->render(function (ValidationException $exception, Request $request): void {
+            if ($request->routeIs('login.store') && ! $request->expectsJson()) {
+                $exception->redirectTo(route('login'));
+            }
+        });
         $exceptions->respond(fn (Response $response) => HttpSecurity::apply($response, request()));
         $exceptions->dontFlash(['sandbox_secret_key', 'production_secret_key', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token']);
         $exceptions->shouldRenderJsonWhen(
