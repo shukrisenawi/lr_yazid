@@ -2,6 +2,7 @@
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import RichTextEditor from '@/components/RichTextEditor.vue';
+import RinggitInput from '@/components/RinggitInput.vue';
 import VariantAttributes from '@/components/VariantAttributes.vue';
 import type { Product, Category, ProductVariant } from '@/types/catalog';
 const props = defineProps<{
@@ -174,18 +175,18 @@ function archive() {
                     </select></label
                 >
                 <label class="grid gap-2 text-sm"
-                    >Regular price (sen)<input
+                    >Regular price (RM)<RinggitInput
                         v-model="form.price_sen"
                         required
                         type="number"
                         min="0"
                         class="rounded-md border bg-transparent p-2.5"
                     /><span class="text-xs text-muted-foreground"
-                        >100 sen = RM 1.00</span
+                        >Enter the amount in RM, for example 10.00.</span
                     ></label
                 >
                 <label class="grid gap-2 text-sm"
-                    >Sale price (sen)<input
+                    >Sale price (RM)<RinggitInput
                         v-model="form.sale_price_sen"
                         type="number"
                         min="0"
@@ -411,7 +412,7 @@ function archive() {
                             required
                             class="min-w-0 rounded border bg-transparent p-2" /></label
                     ><label class="grid gap-2 text-xs"
-                        >Price (sen)<input
+                        >Price (RM)<RinggitInput
                             v-model="variant.price_sen"
                             type="number"
                             min="0"

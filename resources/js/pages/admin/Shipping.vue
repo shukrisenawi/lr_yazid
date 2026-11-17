@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head, useForm } from '@inertiajs/vue3';
+import RinggitInput from '@/components/RinggitInput.vue';
 const props = defineProps<{
     settings: {
         shipping_fee_sen: number;
@@ -33,15 +34,15 @@ const form = useForm({
                 {{ Object.values(form.errors).join(' ') }}
             </div>
             <label class="grid gap-2 text-sm"
-                >Shipping charge (sen)<input
+                >Shipping charge (RM)<RinggitInput
                     v-model="form.shipping_fee_sen"
                     type="number"
                     min="0"
-                    max="1000000"
+                    max="10000"
                     required
                     class="rounded-md border bg-transparent p-2.5"
                 /><span class="text-xs text-muted-foreground"
-                    >1000 sen = RM 10.00</span
+                    >Enter the amount in RM, for example 10.00.</span
                 ></label
             ><label class="grid gap-2 text-sm"
                 >Stock reservation duration (minutes)<input

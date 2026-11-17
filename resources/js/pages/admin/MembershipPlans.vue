@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import RinggitInput from '@/components/RinggitInput.vue';
 import { money } from '@/types/catalog';
 import type { MembershipPlan } from '@/types/membership';
 defineProps<{ plans: MembershipPlan[] }>();
@@ -89,10 +90,11 @@ function save() {
             /></label>
             <div class="grid gap-5 sm:grid-cols-2">
                 <label class="grid gap-2 text-sm"
-                    >Price (sen)<input
+                    >Price (RM)<RinggitInput
                         v-model="form.price_sen"
                         type="number"
-                        min="100"
+                        min="1"
+                        max="1000000"
                         required
                         class="rounded-md border bg-transparent p-2.5" /></label
                 ><label class="grid gap-2 text-sm"
