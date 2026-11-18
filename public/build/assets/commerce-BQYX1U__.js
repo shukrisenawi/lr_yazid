@@ -1,0 +1,1 @@
+var e=e=>new Intl.DateTimeFormat(`en-MY`,{timeZone:`Asia/Kuala_Lumpur`,dateStyle:`medium`,timeStyle:`short`}).format(new Date(e));export{e as t};

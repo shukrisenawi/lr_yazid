@@ -1,0 +1,1 @@
+var e=e=>new Intl.NumberFormat(`en-MY`,{style:`currency`,currency:`MYR`}).format(e/100);export{e as t};

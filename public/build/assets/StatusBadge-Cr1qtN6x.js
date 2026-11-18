@@ -1,0 +1,1 @@
+import{$ as e,ct as t,pr as n,qt as r}from"./dist-jVGu4_vM.js";var i={class:`inline-flex rounded-md border bg-muted px-2.5 py-1 text-xs font-medium capitalize`},a=t({__name:`StatusBadge`,props:{status:{}},setup(t){return(a,o)=>(r(),e(`span`,i,n(t.status.replaceAll(`_`,` `)),1))}});export{a as t};
