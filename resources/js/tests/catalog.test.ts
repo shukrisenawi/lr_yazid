@@ -41,8 +41,10 @@ function mount(render: () => ReturnType<typeof h>) {
 
 describe('catalog components', () => {
     it('formats prices from integer sen', () => {
+        expect(money(0)).toMatch(/^RM\s*0\.00$/);
         expect(money(8900)).toContain('89.00');
         expect(money(1)).toContain('0.01');
+        expect(money(100000000)).toMatch(/^RM\s*1,000,000\.00$/);
     });
     it('adds, edits and removes structured attributes', async () => {
         const attributes = ref<{ name: string; value: string }[]>([]);

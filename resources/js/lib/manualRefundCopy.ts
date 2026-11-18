@@ -9,7 +9,7 @@ export const manualRefundCopy = {
     payment: 'Verified payment',
     choose: 'Choose a payment',
     balance: 'Unrecorded balance',
-    amount: 'Refund amount (MYR)',
+    amount: 'Refund amount (RM)',
     external: 'External refund / receipt reference',
     externalHelp:
         '3–100 letters, numbers or . _ : / -; stored in uppercase and unique within the payment environment.',

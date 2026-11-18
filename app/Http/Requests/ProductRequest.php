@@ -9,6 +9,25 @@ use Illuminate\Validation\Rule;
 
 class ProductRequest extends FormRequest
 {
+    /** @return array<string, string> */
+    public function attributes(): array
+    {
+        return [
+            'price_sen' => 'regular price (RM)',
+            'sale_price_sen' => 'sale price (RM)',
+            'variants.*.price_sen' => 'variant price (RM)',
+        ];
+    }
+
+    /** @return array<string, string> */
+    public function messages(): array
+    {
+        return [
+            'price_sen.max' => 'The regular price must not exceed RM 1,000,000.00.',
+            'variants.*.price_sen.max' => 'The variant price must not exceed RM 1,000,000.00.',
+        ];
+    }
+
     public function authorize(): bool
     {
         return $this->user()?->role === UserRole::Admin;

@@ -7,6 +7,18 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ShippingSettingsRequest extends FormRequest
 {
+    /** @return array<string, string> */
+    public function attributes(): array
+    {
+        return ['shipping_fee_sen' => 'shipping charge (RM)'];
+    }
+
+    /** @return array<string, string> */
+    public function messages(): array
+    {
+        return ['shipping_fee_sen.max' => 'The shipping charge must not exceed RM 10,000.00.'];
+    }
+
     public function authorize(): bool
     {
         return $this->user()?->role === UserRole::Admin;

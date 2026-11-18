@@ -81,7 +81,9 @@ php artisan db:seed --class=CatalogSeeder
 ```
 
 This seeder does nothing outside local/testing environments and creates no
-administrator accounts. Prices are entered as integer sen (8900 = RM 89.00).
+administrator accounts. All monetary form inputs and price displays use RM
+(for example, 89.00). Database values and internal requests, including catalog
+price filters, retain integer sen (8900 = RM 89.00).
 Sale times use Asia/Kuala_Lumpur. Archiving never deletes product records.
 
 ## Verification

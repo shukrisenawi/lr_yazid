@@ -69,8 +69,8 @@ describe('catalog filter initialization', () => {
             search: '',
             category: '',
             sort: 'newest',
-            min: '',
-            max: '',
+            min: null,
+            max: null,
         });
     });
     it('keeps an applied explicit sort and zero price boundary', () => {

@@ -7,6 +7,21 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class MembershipPlanRequest extends FormRequest
 {
+    /** @return array<string, string> */
+    public function attributes(): array
+    {
+        return ['price_sen' => 'price (RM)'];
+    }
+
+    /** @return array<string, string> */
+    public function messages(): array
+    {
+        return [
+            'price_sen.min' => 'The price must be at least RM 1.00.',
+            'price_sen.max' => 'The price must not exceed RM 1,000,000.00.',
+        ];
+    }
+
     public function authorize(): bool
     {
         return $this->user()?->role === UserRole::Admin;

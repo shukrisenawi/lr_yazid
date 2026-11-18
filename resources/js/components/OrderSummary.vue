@@ -15,7 +15,7 @@ defineProps<{ subtotal: number; shipping: number; total: number }>();
         <div
             class="flex justify-between gap-4 border-t pt-4 text-lg font-semibold"
         >
-            <dt>Total (MYR)</dt>
+            <dt>Total (RM)</dt>
             <dd>{{ money(total) }}</dd>
         </div>
     </dl>

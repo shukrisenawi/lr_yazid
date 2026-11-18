@@ -2,6 +2,7 @@
 import { Head, useForm } from '@inertiajs/vue3';
 import ProductCard from '@/components/ProductCard.vue';
 import Pagination from '@/components/Pagination.vue';
+import RinggitInput from '@/components/RinggitInput.vue';
 import type { Category, ProductCardData, Paginated } from '@/types/catalog';
 const props = defineProps<{
     products: Paginated<ProductCardData>;
@@ -19,8 +20,8 @@ const form = useForm({
     category: props.filters.category ?? '',
     sort:
         typeof props.filters.sort === 'string' ? props.filters.sort : 'newest',
-    min: props.filters.min ?? '',
-    max: props.filters.max ?? '',
+    min: props.filters.min == null ? null : Number(props.filters.min),
+    max: props.filters.max == null ? null : Number(props.filters.max),
 });
 </script>
 <template>
@@ -67,13 +68,13 @@ const form = useForm({
             >
             <div class="grid grid-cols-2 gap-2">
                 <label class="grid gap-2 text-sm"
-                    >Min (sen)<input
+                    >Min (RM)<RinggitInput
                         v-model="form.min"
                         type="number"
                         min="0"
                         class="w-full rounded-md border bg-transparent p-2.5" /></label
                 ><label class="grid gap-2 text-sm"
-                    >Max (sen)<input
+                    >Max (RM)<RinggitInput
                         v-model="form.max"
                         type="number"
                         min="0"
