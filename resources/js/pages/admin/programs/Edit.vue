@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ImageUpload from '@/components/ImageUpload.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import RichTextEditor from '@/components/RichTextEditor.vue';
@@ -216,9 +217,8 @@ function save() {
                 </div>
                 <label class="mt-5 grid gap-2 text-sm"
                     >{{ copy.upload
-                    }}<input
+                    }}<ImageUpload
                         :key="uploadKey"
-                        type="file"
                         multiple
                         accept="image/jpeg,image/png,image/webp"
                         @change="upload"

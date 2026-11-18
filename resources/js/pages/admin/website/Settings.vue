@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import ImageUpload from '@/components/ImageUpload.vue';
 import { websiteCopy as copy } from '@/lib/websiteCopy';
 import { paymentSettingsCopy } from '@/lib/paymentSettingsCopy';
 import type { Website } from '@/types/website';
@@ -112,11 +113,9 @@ function save() {
                         class="mb-3 h-16 max-w-full object-contain"
                     /><label class="grid gap-2 text-sm"
                         >{{ copy.logo
-                        }}<input
+                        }}<ImageUpload
                             :key="`logo-${uploadKey}`"
-                            type="file"
                             accept="image/jpeg,image/png,image/webp"
-                            class="max-w-full rounded-md border p-2"
                             @change="upload($event, 'logo')" /></label
                     ><label class="mt-3 flex items-center gap-2 text-sm"
                         ><input v-model="form.remove_logo" type="checkbox" />{{
@@ -132,11 +131,9 @@ function save() {
                         class="mb-3 size-12 object-contain"
                     /><label class="grid gap-2 text-sm"
                         >{{ copy.favicon
-                        }}<input
+                        }}<ImageUpload
                             :key="`favicon-${uploadKey}`"
-                            type="file"
                             accept="image/jpeg,image/png,image/webp"
-                            class="max-w-full rounded-md border p-2"
                             @change="upload($event, 'favicon')" /></label
                     ><label class="mt-3 flex items-center gap-2 text-sm"
                         ><input

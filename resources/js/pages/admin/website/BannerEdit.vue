@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import ImageUpload from '@/components/ImageUpload.vue';
 import { websiteCopy as copy } from '@/lib/websiteCopy';
 import { localDateTime } from '@/types/program';
 import type { Banner } from '@/types/website';
@@ -77,11 +78,9 @@ function save() {
             />
             <label class="grid gap-2 text-sm"
                 >{{ copy.image
-                }}<input
+                }}<ImageUpload
                     :key="uploadKey"
-                    type="file"
                     accept="image/jpeg,image/png,image/webp"
-                    class="max-w-full rounded-md border p-2"
                     @change="upload"
                 /><span class="text-xs text-muted-foreground">{{
                     copy.bannerImageHelp

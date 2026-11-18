@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ImageUpload from '@/components/ImageUpload.vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import RichTextEditor from '@/components/RichTextEditor.vue';
@@ -300,10 +301,10 @@ function archive() {
                                 Move later
                             </button>
                             <label class="grid gap-1 text-xs"
-                                >Replace image<input
-                                    type="file"
+                                >Replace image<ImageUpload
+                                    compact
                                     accept="image/jpeg,image/png,image/webp"
-                                    class="max-w-40 text-xs"
+                                    class="max-w-40"
                                     :disabled="replacement.processing"
                                     @change="replaceImage(id, $event)"
                             /></label>
@@ -328,8 +329,9 @@ function archive() {
                     </div>
                 </div>
                 <label class="mt-4 grid gap-2 text-sm"
-                    >Upload images (JPEG, PNG or WebP, up to 5 MB each)<input
-                        type="file"
+                    >Upload images (JPEG, PNG or WebP, up to 5 MB
+                    each)<ImageUpload
+                        :preview="false"
                         multiple
                         accept="image/jpeg,image/png,image/webp"
                         @change="
