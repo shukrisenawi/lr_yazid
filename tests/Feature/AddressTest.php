@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Address;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class AddressTest extends TestCase
@@ -14,6 +15,35 @@ class AddressTest extends TestCase
     private function data(string $line, bool $default = false): array
     {
         return ['full_name' => 'Customer', 'phone' => '012-3456789', 'line1' => $line, 'city' => 'Shah Alam', 'state' => 'Selangor', 'postcode' => '40100', 'is_default' => $default];
+    }
+
+    public function test_state_dropdown_uses_requested_names_and_order(): void
+    {
+        $this->actingAs(User::factory()->create())->get('/addresses')
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('customer/Addresses')
+                ->where('states', [
+                    'Perlis', 'Kedah', 'Pulau Pinang', 'Perak', 'Kelantan', 'Terengganu',
+                    'Pahang', 'Kuala Lumpur', 'Putrajaya', 'Selangor', 'Negeri Sembilan',
+                    'Melaka', 'Johor', 'Labuan', 'Sabah', 'Sarawak',
+                ]));
+    }
+
+    public function test_all_dropdown_states_can_be_saved(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        foreach ([
+            'Perlis', 'Kedah', 'Pulau Pinang', 'Perak', 'Kelantan', 'Terengganu',
+            'Pahang', 'Kuala Lumpur', 'Putrajaya', 'Selangor', 'Negeri Sembilan',
+            'Melaka', 'Johor', 'Labuan', 'Sabah', 'Sarawak',
+        ] as $state) {
+            $this->post('/addresses', array_merge($this->data($state), [
+                'state' => $state,
+            ]))->assertSessionHasNoErrors();
+            $this->assertDatabaseHas('addresses', ['user_id' => $user->id, 'state' => $state]);
+        }
     }
 
     public function test_addresses_normalize_phone_and_keep_exactly_one_default(): void

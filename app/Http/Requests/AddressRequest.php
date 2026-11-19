@@ -9,9 +9,9 @@ use Illuminate\Validation\Rule;
 class AddressRequest extends FormRequest
 {
     public const STATES = [
-        'Johor', 'Kedah', 'Kelantan', 'Kuala Lumpur', 'Labuan', 'Malacca',
-        'Negeri Sembilan', 'Pahang', 'Penang', 'Perak', 'Perlis', 'Putrajaya',
-        'Sabah', 'Sarawak', 'Selangor', 'Terengganu',
+        'Perlis', 'Kedah', 'Pulau Pinang', 'Perak', 'Kelantan', 'Terengganu',
+        'Pahang', 'Kuala Lumpur', 'Putrajaya', 'Selangor', 'Negeri Sembilan',
+        'Melaka', 'Johor', 'Labuan', 'Sabah', 'Sarawak',
     ];
 
     public function authorize(): bool
