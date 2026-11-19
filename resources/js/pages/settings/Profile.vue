@@ -3,7 +3,6 @@ import { Form, Head, usePage } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
-import DeleteUser from '@/components/DeleteUser.vue';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -126,6 +125,4 @@ const profileVersion = ref(user.value.profile_version);
             </div>
         </Form>
     </div>
-
-    <DeleteUser />
 </template>
