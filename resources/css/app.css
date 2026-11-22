@@ -290,62 +290,6 @@
     text-underline-offset: 5px;
 }
 
-/* Legacy action controls use underline utilities instead of the shared Button.
-   Keep editorial links inside rich content as links, not action buttons. */
-:is(
-    a[class~='underline'],
-    a[class~='hover:underline'],
-    button[class~='underline'],
-    button[class~='hover:underline']
-):not(.rich-content a) {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    min-height: 2.5rem;
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--input);
-    border-radius: var(--radius-md);
-    background-color: var(--secondary);
-    color: var(--secondary-foreground);
-    font-weight: 500;
-    line-height: 1.25rem;
-    text-decoration: none;
-}
-
-:is(
-    a[class~='underline'],
-    a[class~='hover:underline'],
-    button[class~='underline'],
-    button[class~='hover:underline']
-):not(.rich-content a):hover {
-    background-color: var(--accent);
-    border-color: var(--ring);
-    text-decoration: none;
-}
-
-:is(
-    a[class~='underline'],
-    a[class~='hover:underline'],
-    button[class~='underline'],
-    button[class~='hover:underline']
-):not(.rich-content a):focus-visible {
-    outline: 2px solid var(--ring);
-    outline-offset: 3px;
-}
-
-:is(button, a)[class~='underline'][class*='text-red-'] {
-    color: #b91c1c;
-    border-color: #fca5a5;
-    background-color: #fef2f2;
-}
-
-.dark :is(button, a)[class~='underline'][class*='text-red-'] {
-    color: #fecaca;
-    border-color: #b91c1c;
-    background-color: #450a0a;
-}
-
 @media (max-width: 767px) {
     .storefront-links {
         width: 100%;
