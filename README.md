@@ -161,7 +161,7 @@ Membership notices use database/mail channels; configure server PHP mail before 
 
 ### PHP mail delivery (no application SMTP credentials)
 
-Set `MAIL_MAILER=mail` and a real `MAIL_FROM_ADDRESS` / `MAIL_FROM_NAME` on the
+Set `MAIL_MAILER=mail`, `MAIL_FROM_ADDRESS="support@csiti.my"` and `MAIL_FROM_NAME="${APP_NAME}"` on the
 deployment server. The application calls PHP `mail()` directly; it does not read
 `MAIL_HOST`, `MAIL_USERNAME` or `MAIL_PASSWORD` for this transport.
 Configure the delivery agent in server `php.ini`: Windows uses `SMTP`/`smtp_port`
