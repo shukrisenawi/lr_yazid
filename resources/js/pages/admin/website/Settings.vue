@@ -59,8 +59,10 @@ function save() {
         </nav>
         <form class="mt-8 space-y-6" @submit.prevent="save">
             <label class="grid gap-2 text-sm"
-                >{{ copy.name
-                }}<input
+                ><span
+                    >{{ copy.name }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.website_name"
                     required
                     maxlength="80"
@@ -94,8 +96,10 @@ function save() {
                 />
             </label>
             <label class="grid gap-2 text-sm"
-                >{{ copy.footer
-                }}<textarea
+                ><span
+                    >{{ copy.footer }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><textarea
                     v-model="form.footer_information"
                     required
                     rows="2"
@@ -153,16 +157,24 @@ function save() {
                     class="grid gap-3 sm:grid-cols-[1fr_2fr_auto] sm:items-end"
                 >
                     <label class="grid gap-2 text-sm"
-                        >{{ copy.label
-                        }}<input
+                        ><span
+                            >{{ copy.label }}
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><input
                             v-model="link.label"
                             required
                             maxlength="40"
                             class="min-w-0 rounded-md border bg-transparent p-2.5"
                     /></label>
                     <label class="grid gap-2 text-sm"
-                        >{{ copy.url
-                        }}<input
+                        ><span
+                            >{{ copy.url }}
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><input
                             v-model="link.url"
                             required
                             type="url"

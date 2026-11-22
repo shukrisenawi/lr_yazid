@@ -250,24 +250,36 @@ function remove(id: number) {
                 </p>
                 <div class="grid gap-5 sm:grid-cols-2">
                     <label class="grid gap-2 text-sm"
-                        >{{ copy.start
-                        }}<input
+                        ><span
+                            >{{ copy.start }}
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><input
                             v-model="slot.starts_at"
                             type="datetime-local"
                             required
                             step="1"
                             class="rounded-md border bg-transparent p-2.5" /></label
                     ><label class="grid gap-2 text-sm"
-                        >{{ copy.end
-                        }}<input
+                        ><span
+                            >{{ copy.end }}
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><input
                             v-model="slot.ends_at"
                             type="datetime-local"
                             required
                             step="1"
                             class="rounded-md border bg-transparent p-2.5" /></label
                     ><label class="grid gap-2 text-sm"
-                        >{{ copy.capacity
-                        }}<input
+                        ><span
+                            >{{ copy.capacity }}
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><input
                             v-model="slot.capacity"
                             type="number"
                             min="1"
@@ -275,8 +287,12 @@ function remove(id: number) {
                             required
                             class="rounded-md border bg-transparent p-2.5" /></label
                     ><label class="grid gap-2 text-sm"
-                        >{{ copy.status
-                        }}<select
+                        ><span
+                            >{{ copy.status }}
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><select
                             v-model="slot.status"
                             class="rounded-md border bg-background p-2.5"
                         >
@@ -290,8 +306,12 @@ function remove(id: number) {
                     >
                 </div>
                 <label class="grid gap-2 text-sm"
-                    >{{ copy.location
-                    }}<input
+                    ><span
+                        >{{ copy.location }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="slot.location"
                         required
                         maxlength="500"
@@ -335,15 +355,23 @@ function remove(id: number) {
                 </p>
                 <div class="grid gap-5 sm:grid-cols-2">
                     <label class="grid gap-2 text-sm"
-                        >{{ copy.from
-                        }}<input
+                        ><span
+                            >{{ copy.from }}
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><input
                             v-model="generator.from"
                             type="date"
                             required
                             class="rounded-md border bg-transparent p-2.5" /></label
                     ><label class="grid gap-2 text-sm"
-                        >{{ copy.to
-                        }}<input
+                        ><span
+                            >{{ copy.to }}
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><input
                             v-model="generator.to"
                             type="date"
                             required
@@ -351,7 +379,10 @@ function remove(id: number) {
                     /></label>
                 </div>
                 <fieldset>
-                    <legend class="mb-3 text-sm">{{ copy.weekdays }}</legend>
+                    <legend class="mb-3 text-sm">
+                        {{ copy.weekdays }}
+                        <span class="text-red-600" aria-hidden="true">*</span>
+                    </legend>
                     <div class="flex flex-wrap gap-4">
                         <label
                             v-for="(day, index) in copy.days"
@@ -367,34 +398,62 @@ function remove(id: number) {
                 </fieldset>
                 <div class="grid gap-5 sm:grid-cols-2">
                     <label class="grid gap-2 text-sm"
-                        >{{ copy.dayStart
-                        }}<input
+                        ><span
+                            >{{ copy.dayStart }}
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><input
                             v-model="generator.day_start"
                             type="time"
                             required
                             class="rounded-md border bg-transparent p-2.5" /></label
                     ><label class="grid gap-2 text-sm"
-                        >{{ copy.dayEnd
-                        }}<input
+                        ><span
+                            >{{ copy.dayEnd }}
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><input
                             v-model="generator.day_end"
                             type="time"
                             required
                             class="rounded-md border bg-transparent p-2.5" /></label
                     ><label class="grid gap-2 text-sm"
-                        >{{ copy.breakStart
-                        }}<input
+                        ><span
+                            >{{ copy.breakStart }}
+                            <span
+                                v-if="generator.break_end"
+                                class="text-red-600"
+                                aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><input
                             v-model="generator.break_start"
+                            :required="!!generator.break_end"
                             type="time"
                             class="rounded-md border bg-transparent p-2.5" /></label
                     ><label class="grid gap-2 text-sm"
-                        >{{ copy.breakEnd
-                        }}<input
+                        ><span
+                            >{{ copy.breakEnd }}
+                            <span
+                                v-if="generator.break_start"
+                                class="text-red-600"
+                                aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><input
                             v-model="generator.break_end"
+                            :required="!!generator.break_start"
                             type="time"
                             class="rounded-md border bg-transparent p-2.5" /></label
                     ><label class="grid gap-2 text-sm"
-                        >{{ copy.duration
-                        }}<input
+                        ><span
+                            >{{ copy.duration }}
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><input
                             v-model="generator.duration_minutes"
                             type="number"
                             min="5"
@@ -402,8 +461,12 @@ function remove(id: number) {
                             required
                             class="rounded-md border bg-transparent p-2.5" /></label
                     ><label class="grid gap-2 text-sm"
-                        >{{ copy.capacity
-                        }}<input
+                        ><span
+                            >{{ copy.capacity }}
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><input
                             v-model="generator.capacity"
                             type="number"
                             min="1"
@@ -413,8 +476,12 @@ function remove(id: number) {
                     /></label>
                 </div>
                 <label class="grid gap-2 text-sm"
-                    >{{ copy.location
-                    }}<input
+                    ><span
+                        >{{ copy.location }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="generator.location"
                         required
                         maxlength="500"
@@ -507,15 +574,23 @@ function remove(id: number) {
                 "
             >
                 <label class="grid gap-2 text-sm"
-                    >{{ copy.date
-                    }}<input
+                    ><span
+                        >{{ copy.date }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="block.date"
                         type="date"
                         required
                         class="rounded-md border bg-transparent p-2.5" /></label
                 ><label class="grid min-w-0 flex-1 gap-2 text-sm"
-                    >{{ copy.reason
-                    }}<input
+                    ><span
+                        >{{ copy.reason }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="block.reason"
                         required
                         maxlength="500"

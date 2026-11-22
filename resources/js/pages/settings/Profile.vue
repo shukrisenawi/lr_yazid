@@ -91,7 +91,12 @@ function preview(event: Event) {
                 >
             </div>
             <div class="grid gap-2">
-                <Label for="name">Name</Label>
+                <Label for="name"
+                    >Name
+                    <span class="text-red-600" aria-hidden="true"
+                        >*</span
+                    ></Label
+                >
                 <Input
                     id="name"
                     class="mt-1 block w-full"
@@ -105,7 +110,12 @@ function preview(event: Event) {
             </div>
 
             <div class="grid gap-2">
-                <Label for="email">Email address</Label>
+                <Label for="email"
+                    >Email address
+                    <span class="text-red-600" aria-hidden="true"
+                        >*</span
+                    ></Label
+                >
                 <Input
                     id="email"
                     type="email"
@@ -120,7 +130,12 @@ function preview(event: Event) {
             </div>
 
             <div class="grid gap-2">
-                <Label for="phone">Phone number</Label>
+                <Label for="phone"
+                    >Phone number
+                    <span class="text-red-600" aria-hidden="true"
+                        >*</span
+                    ></Label
+                >
                 <Input
                     id="phone"
                     name="phone"

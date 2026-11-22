@@ -17,24 +17,30 @@ const exportUrl = computed(() => reportExportUrl(props.filters));
         @submit.prevent="form.get(action)"
     >
         <label class="grid gap-2 text-sm"
-            >{{ copy.from
-            }}<input
+            ><span
+                >{{ copy.from }}
+                <span class="text-red-600" aria-hidden="true">*</span></span
+            ><input
                 v-model="form.from"
                 type="date"
                 required
                 class="rounded-md border bg-transparent p-2.5"
         /></label>
         <label class="grid gap-2 text-sm"
-            >{{ copy.to
-            }}<input
+            ><span
+                >{{ copy.to }}
+                <span class="text-red-600" aria-hidden="true">*</span></span
+            ><input
                 v-model="form.to"
                 type="date"
                 required
                 class="rounded-md border bg-transparent p-2.5"
         /></label>
         <label class="grid gap-2 text-sm"
-            >{{ copy.environment
-            }}<select
+            ><span
+                >{{ copy.environment }}
+                <span class="text-red-600" aria-hidden="true">*</span></span
+            ><select
                 v-model="form.environment"
                 class="rounded-md border bg-background p-2.5"
             >

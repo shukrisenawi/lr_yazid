@@ -60,6 +60,12 @@ const toggleRecoveryMode = (clearErrors: () => void): void => {
                 #default="{ errors, processing, clearErrors }"
             >
                 <input type="hidden" name="code" :value="code" />
+                <label for="otp" class="block text-sm font-medium"
+                    >Authentication code
+                    <span class="text-red-600" aria-hidden="true"
+                        >*</span
+                    ></label
+                >
                 <div
                     class="flex flex-col items-center justify-center space-y-3 text-center"
                 >
@@ -105,7 +111,14 @@ const toggleRecoveryMode = (clearErrors: () => void): void => {
                 reset-on-error
                 #default="{ errors, processing, clearErrors }"
             >
+                <label for="recovery_code" class="block text-sm font-medium"
+                    >Recovery code
+                    <span class="text-red-600" aria-hidden="true"
+                        >*</span
+                    ></label
+                >
                 <Input
+                    id="recovery_code"
                     name="recovery_code"
                     type="text"
                     placeholder="Enter recovery code"

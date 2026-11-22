@@ -47,7 +47,10 @@ function submit(buyNow = false) {
 <template>
     <form class="mt-5 space-y-3" @submit.prevent="submit()">
         <label v-if="!compact" class="grid max-w-28 gap-2 text-sm"
-            >Quantity<input
+            ><span
+                >Quantity
+                <span class="text-red-600" aria-hidden="true">*</span></span
+            ><input
                 v-model="form.quantity"
                 type="number"
                 min="1"

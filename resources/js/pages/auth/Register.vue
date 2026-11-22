@@ -33,7 +33,12 @@ defineOptions({
     >
         <div class="grid gap-6">
             <div class="grid gap-2">
-                <Label for="name">Name</Label>
+                <Label for="name"
+                    >Name
+                    <span class="text-red-600" aria-hidden="true"
+                        >*</span
+                    ></Label
+                >
                 <Input
                     id="name"
                     type="text"
@@ -48,7 +53,12 @@ defineOptions({
             </div>
 
             <div class="grid gap-2">
-                <Label for="email">Email address</Label>
+                <Label for="email"
+                    >Email address
+                    <span class="text-red-600" aria-hidden="true"
+                        >*</span
+                    ></Label
+                >
                 <Input
                     id="email"
                     type="email"
@@ -62,7 +72,12 @@ defineOptions({
             </div>
 
             <div class="grid gap-2">
-                <Label for="phone">Phone number</Label>
+                <Label for="phone"
+                    >Phone number
+                    <span class="text-red-600" aria-hidden="true"
+                        >*</span
+                    ></Label
+                >
                 <Input
                     id="phone"
                     name="phone"
@@ -75,7 +90,12 @@ defineOptions({
             </div>
 
             <div class="grid gap-2">
-                <Label for="password">Password</Label>
+                <Label for="password"
+                    >Password
+                    <span class="text-red-600" aria-hidden="true"
+                        >*</span
+                    ></Label
+                >
                 <PasswordInput
                     id="password"
                     required
@@ -89,7 +109,12 @@ defineOptions({
             </div>
 
             <div class="grid gap-2">
-                <Label for="password_confirmation">Confirm password</Label>
+                <Label for="password_confirmation"
+                    >Confirm password
+                    <span class="text-red-600" aria-hidden="true"
+                        >*</span
+                    ></Label
+                >
                 <PasswordInput
                     id="password_confirmation"
                     required

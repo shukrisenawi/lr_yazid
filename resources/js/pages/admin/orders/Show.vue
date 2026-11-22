@@ -125,8 +125,10 @@ function cancelOrder() {
         >
             <p class="text-sm text-muted-foreground">{{ copy.notice }}</p>
             <label class="grid gap-2 text-sm"
-                >{{ copy.fulfillment
-                }}<select
+                ><span
+                    >{{ copy.fulfillment }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><select
                     v-model="form.fulfillment_status"
                     class="rounded-md border bg-background p-2.5"
                 >
@@ -147,8 +149,10 @@ function cancelOrder() {
                     maxlength="150"
                     class="rounded-md border bg-transparent p-2.5" /></label
             ><label class="grid gap-2 text-sm"
-                >{{ copy.reason
-                }}<textarea
+                ><span
+                    >{{ copy.reason }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><textarea
                     v-model="form.reason"
                     required
                     minlength="5"
@@ -181,7 +185,10 @@ function cancelOrder() {
                 {{ cancellationCopy.help }}
             </p>
             <label class="grid gap-2 text-sm"
-                >{{ cancellationCopy.reason }}
+                ><span
+                    >{{ cancellationCopy.reason }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                >
                 <textarea
                     v-model="cancellationForm.reason"
                     required

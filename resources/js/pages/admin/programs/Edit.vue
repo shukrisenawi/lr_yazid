@@ -73,15 +73,23 @@ function save() {
             </div>
             <div class="grid gap-5 sm:grid-cols-2">
                 <label class="grid gap-2 text-sm"
-                    >{{ copy.name
-                    }}<input
+                    ><span
+                        >{{ copy.name }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.title"
                         required
                         maxlength="200"
                         class="rounded-md border bg-transparent p-2.5" /></label
                 ><label class="grid gap-2 text-sm"
-                    >{{ copy.slug
-                    }}<input
+                    ><span
+                        >{{ copy.slug }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.slug"
                         required
                         pattern="[a-z0-9]+(-[a-z0-9]+)*"
@@ -107,32 +115,48 @@ function save() {
             </section>
             <div class="grid gap-5 sm:grid-cols-2">
                 <label class="grid gap-2 text-sm"
-                    >{{ copy.starts
-                    }}<input
+                    ><span
+                        >{{ copy.starts }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.starts_at"
                         type="datetime-local"
                         required
                         step="1"
                         class="rounded-md border bg-transparent p-2.5" /></label
                 ><label class="grid gap-2 text-sm"
-                    >{{ copy.ends
-                    }}<input
+                    ><span
+                        >{{ copy.ends }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.ends_at"
                         type="datetime-local"
                         required
                         step="1"
                         class="rounded-md border bg-transparent p-2.5" /></label
                 ><label class="grid gap-2 text-sm"
-                    >{{ copy.opens
-                    }}<input
+                    ><span
+                        >{{ copy.opens }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.registration_opens_at"
                         type="datetime-local"
                         required
                         step="1"
                         class="rounded-md border bg-transparent p-2.5" /></label
                 ><label class="grid gap-2 text-sm"
-                    >{{ copy.closes
-                    }}<input
+                    ><span
+                        >{{ copy.closes }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.registration_closes_at"
                         type="datetime-local"
                         required
@@ -144,8 +168,10 @@ function save() {
                 {{ copy.scheduleHelp }}
             </p>
             <label class="grid gap-2 text-sm"
-                >{{ copy.location
-                }}<input
+                ><span
+                    >{{ copy.location }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.location"
                     required
                     maxlength="500"
@@ -159,8 +185,12 @@ function save() {
             /></label>
             <div class="grid gap-5 sm:grid-cols-2">
                 <label class="grid gap-2 text-sm"
-                    >{{ copy.capacity
-                    }}<input
+                    ><span
+                        >{{ copy.capacity }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.capacity"
                         type="number"
                         min="1"
@@ -168,8 +198,12 @@ function save() {
                         required
                         class="rounded-md border bg-transparent p-2.5" /></label
                 ><label class="grid gap-2 text-sm"
-                    >{{ copy.status
-                    }}<select
+                    ><span
+                        >{{ copy.status }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><select
                         v-model="form.status"
                         class="rounded-md border bg-background p-2.5"
                     >

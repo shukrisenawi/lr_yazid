@@ -111,8 +111,10 @@ const response = useForm({ accept: true });
                 {{ copy.cancellationPolicy }}: {{ cancellationNoticeHours }}
             </p>
             <label class="grid gap-2 text-sm"
-                >{{ copy.cancelReason
-                }}<textarea
+                ><span
+                    >{{ copy.cancelReason }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><textarea
                     v-model="cancel.reason"
                     required
                     minlength="5"

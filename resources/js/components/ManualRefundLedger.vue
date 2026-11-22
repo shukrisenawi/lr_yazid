@@ -107,7 +107,10 @@ function submit() {
             @submit.prevent="submit"
         >
             <label class="grid gap-2 text-sm"
-                >{{ copy.payment }}
+                ><span
+                    >{{ copy.payment }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                >
                 <select
                     v-model="form.payment_id"
                     required
@@ -125,8 +128,10 @@ function submit() {
                 </select>
             </label>
             <label class="grid gap-2 text-sm"
-                >{{ copy.amount
-                }}<input
+                ><span
+                    >{{ copy.amount }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.amount"
                     type="text"
                     inputmode="decimal"
@@ -137,8 +142,10 @@ function submit() {
                     class="rounded-md border bg-transparent p-2.5"
             /></label>
             <label class="grid gap-2 text-sm"
-                >{{ copy.external
-                }}<input
+                ><span
+                    >{{ copy.external }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.external_reference"
                     required
                     minlength="3"
@@ -150,8 +157,10 @@ function submit() {
                 }}</span></label
             >
             <label class="grid gap-2 text-sm"
-                >{{ copy.method
-                }}<select
+                ><span
+                    >{{ copy.method }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><select
                     v-model="form.method"
                     class="rounded-md border bg-background p-2.5"
                 >
@@ -165,16 +174,20 @@ function submit() {
                 </select></label
             >
             <label class="grid gap-2 text-sm"
-                >{{ copy.date
-                }}<input
+                ><span
+                    >{{ copy.date }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.refunded_at"
                     type="datetime-local"
                     required
                     class="min-w-0 rounded-md border bg-transparent p-2.5"
             /></label>
             <label class="grid gap-2 text-sm"
-                >{{ copy.reason
-                }}<textarea
+                ><span
+                    >{{ copy.reason }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><textarea
                     v-model="form.reason"
                     required
                     minlength="5"
@@ -189,7 +202,10 @@ function submit() {
                     type="checkbox"
                     required
                     class="mt-1"
-                />{{ copy.confirm }}</label
+                /><span
+                    >{{ copy.confirm }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ></label
             >
             <p
                 v-if="Object.keys(form.errors).length"

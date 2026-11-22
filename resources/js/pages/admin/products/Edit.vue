@@ -142,20 +142,35 @@ function archive() {
             </div>
             <div class="grid gap-5 md:grid-cols-2">
                 <label class="grid gap-2 text-sm"
-                    >Product name<input
+                    ><span
+                        >Product name
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.name"
                         required
                         class="rounded-md border bg-transparent p-2.5"
                 /></label>
                 <label class="grid gap-2 text-sm"
-                    >Slug<input
+                    ><span
+                        >Slug
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.slug"
                         required
                         pattern="[a-zA-Z0-9_\-]+"
                         class="rounded-md border bg-transparent p-2.5"
                 /></label>
                 <label class="grid gap-2 text-sm"
-                    >SKU<input
+                    ><span
+                        >SKU
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.sku"
                         required
                         class="rounded-md border bg-transparent p-2.5"
@@ -176,7 +191,12 @@ function archive() {
                     </select></label
                 >
                 <label class="grid gap-2 text-sm"
-                    >Regular price (RM)<RinggitInput
+                    ><span
+                        >Regular price (RM)
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><RinggitInput
                         v-model="form.price_sen"
                         required
                         type="number"
@@ -206,7 +226,12 @@ function archive() {
                         class="rounded-md border bg-transparent p-2.5"
                 /></label>
                 <label class="grid gap-2 text-sm"
-                    >Stock quantity<input
+                    ><span
+                        >Stock quantity
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.stock"
                         required
                         type="number"
@@ -214,7 +239,12 @@ function archive() {
                         class="rounded-md border bg-transparent p-2.5"
                 /></label>
                 <label class="grid gap-2 text-sm"
-                    >Weight (grams)<input
+                    ><span
+                        >Weight (grams)
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.weight_grams"
                         required
                         type="number"
@@ -222,7 +252,12 @@ function archive() {
                         class="rounded-md border bg-transparent p-2.5"
                 /></label>
                 <label class="grid gap-2 text-sm"
-                    >Status<select
+                    ><span
+                        >Status
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><select
                         v-model="form.status"
                         class="rounded-md border bg-background p-2.5"
                     >
@@ -404,24 +439,44 @@ function archive() {
                         <VariantAttributes v-model="variant.attributes" />
                     </div>
                     <label class="grid gap-2 text-xs"
-                        >Option name<input
+                        ><span
+                            >Option name
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><input
                             v-model="variant.name"
                             required
                             class="min-w-0 rounded border bg-transparent p-2" /></label
                     ><label class="grid gap-2 text-xs"
-                        >Variant SKU<input
+                        ><span
+                            >Variant SKU
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><input
                             v-model="variant.sku"
                             required
                             class="min-w-0 rounded border bg-transparent p-2" /></label
                     ><label class="grid gap-2 text-xs"
-                        >Price (RM)<RinggitInput
+                        ><span
+                            >Price (RM)
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><RinggitInput
                             v-model="variant.price_sen"
                             type="number"
                             min="0"
                             required
                             class="min-w-0 rounded border bg-transparent p-2" /></label
                     ><label class="grid gap-2 text-xs"
-                        >Stock<input
+                        ><span
+                            >Stock
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><input
                             v-model="variant.stock"
                             type="number"
                             min="0"

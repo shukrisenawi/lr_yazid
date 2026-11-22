@@ -99,7 +99,10 @@ watch(
                 />
             </button>
         </div>
-        <h3 class="mt-6 font-medium">{{ selectedDate }}</h3>
+        <h3 class="mt-6 font-medium">
+            {{ selectedDate }}
+            <span class="text-red-600" aria-hidden="true">*</span>
+        </h3>
         <p v-if="!times.length" class="mt-4 text-sm text-muted-foreground">
             {{ copy.noTimes }}
         </p>

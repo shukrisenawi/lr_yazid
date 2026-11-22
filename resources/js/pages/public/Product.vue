@@ -86,7 +86,12 @@ watch(variant, (value) => {
                 <label
                     v-if="product.variants?.length"
                     class="mt-6 grid max-w-sm gap-2 text-sm"
-                    >Choose an option<select
+                    ><span
+                        >Choose an option
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><select
                         v-model="variantId"
                         class="rounded-md border bg-background p-3"
                     >

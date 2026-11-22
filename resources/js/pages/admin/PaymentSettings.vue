@@ -64,8 +64,10 @@ function save() {
             @submit.prevent="save"
         >
             <label class="grid gap-2 text-sm"
-                >{{ copy.environment
-                }}<select
+                ><span
+                    >{{ copy.environment }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><select
                     v-model="form.environment"
                     class="rounded-md border bg-background p-2.5"
                 >

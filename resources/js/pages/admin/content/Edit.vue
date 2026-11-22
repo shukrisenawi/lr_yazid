@@ -51,8 +51,12 @@ function save() {
         <form class="mt-8 space-y-6" @submit.prevent="save">
             <div class="grid gap-5 sm:grid-cols-2">
                 <label class="grid gap-2 text-sm"
-                    >{{ copy.name
-                    }}<input
+                    ><span
+                        >{{ copy.name }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.title"
                         required
                         maxlength="200"
@@ -64,8 +68,12 @@ function save() {
                     ></label
                 >
                 <label class="grid gap-2 text-sm"
-                    >{{ copy.slug
-                    }}<input
+                    ><span
+                        >{{ copy.slug }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.slug"
                         required
                         maxlength="200"
@@ -114,8 +122,10 @@ function save() {
                 ></label
             >
             <label class="grid gap-2 text-sm"
-                >{{ copy.status
-                }}<select
+                ><span
+                    >{{ copy.status }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><select
                     v-model="form.status"
                     class="rounded-md border bg-background p-2.5"
                 >

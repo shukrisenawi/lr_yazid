@@ -54,8 +54,10 @@ function save() {
         </p>
         <form class="mt-8 space-y-6" @submit.prevent="save">
             <label class="grid gap-2 text-sm"
-                >{{ copy.title
-                }}<input
+                ><span
+                    >{{ copy.title }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.title"
                     required
                     maxlength="100"
@@ -77,8 +79,15 @@ function save() {
                 class="aspect-[5/4] max-h-64 max-w-full rounded-md object-cover"
             />
             <label class="grid gap-2 text-sm"
-                >{{ copy.image
-                }}<ImageUpload
+                ><span
+                    >{{ copy.image }}
+                    <span
+                        v-if="form.status === 'published'"
+                        class="text-red-600"
+                        aria-hidden="true"
+                        >*</span
+                    ></span
+                ><ImageUpload
                     :key="uploadKey"
                     accept="image/jpeg,image/png,image/webp"
                     @change="upload"
@@ -87,8 +96,15 @@ function save() {
                 }}</span></label
             >
             <label class="grid gap-2 text-sm"
-                >{{ copy.alt
-                }}<input
+                ><span
+                    >{{ copy.alt }}
+                    <span
+                        v-if="form.status === 'published'"
+                        class="text-red-600"
+                        aria-hidden="true"
+                        >*</span
+                    ></span
+                ><input
                     v-model="form.image_alt"
                     :required="form.status === 'published'"
                     maxlength="200"
@@ -96,16 +112,32 @@ function save() {
             /></label>
             <div class="grid gap-5 sm:grid-cols-2">
                 <label class="grid gap-2 text-sm"
-                    >{{ copy.label
-                    }}<input
+                    ><span
+                        >{{ copy.label }}
+                        <span
+                            v-if="form.link_path"
+                            class="text-red-600"
+                            aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.link_label"
+                        :required="!!form.link_path"
                         maxlength="40"
                         class="rounded-md border bg-transparent p-2.5"
                 /></label>
                 <label class="grid gap-2 text-sm"
-                    >{{ copy.path
-                    }}<input
+                    ><span
+                        >{{ copy.path }}
+                        <span
+                            v-if="form.link_label"
+                            class="text-red-600"
+                            aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.link_path"
+                        :required="!!form.link_label"
                         maxlength="500"
                         class="rounded-md border bg-transparent p-2.5"
                 /></label>
@@ -113,8 +145,12 @@ function save() {
             <p class="text-xs text-muted-foreground">{{ copy.pathHelp }}</p>
             <div class="grid gap-5 sm:grid-cols-2">
                 <label class="grid gap-2 text-sm"
-                    >{{ copy.status
-                    }}<select
+                    ><span
+                        >{{ copy.status }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><select
                         v-model="form.status"
                         class="rounded-md border bg-background p-2.5"
                     >
@@ -123,8 +159,12 @@ function save() {
                     </select></label
                 >
                 <label class="grid gap-2 text-sm"
-                    >{{ copy.position
-                    }}<input
+                    ><span
+                        >{{ copy.position }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.position"
                         type="number"
                         required

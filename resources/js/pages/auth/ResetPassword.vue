@@ -36,7 +36,12 @@ const inputEmail = ref(props.email);
     >
         <div class="grid gap-6">
             <div class="grid gap-2">
-                <Label for="email">Email</Label>
+                <Label for="email"
+                    >Email
+                    <span class="text-red-600" aria-hidden="true"
+                        >*</span
+                    ></Label
+                >
                 <Input
                     id="email"
                     type="email"
@@ -50,9 +55,15 @@ const inputEmail = ref(props.email);
             </div>
 
             <div class="grid gap-2">
-                <Label for="password">Password</Label>
+                <Label for="password"
+                    >Password
+                    <span class="text-red-600" aria-hidden="true"
+                        >*</span
+                    ></Label
+                >
                 <PasswordInput
                     id="password"
+                    required
                     name="password"
                     autocomplete="new-password"
                     class="mt-1 block w-full"
@@ -64,9 +75,15 @@ const inputEmail = ref(props.email);
             </div>
 
             <div class="grid gap-2">
-                <Label for="password_confirmation"> Confirm password </Label>
+                <Label for="password_confirmation"
+                    >Confirm password
+                    <span class="text-red-600" aria-hidden="true"
+                        >*</span
+                    ></Label
+                >
                 <PasswordInput
                     id="password_confirmation"
+                    required
                     name="password_confirmation"
                     autocomplete="new-password"
                     class="mt-1 block w-full"

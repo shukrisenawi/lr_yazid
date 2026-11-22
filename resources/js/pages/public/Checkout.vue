@@ -41,7 +41,12 @@ const form = useForm({
                     <div
                         class="flex flex-wrap items-center justify-between gap-4"
                     >
-                        <h2 class="text-xl font-semibold">Shipping address</h2>
+                        <h2 class="text-xl font-semibold">
+                            Shipping address
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            >
+                        </h2>
                         <Link href="/addresses" class="text-sm underline"
                             >Manage addresses</Link
                         >

@@ -34,7 +34,10 @@ const form = useForm({
                 {{ Object.values(form.errors).join(' ') }}
             </div>
             <label class="grid gap-2 text-sm"
-                >Shipping charge (RM)<RinggitInput
+                ><span
+                    >Shipping charge (RM)
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><RinggitInput
                     v-model="form.shipping_fee_sen"
                     type="number"
                     min="0"
@@ -45,7 +48,10 @@ const form = useForm({
                     >Enter the amount in RM, for example 10.00.</span
                 ></label
             ><label class="grid gap-2 text-sm"
-                >Stock reservation duration (minutes)<input
+                ><span
+                    >Stock reservation duration (minutes)
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.reservation_minutes"
                     type="number"
                     min="5"

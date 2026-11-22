@@ -26,7 +26,12 @@ defineOptions({
     >
         <div class="space-y-6">
             <div class="grid gap-2">
-                <Label htmlFor="password">Password</Label>
+                <Label for="password"
+                    >Password
+                    <span class="text-red-600" aria-hidden="true"
+                        >*</span
+                    ></Label
+                >
                 <PasswordInput
                     id="password"
                     name="password"

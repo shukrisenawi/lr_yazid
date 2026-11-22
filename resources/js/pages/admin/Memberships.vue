@@ -146,13 +146,19 @@ function select(row: Row) {
                 {{ Object.values(adjustment.errors).join(' ') }}
             </p>
             <label class="grid gap-2 text-sm"
-                >New expiry (Malaysia time)<input
+                ><span
+                    >New expiry (Malaysia time)
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="adjustment.expires_at"
                     type="datetime-local"
                     required
                     class="rounded-md border bg-transparent p-2.5" /></label
             ><label class="grid gap-2 text-sm"
-                >Reason for adjustment<textarea
+                ><span
+                    >Reason for adjustment
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><textarea
                     v-model="adjustment.reason"
                     required
                     minlength="10"

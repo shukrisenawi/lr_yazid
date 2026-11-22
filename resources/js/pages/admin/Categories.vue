@@ -27,12 +27,18 @@ function remove(id: number) {
             "
         >
             <label class="grid gap-2 text-sm"
-                >Category name<input
+                ><span
+                    >Category name
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.name"
                     required
                     class="rounded-md border bg-transparent p-2" /></label
             ><label class="grid gap-2 text-sm"
-                >Slug<input
+                ><span
+                    >Slug
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.slug"
                     required
                     class="rounded-md border bg-transparent p-2" /></label
@@ -55,12 +61,22 @@ function remove(id: number) {
                 @submit.prevent="save(category)"
             >
                 <label class="grid gap-2 text-sm"
-                    >Name<input
+                    ><span
+                        >Name
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="category.name"
                         required
                         class="rounded border bg-transparent p-2" /></label
                 ><label class="grid gap-2 text-sm"
-                    >Slug<input
+                    ><span
+                        >Slug
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="category.slug"
                         required
                         class="rounded border bg-transparent p-2" /></label

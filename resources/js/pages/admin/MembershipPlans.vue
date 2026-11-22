@@ -83,14 +83,22 @@ function save() {
                 {{ Object.values(form.errors).join(' ') }}
             </p>
             <label class="grid gap-2 text-sm"
-                >Plan name<input
+                ><span
+                    >Plan name
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.name"
                     required
                     class="rounded-md border bg-transparent p-2.5"
             /></label>
             <div class="grid gap-5 sm:grid-cols-2">
                 <label class="grid gap-2 text-sm"
-                    >Price (RM)<RinggitInput
+                    ><span
+                        >Price (RM)
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><RinggitInput
                         v-model="form.price_sen"
                         type="number"
                         min="1"
@@ -98,7 +106,12 @@ function save() {
                         required
                         class="rounded-md border bg-transparent p-2.5" /></label
                 ><label class="grid gap-2 text-sm"
-                    >Duration (calendar months)<input
+                    ><span
+                        >Duration (calendar months)
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.duration_months"
                         type="number"
                         min="1"
@@ -114,7 +127,10 @@ function save() {
                     class="rounded-md border bg-transparent p-3"
                 /></label
             ><label class="grid gap-2 text-sm"
-                >Benefits (one per line)<textarea
+                ><span
+                    >Benefits (one per line)
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><textarea
                     v-model="benefits"
                     required
                     rows="5"

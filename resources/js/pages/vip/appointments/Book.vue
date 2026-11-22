@@ -60,8 +60,10 @@ function submit() {
         </p>
         <template v-else
             ><label class="mt-6 grid max-w-md gap-2 text-sm"
-                >{{ copy.chooseService
-                }}<select
+                ><span
+                    >{{ copy.chooseService }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><select
                     v-model="service"
                     :disabled="loading || !!reschedule"
                     class="rounded-md border bg-background p-2.5"
@@ -96,8 +98,12 @@ function submit() {
                         {{ Object.values(form.errors).join(' ') }}
                     </p>
                     <label v-if="reschedule" class="grid gap-2 text-sm"
-                        >{{ copy.rescheduleReason
-                        }}<textarea
+                        ><span
+                            >{{ copy.rescheduleReason }}
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><textarea
                             v-model="form.reason"
                             required
                             minlength="5"
@@ -107,8 +113,12 @@ function submit() {
                         /></label
                     ><template v-else
                         ><label class="grid gap-2 text-sm"
-                            >{{ copy.purpose
-                            }}<textarea
+                            ><span
+                                >{{ copy.purpose }}
+                                <span class="text-red-600" aria-hidden="true"
+                                    >*</span
+                                ></span
+                            ><textarea
                                 v-model="form.purpose"
                                 required
                                 minlength="5"

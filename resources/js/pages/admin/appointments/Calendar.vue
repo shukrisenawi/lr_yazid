@@ -74,8 +74,10 @@ const full = computed(() => {
             @submit.prevent="filter.get('/admin/appointments/calendar')"
         >
             <label class="grid gap-2 text-sm"
-                >{{ copy.date
-                }}<input
+                ><span
+                    >{{ copy.date }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="filter.date"
                     type="date"
                     required

@@ -69,11 +69,15 @@ const passwordInput = useTemplateRef('passwordInput');
                         </DialogHeader>
 
                         <div class="grid gap-2">
-                            <Label for="password" class="sr-only"
-                                >Password</Label
+                            <Label for="password"
+                                >Password
+                                <span class="text-red-600" aria-hidden="true"
+                                    >*</span
+                                ></Label
                             >
                             <PasswordInput
                                 id="password"
+                                required
                                 name="password"
                                 ref="passwordInput"
                                 placeholder="Password"

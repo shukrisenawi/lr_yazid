@@ -108,8 +108,10 @@ function save() {
                 {{ Object.values(form.errors).join(' ') }}
             </p>
             <label class="grid gap-2 text-sm"
-                >{{ copy.name
-                }}<input
+                ><span
+                    >{{ copy.name }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.name"
                     required
                     maxlength="200"
@@ -125,8 +127,10 @@ function save() {
                 />
             </label>
             <label class="grid gap-2 text-sm"
-                >{{ copy.location
-                }}<input
+                ><span
+                    >{{ copy.location }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.location"
                     required
                     maxlength="500"
@@ -134,8 +138,12 @@ function save() {
             /></label>
             <div class="grid gap-5 sm:grid-cols-2">
                 <label class="grid gap-2 text-sm"
-                    >{{ copy.duration
-                    }}<input
+                    ><span
+                        >{{ copy.duration }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.duration_minutes"
                         type="number"
                         min="5"
@@ -143,8 +151,12 @@ function save() {
                         required
                         class="rounded-md border bg-transparent p-2.5" /></label
                 ><label class="grid gap-2 text-sm"
-                    >{{ copy.capacity
-                    }}<input
+                    ><span
+                        >{{ copy.capacity }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.default_capacity"
                         type="number"
                         min="1"
@@ -152,8 +164,12 @@ function save() {
                         required
                         class="rounded-md border bg-transparent p-2.5" /></label
                 ><label class="grid gap-2 text-sm"
-                    >{{ copy.notice
-                    }}<input
+                    ><span
+                        >{{ copy.notice }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.minimum_notice_hours"
                         type="number"
                         min="0"
@@ -161,8 +177,12 @@ function save() {
                         required
                         class="rounded-md border bg-transparent p-2.5" /></label
                 ><label class="grid gap-2 text-sm"
-                    >{{ copy.advance
-                    }}<input
+                    ><span
+                        >{{ copy.advance }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.maximum_advance_days"
                         type="number"
                         min="1"
@@ -170,8 +190,12 @@ function save() {
                         required
                         class="rounded-md border bg-transparent p-2.5" /></label
                 ><label class="grid gap-2 text-sm"
-                    >{{ copy.cancellation
-                    }}<input
+                    ><span
+                        >{{ copy.cancellation }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.cancellation_notice_hours"
                         type="number"
                         min="0"
@@ -179,8 +203,12 @@ function save() {
                         required
                         class="rounded-md border bg-transparent p-2.5" /></label
                 ><label class="grid gap-2 text-sm"
-                    >{{ copy.maximum
-                    }}<input
+                    ><span
+                        >{{ copy.maximum }}
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.maximum_active_bookings"
                         type="number"
                         min="1"

@@ -253,6 +253,14 @@ watch(
                             <div
                                 class="flex w-full flex-col items-center justify-center space-y-3 py-2"
                             >
+                                <label for="otp" class="text-sm font-medium"
+                                    >Authentication code
+                                    <span
+                                        class="text-red-600"
+                                        aria-hidden="true"
+                                        >*</span
+                                    ></label
+                                >
                                 <InputOTP
                                     id="otp"
                                     v-model="code"

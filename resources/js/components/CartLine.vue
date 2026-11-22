@@ -56,7 +56,12 @@ watch(
                 "
             >
                 <label class="grid gap-1 text-xs"
-                    >Quantity<input
+                    ><span
+                        >Quantity
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><input
                         v-model="form.quantity"
                         type="number"
                         min="1"

@@ -40,14 +40,20 @@ function save() {
         </div>
         <div class="grid gap-4 sm:grid-cols-2">
             <label class="grid gap-2 text-sm"
-                >Full name<input
+                ><span
+                    >Full name
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.full_name"
                     required
                     autocomplete="name"
                     class="rounded-md border bg-transparent p-2.5"
             /></label>
             <label class="grid gap-2 text-sm"
-                >Phone number<input
+                ><span
+                    >Phone number
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.phone"
                     type="tel"
                     required
@@ -55,7 +61,10 @@ function save() {
                     class="rounded-md border bg-transparent p-2.5"
             /></label>
             <label class="grid gap-2 text-sm sm:col-span-2"
-                >Address line 1<input
+                ><span
+                    >Address line 1
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.line1"
                     required
                     autocomplete="address-line1"
@@ -68,14 +77,20 @@ function save() {
                     class="rounded-md border bg-transparent p-2.5"
             /></label>
             <label class="grid gap-2 text-sm"
-                >City<input
+                ><span
+                    >City
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.city"
                     required
                     autocomplete="address-level2"
                     class="rounded-md border bg-transparent p-2.5"
             /></label>
             <label class="grid gap-2 text-sm"
-                >State<select
+                ><span
+                    >State
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><select
                     v-model="form.state"
                     required
                     autocomplete="address-level1"
@@ -88,7 +103,10 @@ function save() {
                 </select></label
             >
             <label class="grid gap-2 text-sm"
-                >Postcode<input
+                ><span
+                    >Postcode
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.postcode"
                     required
                     pattern="[0-9]{5}"

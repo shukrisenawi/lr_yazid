@@ -83,8 +83,12 @@ function navigate(month: string) {
                 >
                     <h2 class="text-xl font-semibold">{{ copy.review }}</h2>
                     <label class="grid gap-2 text-sm"
-                        >{{ copy.decision
-                        }}<select
+                        ><span
+                            >{{ copy.decision }}
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><select
                             v-model="decision.decision"
                             class="rounded-md border bg-background p-2.5"
                         >
@@ -115,8 +119,15 @@ function navigate(month: string) {
                             >
                         </select></label
                     ><label class="grid gap-2 text-sm"
-                        >{{ copy.adminRemarks
-                        }}<textarea
+                        ><span
+                            >{{ copy.adminRemarks }}
+                            <span
+                                v-if="decision.decision === 'cancelled'"
+                                class="text-red-600"
+                                aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><textarea
                             v-model="decision.remarks"
                             :required="decision.decision === 'cancelled'"
                             maxlength="1000"
@@ -239,8 +250,12 @@ function navigate(month: string) {
                     "
                 >
                     <label class="grid gap-2 text-sm"
-                        >{{ copy.proposalReason
-                        }}<textarea
+                        ><span
+                            >{{ copy.proposalReason }}
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><textarea
                             v-model="proposal.reason"
                             required
                             minlength="5"

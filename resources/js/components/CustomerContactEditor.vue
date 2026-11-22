@@ -44,8 +44,10 @@ function save() {
         </p>
         <form class="space-y-4" @submit.prevent="save">
             <label class="grid gap-2 text-sm"
-                >{{ copy.name
-                }}<input
+                ><span
+                    >{{ copy.name }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.name"
                     required
                     maxlength="255"
@@ -53,8 +55,10 @@ function save() {
                     class="rounded-md border bg-transparent p-2.5"
             /></label>
             <label class="grid gap-2 text-sm"
-                >{{ copy.phone
-                }}<input
+                ><span
+                    >{{ copy.phone }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.phone"
                     type="tel"
                     required
@@ -63,8 +67,10 @@ function save() {
                     class="rounded-md border bg-transparent p-2.5"
             /></label>
             <label class="grid gap-2 text-sm"
-                >{{ copy.reason
-                }}<textarea
+                ><span
+                    >{{ copy.reason }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><textarea
                     v-model="form.reason"
                     required
                     minlength="5"

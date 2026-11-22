@@ -34,9 +34,15 @@ defineProps<{
     <div class="space-y-6">
         <Form v-bind="email.form()" v-slot="{ errors, processing }">
             <div class="grid gap-2">
-                <Label for="email">Email address</Label>
+                <Label for="email"
+                    >Email address
+                    <span class="text-red-600" aria-hidden="true"
+                        >*</span
+                    ></Label
+                >
                 <Input
                     id="email"
+                    required
                     type="email"
                     name="email"
                     autocomplete="off"

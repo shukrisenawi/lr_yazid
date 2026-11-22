@@ -35,15 +35,19 @@ const form = useForm({
             @submit.prevent="form.put('/admin/invoice-settings')"
         >
             <label class="grid gap-2 text-sm"
-                >{{ copy.name
-                }}<input
+                ><span
+                    >{{ copy.name }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.seller_name"
                     required
                     maxlength="200"
                     class="rounded-md border bg-transparent p-2.5" /></label
             ><label class="grid gap-2 text-sm"
-                >{{ copy.address
-                }}<textarea
+                ><span
+                    >{{ copy.address }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><textarea
                     v-model="form.seller_address"
                     required
                     maxlength="2000"
@@ -51,8 +55,10 @@ const form = useForm({
                     class="rounded-md border bg-transparent p-3"
                 /></label
             ><label class="grid gap-2 text-sm"
-                >{{ copy.email
-                }}<input
+                ><span
+                    >{{ copy.email }}
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     v-model="form.seller_email"
                     type="email"
                     required

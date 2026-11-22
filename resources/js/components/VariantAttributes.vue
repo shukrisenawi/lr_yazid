@@ -17,7 +17,10 @@ function update(index: number, key: 'name' | 'value', value: string) {
             class="grid items-end gap-2 sm:grid-cols-[1fr_1fr_auto]"
         >
             <label class="grid gap-1 text-xs"
-                >Attribute name<input
+                ><span
+                    >Attribute name
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     :value="attribute.name"
                     required
                     maxlength="50"
@@ -32,7 +35,10 @@ function update(index: number, key: 'name' | 'value', value: string) {
                     "
             /></label>
             <label class="grid gap-1 text-xs"
-                >Attribute value<input
+                ><span
+                    >Attribute value
+                    <span class="text-red-600" aria-hidden="true">*</span></span
+                ><input
                     :value="attribute.value"
                     required
                     maxlength="100"
