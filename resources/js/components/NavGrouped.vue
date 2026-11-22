@@ -2,6 +2,7 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import { ChevronRight } from '@lucide/vue';
 import { computed, ref, watch } from 'vue';
+import CartBadge from '@/components/CartBadge.vue';
 import {
     SidebarGroup,
     SidebarMenu,
@@ -98,6 +99,9 @@ function toggle(id: string) {
                             >
                                 <component :is="item.icon" />
                                 <span>{{ item.title }}</span>
+                                <CartBadge
+                                    v-if="toUrl(item.href) === '/cart'"
+                                />
                             </Link>
                         </SidebarMenuSubButton>
                     </SidebarMenuSubItem>

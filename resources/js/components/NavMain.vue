@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
+import CartBadge from '@/components/CartBadge.vue';
 import {
     SidebarGroup,
     SidebarGroupLabel,
@@ -8,6 +9,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
+import { toUrl } from '@/lib/utils';
 import type { NavItem } from '@/types';
 
 defineProps<{
@@ -31,6 +33,7 @@ const { isCurrentUrl } = useCurrentUrl();
                     <Link :href="item.href">
                         <component :is="item.icon" />
                         <span>{{ item.title }}</span>
+                        <CartBadge v-if="toUrl(item.href) === '/cart'" />
                     </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>
