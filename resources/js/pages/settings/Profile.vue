@@ -25,6 +25,21 @@ defineOptions({
 const page = usePage();
 const user = computed(() => page.props.auth.user);
 const profileVersion = ref(user.value.profile_version);
+const avatarPreview = ref('');
+const logoPreview = ref('');
+
+function preview(event: Event, target: 'avatar' | 'logo') {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    const previous =
+        target === 'avatar' ? avatarPreview.value : logoPreview.value;
+    if (previous) URL.revokeObjectURL(previous);
+    const url =
+        file && ['image/jpeg', 'image/png', 'image/webp'].includes(file.type)
+            ? URL.createObjectURL(file)
+            : '';
+    if (target === 'avatar') avatarPreview.value = url;
+    else logoPreview.value = url;
+}
 </script>
 
 <template>
@@ -40,11 +55,62 @@ const profileVersion = ref(user.value.profile_version);
         />
 
         <Form
-            v-bind="ProfileController.update.form()"
+            :action="ProfileController.update().url"
+            method="post"
             class="space-y-6"
             v-slot="{ errors, processing }"
             @success="profileVersion = user.profile_version"
         >
+            <input type="hidden" name="_method" value="patch" />
+            <div class="grid gap-3">
+                <Label for="avatar">Avatar</Label>
+                <img
+                    v-if="avatarPreview || user.avatar"
+                    :src="avatarPreview || user.avatar"
+                    alt="Avatar"
+                    class="size-20 rounded-full object-cover"
+                />
+                <Input
+                    id="avatar"
+                    name="avatar"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    @change="preview($event, 'avatar')"
+                />
+                <p class="text-sm text-muted-foreground">
+                    JPG, PNG atau WebP. Maksimum 2 MB, 2048 × 2048 piksel.
+                </p>
+                <InputError :message="errors.avatar" />
+            </div>
+            <div v-if="user.role === 'admin'" class="grid gap-3">
+                <Label for="logo">Logo sistem</Label>
+                <img
+                    v-if="logoPreview || page.props.website?.logo_url"
+                    :src="logoPreview || page.props.website?.logo_url || ''"
+                    alt="Logo sistem"
+                    class="h-20 max-w-60 rounded-md border bg-white object-contain p-2"
+                />
+                <Input
+                    id="logo"
+                    name="logo"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    @change="preview($event, 'logo')"
+                />
+                <input
+                    type="hidden"
+                    name="website_version"
+                    :value="page.props.websiteVersion"
+                />
+                <p class="text-sm text-muted-foreground">
+                    Logo ini digunakan di seluruh sistem. JPG, PNG atau WebP,
+                    maksimum 2 MB, 2048 × 2048 piksel.
+                </p>
+                <InputError :message="errors.logo" />
+                <InputError
+                    :message="errors.website_version || errors.version"
+                />
+            </div>
             <input
                 type="hidden"
                 name="profile_version"

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -22,6 +23,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string $email
  * @property UserRole $role
  * @property string|null $phone
+ * @property string|null $avatar_path
  * @property int $profile_version
  * @property Carbon|null $email_verified_at
  * @property string $password
@@ -44,10 +46,15 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     protected static function booted(): void
     {
         static::updating(function (User $user): void {
-            if ($user->isDirty(['name', 'email', 'phone'])) {
+            if ($user->isDirty(['name', 'email', 'phone', 'avatar_path'])) {
                 $user->profile_version = $user->getOriginal('profile_version') + 1;
             }
         });
+    }
+
+    public function getAvatarAttribute(): ?string
+    {
+        return $this->avatar_path ? Storage::disk('public')->url($this->avatar_path) : null;
     }
 
     /** @return HasMany<Membership, $this> */

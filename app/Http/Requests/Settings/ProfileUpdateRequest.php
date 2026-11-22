@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Settings;
 
 use App\Concerns\ProfileValidationRules;
+use App\Enums\UserRole;
 use App\Support\MalaysianPhone;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -36,6 +37,9 @@ class ProfileUpdateRequest extends FormRequest
             ...$this->profileRules($this->user()->id),
             'profile_version' => ['required', 'integer', 'min:1'],
             'phone' => ['sometimes', 'required', 'regex:/^\+60[1-9][0-9]{7,9}$/'],
+            'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048', 'dimensions:max_width=2048,max_height=2048'],
+            'logo' => [$this->user()->role === UserRole::Admin ? 'nullable' : 'prohibited', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048', 'dimensions:max_width=2048,max_height=2048'],
+            'website_version' => ['required_with:logo', 'integer', 'min:1'],
         ];
     }
 }

@@ -2,13 +2,77 @@
 
 namespace Tests\Feature\Settings;
 
+use App\Enums\UserRole;
 use App\Models\User;
+use App\Models\WebsiteSetting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ProfileUpdateTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_avatar_can_be_uploaded_and_replaced(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $data = ['_method' => 'patch', 'profile_version' => $user->profile_version, 'name' => $user->name, 'email' => $user->email];
+        $this->actingAs($user)->post(route('profile.update'), [...$data, 'avatar' => UploadedFile::fake()->image('avatar.png')])->assertSessionHasNoErrors();
+        $user->refresh();
+        $oldPath = $user->avatar_path;
+        Storage::disk('public')->assertExists($oldPath);
+        $this->get(route('profile.edit'))->assertInertia(fn ($page) => $page->where('auth.user.avatar', Storage::disk('public')->url($oldPath)));
+        $this->post(route('profile.update'), [...$data, 'profile_version' => $user->profile_version, 'avatar' => UploadedFile::fake()->image('new.png')])->assertSessionHasNoErrors();
+        Storage::disk('public')->assertMissing($oldPath);
+        Storage::disk('public')->assertExists($user->fresh()->avatar_path);
+    }
+
+    public function test_only_admin_can_upload_system_logo(): void
+    {
+        Storage::fake('public');
+        $settings = WebsiteSetting::current();
+        $user = User::factory()->create();
+        $data = ['profile_version' => $user->profile_version, 'name' => $user->name, 'email' => $user->email, 'website_version' => $settings->version];
+        $this->actingAs($user)->patch(route('profile.update'), [...$data, 'logo' => UploadedFile::fake()->image('logo.png')])->assertSessionHasErrors('logo');
+        $user->role = UserRole::Admin;
+        $user->save();
+        $this->patch(route('profile.update'), [...$data, 'logo' => UploadedFile::fake()->image('logo.png')])->assertSessionHasNoErrors();
+        Storage::disk('public')->assertExists($settings->fresh()->logo_path);
+        $this->assertDatabaseHas('website_changes', ['admin_id' => $user->id, 'entity_type' => 'settings']);
+    }
+
+    public function test_invalid_images_are_rejected(): void
+    {
+        $user = User::factory()->create(['role' => UserRole::Admin]);
+        $this->actingAs($user)->patch(route('profile.update'), [
+            'profile_version' => $user->profile_version,
+            'name' => $user->name,
+            'email' => $user->email,
+            'website_version' => WebsiteSetting::current()->version,
+            'avatar' => UploadedFile::fake()->create('avatar.pdf'),
+            'logo' => UploadedFile::fake()->image('large.png')->size(2049),
+        ])->assertSessionHasErrors(['avatar', 'logo']);
+    }
+
+    public function test_stale_logo_update_rolls_back_avatar_and_profile(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create(['role' => UserRole::Admin]);
+        $settings = WebsiteSetting::current();
+        $this->actingAs($user)->patch(route('profile.update'), [
+            'profile_version' => $user->profile_version,
+            'name' => 'Changed name',
+            'email' => $user->email,
+            'website_version' => $settings->version + 1,
+            'avatar' => UploadedFile::fake()->image('avatar.png'),
+            'logo' => UploadedFile::fake()->image('logo.png'),
+        ])->assertSessionHasErrors('version');
+        $this->assertSame($user->name, $user->fresh()->name);
+        $this->assertNull($user->fresh()->avatar_path);
+        $this->assertSame([], Storage::disk('public')->allFiles());
+    }
 
     public function test_profile_page_is_displayed()
     {

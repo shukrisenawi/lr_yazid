@@ -63,7 +63,13 @@ withDefaults(
             </button>
             <NotificationBell />
             <Link href="/settings/profile" class="dashboard-header-user">
-                <span class="dashboard-avatar">{{
+                <img
+                    v-if="page.props.auth.user.avatar"
+                    :src="page.props.auth.user.avatar"
+                    :alt="page.props.auth.user.name"
+                    class="dashboard-avatar object-cover"
+                />
+                <span v-else class="dashboard-avatar">{{
                     getInitials(page.props.auth.user.name)
                 }}</span>
                 <span class="hidden sm:grid">

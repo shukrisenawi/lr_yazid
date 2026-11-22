@@ -48,7 +48,7 @@ class HandleInertiaRequests extends Middleware
             'unreadNotificationCount' => fn () => $request->user()?->unreadNotifications()->count() ?? 0,
             'auth' => [
                 'isVip' => $request->user()?->hasActiveMembership() ?? false,
-                'user' => $request->user()?->only(['id', 'name', 'email', 'phone', 'role', 'email_verified_at', 'created_at', 'updated_at', 'profile_version']),
+                'user' => $request->user()?->only(['id', 'name', 'email', 'phone', 'role', 'avatar', 'email_verified_at', 'created_at', 'updated_at', 'profile_version']),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
