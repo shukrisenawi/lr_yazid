@@ -85,9 +85,7 @@ const handleModalNextStep = () => {
 };
 
 const resetModalState = () => {
-    if (props.twoFactorEnabled) {
-        clearSetupData();
-    }
+    clearSetupData();
 
     showVerificationStep.value = false;
     code.value = '';

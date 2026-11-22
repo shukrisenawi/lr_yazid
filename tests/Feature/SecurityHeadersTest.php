@@ -19,7 +19,7 @@ class SecurityHeadersTest extends TestCase
     {
         foreach ([$this->get('/'), $this->actingAs(User::factory()->create())->get('/orders')] as $response) {
             $response->assertOk()->assertHeader('X-Content-Type-Options', 'nosniff')->assertHeader('X-Frame-Options', 'DENY')
-                ->assertHeader('Referrer-Policy', 'no-referrer')->assertHeader('Pragma', 'no-cache');
+                ->assertHeader('Referrer-Policy', 'same-origin')->assertHeader('Pragma', 'no-cache');
             $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
             $this->assertStringContainsString('private', $response->headers->get('Cache-Control'));
             $this->assertStringNotContainsString('public', $response->headers->get('Cache-Control'));
@@ -43,7 +43,7 @@ class SecurityHeadersTest extends TestCase
         $this->get('/admin/orders')->assertRedirect('/login')->assertHeader('X-Frame-Options', 'DENY');
         $response = $this->actingAs(User::factory()->create())->get('/admin/orders')->assertForbidden();
         $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
-        $response->assertHeader('Referrer-Policy', 'no-referrer');
+        $response->assertHeader('Referrer-Policy', 'same-origin');
     }
 
     public function test_hsts_is_only_emitted_for_actual_secure_production_requests(): void

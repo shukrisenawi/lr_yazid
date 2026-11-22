@@ -5,8 +5,10 @@ namespace Tests\Feature\Settings;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Inertia\Inertia;
 use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Fortify\Features;
+use PragmaRX\Google2FA\Google2FA;
 use Tests\TestCase;
 
 class SecurityTest extends TestCase
@@ -111,5 +113,59 @@ class SecurityTest extends TestCase
         $response
             ->assertSessionHasErrors('current_password')
             ->assertRedirect(route('security.edit'));
+    }
+
+    public function test_invalid_two_factor_confirmation_can_be_retried_without_losing_setup(): void
+    {
+        $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
+        $user = User::factory()->create([
+            'two_factor_secret' => encrypt('JBSWY3DPEHPK3PXP'),
+            'two_factor_recovery_codes' => encrypt(json_encode(['qa-recovery-code'])),
+            'two_factor_confirmed_at' => null,
+        ]);
+        $this->actingAs($user)->withSession([
+            'auth.password_confirmed_at' => time(),
+            'two_factor_empty_at' => time() - 10,
+            'two_factor_confirming_at' => time() - 5,
+        ])->from(route('security.edit'))
+            ->post(route('two-factor.confirm'), ['code' => ''])
+            ->assertSessionHasErrors('code', null, 'confirmTwoFactorAuthentication');
+
+        $this->get(route('security.edit'))->assertOk();
+        $this->assertNotNull($user->fresh()->two_factor_secret);
+        $this->assertNull($user->fresh()->two_factor_confirmed_at);
+
+        $code = (new Google2FA)->getCurrentOtp('JBSWY3DPEHPK3PXP');
+        $this->from(route('security.edit'))
+            ->post(route('two-factor.confirm'), ['code' => $code])
+            ->assertSessionHasNoErrors();
+        $this->assertNotNull($user->fresh()->two_factor_confirmed_at);
+    }
+
+    public function test_notification_poll_does_not_cancel_pending_two_factor_setup(): void
+    {
+        $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
+        $this->get('/')->assertOk();
+        $user = User::factory()->create([
+            'two_factor_secret' => encrypt('JBSWY3DPEHPK3PXP'),
+            'two_factor_confirmed_at' => null,
+        ]);
+        $this->actingAs($user)->withSession([
+            'auth.password_confirmed_at' => time(),
+            'two_factor_empty_at' => time() - 40,
+            'two_factor_confirming_at' => time() - 30,
+        ])->get(route('security.edit'), [
+            'X-Inertia' => 'true',
+            'X-Inertia-Version' => Inertia::getVersion(),
+            'X-Inertia-Partial-Component' => 'settings/Security',
+            'X-Inertia-Partial-Data' => 'unreadNotificationCount',
+        ])->assertOk();
+
+        $this->assertNotNull($user->fresh()->two_factor_secret);
+        $this->assertNull($user->fresh()->two_factor_confirmed_at);
+
+        // A real full-page revisit still cleans up abandoned confirmation.
+        $this->get(route('security.edit'))->assertOk();
+        $this->assertNull($user->fresh()->two_factor_secret);
     }
 }

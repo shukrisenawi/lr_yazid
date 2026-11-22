@@ -11,7 +11,9 @@ class HttpSecurity
     {
         $response->headers->set('X-Content-Type-Options', 'nosniff');
         $response->headers->set('X-Frame-Options', 'DENY');
-        $response->headers->set('Referrer-Policy', 'no-referrer');
+        // Inertia validation redirects need the current same-origin form URL.
+        // Do not disclose it when navigating to external sites.
+        $response->headers->set('Referrer-Policy', 'same-origin');
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
         // Baseline only: not a script-src policy or a substitute for XSS sanitization.
         if (! $response->headers->has('Content-Security-Policy')) {

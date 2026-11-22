@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
 abstract class TestCase extends BaseTestCase
@@ -11,6 +12,7 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
         $this->withoutVite();
+        Inertia::disableSsr();
     }
 
     protected function skipUnlessFortifyHas(string $feature, ?string $message = null): void

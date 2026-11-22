@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Address;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Inertia;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
@@ -71,5 +72,24 @@ class AddressTest extends TestCase
         $this->actingAs(User::factory()->create())->post('/addresses', array_merge($this->data('Test'), [
             'state' => 'Invalid', 'postcode' => '123', 'phone' => '+441234567890',
         ]))->assertSessionHasErrors(['state', 'postcode', 'phone']);
+    }
+
+    public function test_inertia_validation_returns_to_form_instead_of_previous_full_page(): void
+    {
+        $this->actingAs(User::factory()->create())->get('/dashboard')->assertOk()
+            ->assertHeader('Referrer-Policy', 'same-origin');
+        $this->get('/addresses', [
+            'X-Inertia' => 'true',
+            'X-Inertia-Version' => Inertia::getVersion(),
+        ])->assertOk();
+
+        $this->withHeaders([
+            'X-Inertia' => 'true',
+            'Referer' => url('/addresses'),
+        ])->post('/addresses', array_merge($this->data('Test'), ['phone' => 'abc']))
+            ->assertRedirect('/addresses')
+            ->assertSessionHasErrors('phone');
+
+        $this->assertDatabaseCount('addresses', 0);
     }
 }
