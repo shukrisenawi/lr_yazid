@@ -261,14 +261,10 @@
 }
 
 /* Existing account, settings and administration screens share these surfaces. */
+/* Keep surfaces scoped to panels: generic rounded/border selectors override
+   active tab, pagination and calendar backgrounds without changing their text. */
 .velzon-shell main > div:not(.dashboard-page) {
     max-width: 1600px;
-}
-
-.velzon-shell main .rounded-md.border,
-.velzon-shell main .rounded-lg.border,
-.velzon-shell main .rounded-xl.border {
-    background-color: var(--card);
 }
 
 .velzon-shell main input,
