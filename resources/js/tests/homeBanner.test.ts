@@ -18,6 +18,7 @@ vi.mock('@inertiajs/vue3', () => ({
 let app: App | undefined;
 afterEach(() => {
     app?.unmount();
+    vi.useRealTimers();
     document.body.innerHTML = '';
     vi.restoreAllMocks();
 });
@@ -60,8 +61,7 @@ describe('homepage banners', () => {
             'First products',
         );
     });
-    it('switches banners only through manual controls and exposes the selected state', async () => {
-        const interval = vi.spyOn(window, 'setInterval');
+    it('switches banners through manual controls and exposes the selected state', async () => {
         const root = mount(banners);
         const buttons = root.querySelectorAll('button');
         expect(buttons[0].getAttribute('aria-pressed')).toBe('true');
@@ -70,7 +70,41 @@ describe('homepage banners', () => {
         expect(root.querySelector('h1')?.textContent).toBe('Second banner');
         expect(buttons[1].getAttribute('aria-pressed')).toBe('true');
         expect(root.querySelector('a')).toBeNull();
-        expect(interval).not.toHaveBeenCalled();
+    });
+    it('autoplays every five seconds and loops back to the first banner', async () => {
+        vi.useFakeTimers();
+        const root = mount(banners);
+        await vi.advanceTimersByTimeAsync(4999);
+        expect(root.querySelector('h1')?.textContent).toBe(banners[0].title);
+        await vi.advanceTimersByTimeAsync(1);
+        expect(root.querySelector('h1')?.textContent).toBe(banners[1].title);
+        await vi.advanceTimersByTimeAsync(5000);
+        expect(root.querySelector('h1')?.textContent).toBe(banners[0].title);
+        app?.unmount();
+        app = undefined;
+        expect(vi.getTimerCount()).toBe(0);
+    });
+    it('pauses on hover or keyboard focus and supports pause and play', async () => {
+        vi.useFakeTimers();
+        const root = mount(banners);
+        const section = root.querySelector('section')!;
+        section.dispatchEvent(new MouseEvent('mouseenter'));
+        await vi.advanceTimersByTimeAsync(5000);
+        expect(root.querySelector('h1')?.textContent).toBe(banners[0].title);
+        section.dispatchEvent(new MouseEvent('mouseleave'));
+        await vi.advanceTimersByTimeAsync(5000);
+        expect(root.querySelector('h1')?.textContent).toBe(banners[1].title);
+        section.dispatchEvent(new FocusEvent('focusin'));
+        await vi.advanceTimersByTimeAsync(5000);
+        expect(root.querySelector('h1')?.textContent).toBe(banners[1].title);
+        const toggle = root.querySelectorAll('button')[2];
+        expect(toggle.textContent).toContain('Play slideshow');
+        toggle.click();
+        await vi.advanceTimersByTimeAsync(5000);
+        expect(root.querySelector('h1')?.textContent).toBe(banners[0].title);
+        toggle.click();
+        await vi.advanceTimersByTimeAsync(5000);
+        expect(root.querySelector('h1')?.textContent).toBe(banners[0].title);
     });
     it('does not render carousel controls for a single banner or content for an empty list', () => {
         const root = mount([banners[0]]);

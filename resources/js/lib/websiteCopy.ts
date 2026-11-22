@@ -24,7 +24,7 @@ export const websiteCopy = {
     imageHelp:
         'JPEG, PNG or WebP. Images are re-encoded for safe public display. Logo: up to 2 MB / 2048px. Favicon: square, 32–512px / 512 KB.',
     bannerHelp:
-        'Published banners appear in order during their schedule. Up to six are displayed, with manual navigation and no autoplay. Times use Asia/Kuala_Lumpur.',
+        'Published banners appear in order during their schedule. Up to six are displayed, rotating automatically every five seconds with manual navigation and a pause control. Times use Asia/Kuala_Lumpur.',
     title: 'Banner title',
     subtitle: 'Supporting text (optional)',
     image: 'Banner image',
@@ -45,6 +45,8 @@ export const websiteCopy = {
     version: 'Version',
     view: 'View homepage',
     slide: 'Choose banner',
+    pauseSlides: 'Pause slideshow',
+    playSlides: 'Play slideshow',
     contact: 'Contact',
     socialNavigation: 'Social media',
 } as const;

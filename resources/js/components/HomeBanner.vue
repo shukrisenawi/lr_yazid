@@ -1,16 +1,44 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import { ArrowUpRight } from '@lucide/vue';
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { websiteCopy as copy } from '@/lib/websiteCopy';
 import type { PublicBanner } from '@/types/website';
 const props = defineProps<{ banners: PublicBanner[] }>();
 const index = ref(0);
+const paused = ref(false);
+const hovered = ref(false);
+let timer: ReturnType<typeof setInterval> | undefined;
+let mounted = false;
 const current = computed(() => props.banners[index.value] ?? props.banners[0]);
+function stopAutoplay() {
+    clearInterval(timer);
+    timer = undefined;
+}
+function startAutoplay() {
+    stopAutoplay();
+    if (!mounted || paused.value || hovered.value || props.banners.length < 2) {
+        return;
+    }
+    timer = setInterval(() => {
+        index.value = (index.value + 1) % props.banners.length;
+    }, 5000);
+}
+function selectBanner(itemIndex: number) {
+    index.value = itemIndex;
+    startAutoplay();
+}
+watch([paused, hovered, () => props.banners.length], startAutoplay);
+onMounted(() => {
+    mounted = true;
+    startAutoplay();
+});
+onUnmounted(stopAutoplay);
 watch(
     () => props.banners,
     () => {
         index.value = 0;
+        startAutoplay();
     },
 );
 </script>
@@ -20,6 +48,9 @@ watch(
         class="mx-auto max-w-7xl px-6 py-12 md:py-16"
         aria-roledescription="carousel"
         :aria-label="copy.banners"
+        @mouseenter="hovered = true"
+        @mouseleave="hovered = false"
+        @focusin="paused = true"
     >
         <div class="grid items-center gap-8 md:grid-cols-2 md:gap-12">
             <div class="min-w-0">
@@ -70,9 +101,16 @@ watch(
                         ? 'border-emerald-800 bg-emerald-800 text-white'
                         : 'border-stone-400 dark:border-stone-600'
                 "
-                @click="index = itemIndex"
+                @click="selectBanner(itemIndex)"
             >
                 {{ itemIndex + 1 }}
+            </button>
+            <button
+                type="button"
+                class="min-h-11 rounded-md border border-stone-400 px-4 text-sm hover:underline dark:border-stone-600"
+                @click="paused = !paused"
+            >
+                {{ paused ? copy.playSlides : copy.pauseSlides }}
             </button>
         </div>
     </section>
