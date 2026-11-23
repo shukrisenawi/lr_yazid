@@ -127,4 +127,28 @@ class ContentPageTest extends TestCase
             ->has('pages.data', 1)->where('pages.data.0.title', 'Shipping Policy')->missing('pages.data.0.content'));
         $this->get('/pages/shipping-policy')->assertOk()->assertInertia(fn (Assert $view) => $view->has('footerPages', 0));
     }
+
+    public function test_landing_page_has_guest_link_and_custom_domain_and_can_be_unpublished(): void
+    {
+        $page = $this->create(['is_landing' => true, 'custom_domain' => ' Promo.example.com ', 'status' => 'published']);
+        $this->assertSame('promo.example.com', $page->custom_domain);
+        auth()->logout();
+        $this->get('/lp/about-us')->assertInertia(fn (Assert $view) => $view->component('landing/Show')->where('contentPage.title', 'About Us')->missing('contentPage.custom_domain'));
+        $this->get('http://promo.example.com/')->assertInertia(fn (Assert $view) => $view->component('landing/Show'));
+        $this->actingAs($this->admin)->put("/admin/content-pages/$page->id", $this->data(['version' => 1, 'is_landing' => true, 'custom_domain' => 'promo.example.com']))->assertSessionHasNoErrors();
+        auth()->logout();
+        $this->get('/lp/about-us')->assertNotFound();
+        $this->get('http://promo.example.com/')->assertNotFound();
+    }
+
+    public function test_normal_pages_are_not_landing_pages_and_domain_values_are_validated(): void
+    {
+        $this->create(['status' => 'published']);
+        $this->get('/lp/about-us')->assertNotFound();
+        foreach (['https://promo.example.com', 'promo.example.com/path', '*.example.com', '-promo.example.com'] as $domain) {
+            $this->post('/admin/content-pages', $this->data(['slug' => 'promo', 'is_landing' => true, 'custom_domain' => $domain]))->assertSessionHasErrors('custom_domain');
+        }
+        $this->create(['slug' => 'promo', 'is_landing' => true, 'custom_domain' => 'promo.example.com']);
+        $this->post('/admin/content-pages', $this->data(['slug' => 'another', 'is_landing' => true, 'custom_domain' => 'promo.example.com']))->assertSessionHasErrors('custom_domain');
+    }
 }

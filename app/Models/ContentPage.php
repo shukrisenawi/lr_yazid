@@ -10,6 +10,6 @@ class ContentPage extends Model
 
     protected function casts(): array
     {
-        return ['show_in_footer' => 'boolean', 'version' => 'integer'];
+        return ['show_in_footer' => 'boolean', 'is_landing' => 'boolean', 'version' => 'integer'];
     }
 }

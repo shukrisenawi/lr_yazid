@@ -29,6 +29,8 @@ void createInertiaApp({
     title: (title, page) => websiteTitle(title, page.props.website, appName),
     layout: (name) => {
         switch (true) {
+            case name.startsWith('landing/'):
+                return [];
             case name.startsWith('invoice/'):
                 return InvoiceLayout;
             case name.startsWith('public/'):

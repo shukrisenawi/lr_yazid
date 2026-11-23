@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [CatalogController::class, 'home'])->name('home');
 Route::get('/pages/{slug}', [ContentPageController::class, 'show'])->name('content.show');
+Route::get('/lp/{slug}', [ContentPageController::class, 'landing'])->name('landing.show');
 Route::get('/vip-membership', [MembershipController::class, 'index'])->name('membership.info');
 Route::get('/products', [CatalogController::class, 'index'])->name('products.index');
 Route::get('/products/{slug}', [CatalogController::class, 'show'])->name('products.show');

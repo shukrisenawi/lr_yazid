@@ -14,7 +14,7 @@ export const contentCopy = {
     footer: 'Show in website footer',
     save: 'Save page',
     view: 'View published page',
-    help: 'Manage About Us, Contact Us, policies and membership information. Review your business and legal details before publishing. Drafts are not publicly accessible.',
+    help: 'Create landing pages, About Us, Contact Us, policies and membership information using the text editor. Enable Landing page for a standalone public page with optional subdomain. Drafts are not publicly accessible.',
     empty: 'No content pages yet. Create a page to add information to your website.',
     search: 'Search page title',
     filter: 'Apply filters',

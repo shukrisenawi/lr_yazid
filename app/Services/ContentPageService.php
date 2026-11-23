@@ -24,7 +24,10 @@ class ContentPageService
             if ($page->exists && $page->version !== (int) $data['version']) {
                 throw ValidationException::withMessages(['version' => __('content.stale')]);
             }
-            $page->fill(collect($data)->only(['title', 'slug', 'seo_title', 'meta_description', 'status', 'show_in_footer'])->all());
+            $page->fill(collect($data)->only(['title', 'slug', 'seo_title', 'meta_description', 'status', 'show_in_footer', 'is_landing', 'custom_domain'])->all());
+            if (! $page->is_landing) {
+                $page->custom_domain = null;
+            }
             $page->content = $content;
             if ($page->exists && ! $page->isDirty()) {
                 return $page;
@@ -33,7 +36,7 @@ class ContentPageService
             $page->save();
             DB::table('content_page_revisions')->insert([
                 'content_page_id' => $page->id, 'admin_id' => $admin->id, 'version' => $page->version,
-                'snapshot' => json_encode($page->only(['title', 'slug', 'content', 'seo_title', 'meta_description', 'status', 'show_in_footer']), JSON_THROW_ON_ERROR),
+                'snapshot' => json_encode($page->only(['title', 'slug', 'content', 'seo_title', 'meta_description', 'status', 'show_in_footer', 'is_landing', 'custom_domain']), JSON_THROW_ON_ERROR),
                 'created_at' => now(), 'updated_at' => now(),
             ]);
 

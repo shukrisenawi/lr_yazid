@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\ContentPage;
 use App\Models\HomepageBanner;
 use App\Models\Product;
 use App\Services\CatalogCardService;
@@ -12,8 +13,17 @@ use Inertia\Response;
 
 class CatalogController extends Controller
 {
-    public function home(CatalogCardService $cards): Response
+    public function home(CatalogCardService $cards, Request $request): Response
     {
+        if ($request->getHost() !== parse_url(config('app.url'), PHP_URL_HOST)) {
+            $landing = ContentPage::where('custom_domain', $request->getHost())->where('is_landing', true)->first();
+            if ($landing) {
+                abort_unless($landing->status === 'published', 404);
+
+                return app(ContentPageController::class)->render($landing);
+            }
+        }
+
         return Inertia::render('public/Home', [
             'banners' => HomepageBanner::visible(),
             'featured' => $cards->query()->where('status', 'active')->where('is_featured', true)->latest()->limit(4)->get()->map($cards->data(...)),

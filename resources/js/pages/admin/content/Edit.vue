@@ -6,6 +6,7 @@ import { dateTime } from '@/types/commerce';
 import type { ContentPage } from '@/types/content';
 const props = defineProps<{
     contentPage: ContentPage | null;
+    publicBaseUrl: string;
     revisions: { version: number; administrator: string; created_at: string }[];
 }>();
 const form = useForm({
@@ -16,6 +17,8 @@ const form = useForm({
     meta_description: props.contentPage?.meta_description ?? '',
     status: props.contentPage?.status ?? 'draft',
     show_in_footer: props.contentPage?.show_in_footer ?? false,
+    is_landing: props.contentPage?.is_landing ?? false,
+    custom_domain: props.contentPage?.custom_domain ?? '',
     version: props.contentPage?.version ?? null,
 });
 function save() {
@@ -42,13 +45,59 @@ function save() {
         <p class="mt-4 text-sm leading-relaxed text-muted-foreground">
             {{ copy.help }}
         </p>
-        <Link
+        <a
             v-if="contentPage?.status === 'published'"
-            :href="`/pages/${contentPage.slug}`"
+            :href="`${publicBaseUrl}/${contentPage.is_landing ? 'lp' : 'pages'}/${contentPage.slug}`"
+            target="_blank"
+            rel="noopener"
             class="mt-4 inline-block text-sm underline"
-            >{{ copy.view }}</Link
+            >{{ copy.view }}: {{ publicBaseUrl }}/{{
+                contentPage.is_landing ? 'lp' : 'pages'
+            }}/{{ contentPage.slug }}</a
         >
         <form class="mt-8 space-y-6" @submit.prevent="save">
+            <section class="space-y-4 rounded-md border p-5">
+                <label class="flex items-center gap-2 text-sm">
+                    <input v-model="form.is_landing" type="checkbox" />
+                    Landing page (tanpa menu dan footer kedai)
+                </label>
+                <p class="text-sm text-muted-foreground">
+                    Gunakan editor di bawah untuk teks, gambar, pautan dan
+                    jadual. Terbitkan untuk mengaktifkan pautan awam.
+                </p>
+                <label v-if="form.is_landing" class="grid gap-2 text-sm">
+                    Subdomain / domain (pilihan)
+                    <input
+                        v-model="form.custom_domain"
+                        maxlength="253"
+                        placeholder="promosi.example.com"
+                        class="rounded-md border bg-transparent p-2.5"
+                    />
+                    <span class="text-muted-foreground"
+                        >Masukkan nama sahaja tanpa https:// atau laluan.
+                        Tetapkan DNS dan hos web ke folder public aplikasi serta
+                        aktifkan SSL.</span
+                    >
+                    <span
+                        v-if="form.errors.custom_domain"
+                        class="text-red-700 dark:text-red-400"
+                        >{{ form.errors.custom_domain }}</span
+                    >
+                </label>
+                <a
+                    v-if="
+                        contentPage?.is_landing &&
+                        contentPage?.custom_domain &&
+                        contentPage?.status === 'published'
+                    "
+                    :href="`https://${contentPage.custom_domain}`"
+                    target="_blank"
+                    rel="noopener"
+                    class="block text-sm break-all underline"
+                    >https://{{ contentPage.custom_domain }} (selepas DNS / SSL
+                    siap)</a
+                >
+            </section>
             <div class="grid gap-5 sm:grid-cols-2">
                 <label class="grid gap-2 text-sm"
                     ><span

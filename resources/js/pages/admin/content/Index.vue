@@ -7,6 +7,7 @@ import type { ContentPage } from '@/types/content';
 import type { Paginated } from '@/types/catalog';
 const props = defineProps<{
     pages: Paginated<ContentPage>;
+    publicBaseUrl: string;
     filters: { search?: string | null; status?: string | null };
 }>();
 const filter = useForm({
@@ -84,8 +85,19 @@ const filter = useForm({
                         >{{ item.title }}</Link
                     >
                     <p class="mt-2 text-xs break-all text-muted-foreground">
-                        /pages/{{ item.slug }}
+                        {{ item.is_landing ? 'Landing page · ' : ''
+                        }}{{ publicBaseUrl }}/{{
+                            item.is_landing ? 'lp' : 'pages'
+                        }}/{{ item.slug }}
                     </p>
+                    <a
+                        v-if="item.status === 'published'"
+                        :href="`${publicBaseUrl}/${item.is_landing ? 'lp' : 'pages'}/${item.slug}`"
+                        target="_blank"
+                        rel="noopener"
+                        class="mt-2 inline-block text-sm underline"
+                        >Buka pautan awam</a
+                    >
                 </div>
                 <div class="text-sm">
                     <p>

@@ -10,9 +10,20 @@ class ContentPageController extends Controller
 {
     public function show(string $slug): Response
     {
-        return Inertia::render('public/ContentPage', [
-            'contentPage' => ContentPage::where('slug', $slug)->where('status', 'published')
-                ->firstOrFail(['title', 'slug', 'content', 'seo_title', 'meta_description', 'updated_at']),
+        $page = ContentPage::where('slug', $slug)->where('status', 'published')->firstOrFail();
+
+        return $this->render($page);
+    }
+
+    public function landing(string $slug): Response
+    {
+        return $this->render(ContentPage::where('slug', $slug)->where('is_landing', true)->where('status', 'published')->firstOrFail());
+    }
+
+    public function render(ContentPage $page): Response
+    {
+        return Inertia::render($page->is_landing ? 'landing/Show' : 'public/ContentPage', [
+            'contentPage' => $page->only(['title', 'slug', 'content', 'seo_title', 'meta_description', 'updated_at']),
         ]);
     }
 }
