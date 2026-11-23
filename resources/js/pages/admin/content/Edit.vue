@@ -75,8 +75,8 @@ function save() {
                     />
                     <span class="text-muted-foreground"
                         >Masukkan nama sahaja tanpa https:// atau laluan.
-                        Tetapkan DNS dan hos web ke folder public aplikasi serta
-                        aktifkan SSL.</span
+                        Tetapkan Document root subdomain ke folder
+                        landing-public aplikasi serta aktifkan SSL.</span
                     >
                     <span
                         v-if="form.errors.custom_domain"
