@@ -8,6 +8,7 @@ import type { Paginated } from '@/types/catalog';
 const props = defineProps<{
     pages: Paginated<ContentPage>;
     publicBaseUrl: string;
+    documentRoots: { standard: string; landing: string };
     filters: { search?: string | null; status?: string | null };
 }>();
 const filter = useForm({
@@ -98,6 +99,46 @@ const filter = useForm({
                         class="mt-2 inline-block text-sm underline"
                         >Buka pautan awam</a
                     >
+                    <div class="mt-3 space-y-2 text-sm">
+                        <p class="text-muted-foreground">
+                            Document root:
+                            <code
+                                class="block break-all text-foreground select-all"
+                                >{{
+                                    item.is_landing
+                                        ? documentRoots.landing
+                                        : documentRoots.standard
+                                }}</code
+                            >
+                        </p>
+                        <template v-if="item.is_landing && item.custom_domain">
+                            <p v-if="item.status === 'published'">
+                                URL root:
+                                <a
+                                    :href="`https://${item.custom_domain}/`"
+                                    target="_blank"
+                                    rel="noopener"
+                                    class="break-all underline underline-offset-4"
+                                    >https://{{ item.custom_domain }}/</a
+                                >
+                            </p>
+                            <p v-else class="break-all text-muted-foreground">
+                                URL root: https://{{ item.custom_domain }}/
+                                (belum diterbitkan)
+                            </p>
+                            <p class="text-xs text-muted-foreground">
+                                Pautan root memerlukan DNS dan SSL subdomain
+                                yang aktif.
+                            </p>
+                        </template>
+                        <p
+                            v-else-if="item.is_landing"
+                            class="text-xs text-muted-foreground"
+                        >
+                            Tetapkan subdomain dalam suntingan halaman untuk
+                            mendapatkan URL root.
+                        </p>
+                    </div>
                 </div>
                 <div class="text-sm">
                     <p>

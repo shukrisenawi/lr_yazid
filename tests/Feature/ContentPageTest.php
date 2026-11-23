@@ -124,7 +124,8 @@ class ContentPageTest extends TestCase
         $this->create();
         $this->create(['title' => 'Shipping Policy', 'slug' => 'shipping-policy', 'status' => 'published', 'show_in_footer' => false]);
         $this->get('/admin/content-pages?search=Shipping&status=published')->assertInertia(fn (Assert $view) => $view
-            ->has('pages.data', 1)->where('pages.data.0.title', 'Shipping Policy')->missing('pages.data.0.content'));
+            ->has('pages.data', 1)->where('pages.data.0.title', 'Shipping Policy')->missing('pages.data.0.content')
+            ->where('documentRoots.standard', public_path())->where('documentRoots.landing', base_path('landing-public')));
         $this->get('/pages/shipping-policy')->assertOk()->assertInertia(fn (Assert $view) => $view->has('footerPages', 0));
     }
 

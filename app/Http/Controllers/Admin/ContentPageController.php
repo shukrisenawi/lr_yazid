@@ -25,6 +25,10 @@ class ContentPageController extends Controller
                 ->latest('updated_at')->paginate(20)->withQueryString(),
             'filters' => $filters,
             'publicBaseUrl' => rtrim(config('app.url'), '/'),
+            'documentRoots' => [
+                'standard' => public_path(),
+                'landing' => base_path('landing-public'),
+            ],
         ]);
     }
 
