@@ -416,7 +416,7 @@ function archive() {
                 <div
                     v-for="(variant, index) in form.variants"
                     :key="index"
-                    class="mt-4 grid gap-3 rounded-md border p-4 sm:grid-cols-2 lg:grid-cols-5"
+                    class="mt-4 grid gap-3 rounded-md border bg-card p-4 sm:grid-cols-2 lg:grid-cols-5"
                 >
                     <label class="grid gap-2 text-xs"
                         >Variant image<select

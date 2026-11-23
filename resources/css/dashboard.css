@@ -277,6 +277,22 @@
     background: var(--card);
 }
 
+/* Legacy admin panels have borders but no surface fill. Target content
+   containers explicitly, not buttons, status badges or active tabs.
+   Keep intentional background utilities (including muted/error states). */
+.admin-content section.border:not([class*='bg-']),
+.admin-content article.border:not([class*='bg-']),
+.admin-content aside.border:not([class*='bg-']),
+.admin-content form.border:not([class*='bg-']),
+.admin-content figure.border:not([class*='bg-']),
+.admin-content fieldset.border:not([class*='bg-']),
+.admin-content div.overflow-x-auto.border:not([class*='bg-']),
+.admin-content div.overflow-hidden.border:not([class*='bg-']),
+.admin-content dl > div.border:not([class*='bg-']) {
+    background-color: var(--card);
+    box-shadow: 0 1px 2px rgb(56 65 74 / 5%);
+}
+
 .velzon-shell main h1.text-3xl {
     font-size: 22px;
     line-height: 1.4;

@@ -2,5 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 </script>
 <template>
-    <AppLayout><slot /></AppLayout>
+    <AppLayout>
+        <div class="admin-content contents"><slot /></div>
+    </AppLayout>
 </template>
