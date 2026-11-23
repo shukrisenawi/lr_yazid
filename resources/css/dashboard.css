@@ -324,6 +324,34 @@
     color: var(--foreground);
 }
 
+.report-management-link {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: var(--card);
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.report-management-link::after {
+    content: '\2192';
+    flex-shrink: 0;
+}
+
+.report-management-link:hover {
+    border-color: var(--primary);
+    background: var(--secondary);
+}
+
+.report-management-link:active {
+    transform: translateY(1px);
+}
+
 :is(.velzon-shell, [data-mobile='true']) a:focus-visible,
 :is(.velzon-shell, [data-mobile='true']) button:focus-visible {
     outline: 2px solid var(--ring);

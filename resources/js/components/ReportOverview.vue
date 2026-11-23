@@ -67,15 +67,15 @@ defineProps<{ report: AdminReport }>();
             </div>
         </dl>
     </section>
-    <nav class="mt-6 flex flex-wrap gap-5 text-sm">
-        <Link href="/admin/orders" class="underline">{{ copy.orders }}</Link
-        ><Link href="/admin/payments" class="underline">{{
+    <nav class="mt-6 grid gap-3 text-sm sm:grid-cols-2 xl:grid-cols-4">
+        <Link href="/admin/orders" class="report-management-link">{{ copy.orders }}</Link
+        ><Link href="/admin/payments" class="report-management-link">{{
             copy.payments
         }}</Link
-        ><Link href="/admin/customers" class="underline">{{
+        ><Link href="/admin/customers" class="report-management-link">{{
             copy.customers
         }}</Link
-        ><Link href="/admin/appointments" class="underline">{{
+        ><Link href="/admin/appointments" class="report-management-link">{{
             copy.bookings
         }}</Link>
     </nav>

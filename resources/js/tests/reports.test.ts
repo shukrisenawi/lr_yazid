@@ -108,6 +108,7 @@ describe('administration reports', () => {
         );
         expect(root.textContent).toContain('not historical counts');
         expect(root.querySelector('a[href="/admin/payments"]')).not.toBeNull();
+        expect(root.querySelectorAll('nav .report-management-link')).toHaveLength(4);
     });
     it('shows real zero states instead of sample revenues', () => {
         const report = fixture();
