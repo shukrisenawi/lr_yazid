@@ -44,9 +44,16 @@ describe('grouped sidebar navigation', () => {
         expect(new Set(items.map((item) => item.icon)).size).toBe(items.length);
     });
 
-    it('limits admin navigation to three links and five collapsible groups', () => {
+    it('limits admin navigation to management links only', () => {
         expect(adminNavigation).toHaveLength(3);
-        expect(adminNavigationGroups(false)).toHaveLength(5);
+        expect(adminNavigationGroups(false)).toHaveLength(4);
+        for (const isVip of [false, true]) {
+            expect(
+                adminNavigationGroups(isVip)
+                    .flatMap((group) => group.items)
+                    .every((item) => toUrl(item.href).startsWith('/admin/')),
+            ).toBe(true);
+        }
     });
 
     it('keeps VIP-only account links restricted to active members', () => {

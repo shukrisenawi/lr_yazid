@@ -79,7 +79,11 @@ class VipProgramTest extends TestCase
             $user->memberships()->update(['expires_at' => now()]);
             $this->actingAs($user)->get('/vip/programs')->assertForbidden();
             $this->post("/vip/programs/$program->id/register")->assertForbidden();
-            $this->get('/my-programs')->assertOk();
+            if ($user->role === UserRole::Admin) {
+                $this->get('/my-programs')->assertRedirect(route('admin.dashboard'));
+            } else {
+                $this->get('/my-programs')->assertOk();
+            }
         }
         $this->assertDatabaseCount('vip_program_registrations', 0);
     }

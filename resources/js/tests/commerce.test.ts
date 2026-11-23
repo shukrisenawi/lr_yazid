@@ -9,6 +9,7 @@ vi.mock('@inertiajs/vue3', async () => {
     const { reactive } = await import('vue');
     return {
         router: { visit: calls.visit },
+        usePage: () => ({ props: { auth: { user: null } } }),
         useForm: (data: Record<string, unknown>) =>
             reactive({
                 ...data,

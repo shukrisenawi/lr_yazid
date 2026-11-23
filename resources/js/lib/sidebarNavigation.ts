@@ -29,7 +29,6 @@ import {
     Store,
     Tags,
     Truck,
-    UserRound,
     UsersRound,
 } from '@lucide/vue';
 import type { LucideIcon } from '@lucide/vue';
@@ -89,7 +88,7 @@ export const adminNavigation: NavItem[] = [
     { title: 'Customers', href: '/admin/customers', icon: UsersRound },
 ];
 
-export function adminNavigationGroups(isVip: boolean): SidebarNavGroup[] {
+export function adminNavigationGroups(_isVip: boolean): SidebarNavGroup[] {
     return [
         {
             id: 'commerce',
@@ -186,12 +185,6 @@ export function adminNavigationGroups(isVip: boolean): SidebarNavGroup[] {
                     icon: FileText,
                 },
             ],
-        },
-        {
-            id: 'account',
-            title: 'My account',
-            icon: UserRound,
-            items: accountNavigation(isVip),
         },
     ];
 }

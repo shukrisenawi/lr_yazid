@@ -97,7 +97,11 @@ class AppointmentWorkflowTest extends TestCase
         foreach ([User::factory()->create(), $expired, $this->admin] as $user) {
             $this->actingAs($user)->get('/vip/appointments/book')->assertForbidden();
             $this->post('/vip/appointments', ['slot_id' => $slot->id, 'booking_key' => (string) Str::uuid(), 'purpose' => 'Not eligible'])->assertForbidden();
-            $this->get('/appointments')->assertOk();
+            if ($user->role === UserRole::Admin) {
+                $this->get('/appointments')->assertRedirect(route('admin.dashboard'));
+            } else {
+                $this->get('/appointments')->assertOk();
+            }
         }
         $this->assertDatabaseCount('appointments', 0);
     }

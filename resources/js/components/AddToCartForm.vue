@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { router, useForm } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { router, useForm, usePage } from '@inertiajs/vue3';
+import { computed, ref, watch } from 'vue';
 const props = withDefaults(
     defineProps<{
         productId: number;
@@ -25,6 +25,8 @@ const form = useForm({
     quantity: 1,
 });
 const added = ref(false);
+const page = usePage();
+const isAdmin = computed(() => page.props.auth.user?.role === 'admin');
 watch(
     () => props.variantId,
     (value) => {
@@ -45,7 +47,7 @@ function submit(buyNow = false) {
 }
 </script>
 <template>
-    <form class="mt-5 space-y-3" @submit.prevent="submit()">
+    <form v-if="!isAdmin" class="mt-5 space-y-3" @submit.prevent="submit()">
         <label v-if="!compact" class="grid max-w-28 gap-2 text-sm"
             ><span
                 >Quantity

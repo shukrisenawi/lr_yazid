@@ -17,6 +17,7 @@ vi.mock('@inertiajs/vue3', async () => {
                 clearErrors: vi.fn(),
             }),
         router: { visit: vi.fn() },
+        usePage: () => ({ props: { auth: { user: null } } }),
         Link: defineComponent({
             props: ['href'],
             setup:

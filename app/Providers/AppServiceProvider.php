@@ -58,7 +58,7 @@ class AppServiceProvider extends ServiceProvider
             }
         });
         Event::listen(Login::class, function (Login $event): void {
-            if (request()->hasSession() && $event->user instanceof User) {
+            if (request()->hasSession() && $event->user instanceof User && $event->user->role !== UserRole::Admin) {
                 app(CartService::class)->mergeGuest(request(), $event->user);
             }
         });

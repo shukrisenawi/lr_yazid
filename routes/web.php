@@ -29,20 +29,23 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\VipProgramController;
+use App\Http\Middleware\CustomerOnly;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [CatalogController::class, 'home'])->name('home');
 Route::get('/pages/{slug}', [ContentPageController::class, 'show'])->name('content.show');
 Route::get('/lp/{slug}', [ContentPageController::class, 'landing'])->name('landing.show');
-Route::get('/vip-membership', [MembershipController::class, 'index'])->name('membership.info');
+Route::get('/vip-membership', [MembershipController::class, 'index'])->middleware(CustomerOnly::class)->name('membership.info');
 Route::get('/products', [CatalogController::class, 'index'])->name('products.index');
 Route::get('/products/{slug}', [CatalogController::class, 'show'])->name('products.show');
 Route::post('/payments/toyyibpay/callback', [PaymentController::class, 'callback'])->middleware('throttle:120,1')->name('payments.callback');
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('/cart/items', [CartController::class, 'store'])->block()->middleware('throttle:60,1')->name('cart.store');
-Route::patch('/cart/items/{cartItem}', [CartController::class, 'update'])->block()->name('cart.update');
-Route::delete('/cart/items/{cartItem}', [CartController::class, 'destroy'])->block()->name('cart.remove');
-Route::delete('/cart', [CartController::class, 'clear'])->block()->name('cart.clear');
+Route::middleware(CustomerOnly::class)->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/items', [CartController::class, 'store'])->block()->middleware('throttle:60,1')->name('cart.store');
+    Route::patch('/cart/items/{cartItem}', [CartController::class, 'update'])->block()->name('cart.update');
+    Route::delete('/cart/items/{cartItem}', [CartController::class, 'destroy'])->block()->name('cart.remove');
+    Route::delete('/cart', [CartController::class, 'clear'])->block()->name('cart.clear');
+});
 
 Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('commerce-notices', [CommerceNoticeController::class, 'index'])->name('commerce-notices.index');
@@ -106,35 +109,37 @@ Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('adm
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
-    Route::get('/vip/appointments/book', [AppointmentController::class, 'calendar'])->middleware('can:vip')->name('appointments.book');
-    Route::post('/vip/appointments', [AppointmentController::class, 'store'])->middleware(['can:vip', 'throttle:20,1'])->name('appointments.store');
-    Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
-    Route::get('/appointments/{appointment}', [AppointmentController::class, 'show'])->name('appointments.show');
-    Route::post('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel'])->name('appointments.cancel');
-    Route::post('/appointments/{appointment}/reschedule', [AppointmentController::class, 'reschedule'])->middleware(['can:vip', 'throttle:20,1'])->name('appointments.reschedule');
-    Route::post('/appointment-reschedules/{rescheduleRequest}/respond', [AppointmentController::class, 'respond'])->name('appointments.reschedules.respond');
-    Route::get('/my-programs', [VipProgramController::class, 'mine'])->name('programs.mine');
-    Route::post('/my-programs/{registration}/cancel', [VipProgramController::class, 'cancel'])->name('programs.cancel');
-    Route::middleware('can:vip')->prefix('vip/programs')->name('vip.programs.')->group(function () {
-        Route::get('/', [VipProgramController::class, 'index'])->name('index');
-        Route::get('/{slug}', [VipProgramController::class, 'show'])->name('show');
-        Route::post('/{program}/register', [VipProgramController::class, 'register'])->middleware('throttle:20,1')->name('register');
+    Route::middleware(CustomerOnly::class)->group(function () {
+        Route::get('/vip/appointments/book', [AppointmentController::class, 'calendar'])->middleware('can:vip')->name('appointments.book');
+        Route::post('/vip/appointments', [AppointmentController::class, 'store'])->middleware(['can:vip', 'throttle:20,1'])->name('appointments.store');
+        Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
+        Route::get('/appointments/{appointment}', [AppointmentController::class, 'show'])->name('appointments.show');
+        Route::post('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel'])->name('appointments.cancel');
+        Route::post('/appointments/{appointment}/reschedule', [AppointmentController::class, 'reschedule'])->middleware(['can:vip', 'throttle:20,1'])->name('appointments.reschedule');
+        Route::post('/appointment-reschedules/{rescheduleRequest}/respond', [AppointmentController::class, 'respond'])->name('appointments.reschedules.respond');
+        Route::get('/my-programs', [VipProgramController::class, 'mine'])->name('programs.mine');
+        Route::post('/my-programs/{registration}/cancel', [VipProgramController::class, 'cancel'])->name('programs.cancel');
+        Route::middleware('can:vip')->prefix('vip/programs')->name('vip.programs.')->group(function () {
+            Route::get('/', [VipProgramController::class, 'index'])->name('index');
+            Route::get('/{slug}', [VipProgramController::class, 'show'])->name('show');
+            Route::post('/{program}/register', [VipProgramController::class, 'register'])->middleware('throttle:20,1')->name('register');
+        });
+        Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+        Route::post('/checkout', [CheckoutController::class, 'store'])->block()->middleware('throttle:10,1')->name('checkout.store');
+        Route::resource('addresses', AddressController::class)->only(['index', 'store', 'update', 'destroy']);
+        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+        Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->block()->name('orders.cancel');
+        Route::post('/orders/{order}/pay', [PaymentController::class, 'start'])->block(30, 30)->middleware('throttle:10,1')->name('orders.pay');
+        Route::get('/payments/return', [PaymentController::class, 'result'])->name('payments.return');
+        Route::inertia('dashboard', 'customer/Dashboard')->name('dashboard');
+        Route::get('/membership', [MembershipController::class, 'index'])->name('membership.index');
+        Route::get('vip/dashboard', [MembershipController::class, 'dashboard'])
+            ->middleware('can:vip')->name('vip.dashboard');
     });
-    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-    Route::post('/checkout', [CheckoutController::class, 'store'])->block()->middleware('throttle:10,1')->name('checkout.store');
-    Route::resource('addresses', AddressController::class)->only(['index', 'store', 'update', 'destroy']);
-    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
-    Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->block()->name('orders.cancel');
-    Route::post('/orders/{order}/pay', [PaymentController::class, 'start'])->block(30, 30)->middleware('throttle:10,1')->name('orders.pay');
-    Route::get('/payments/return', [PaymentController::class, 'result'])->name('payments.return');
-    Route::inertia('dashboard', 'customer/Dashboard')->name('dashboard');
-    Route::get('/membership', [MembershipController::class, 'index'])->name('membership.index');
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
     Route::post('/notifications/{notification}/read', [NotificationController::class, 'read'])->whereUuid('notification')->name('notifications.read');
-    Route::get('vip/dashboard', [MembershipController::class, 'dashboard'])
-        ->middleware('can:vip')->name('vip.dashboard');
 });
 
 require __DIR__.'/settings.php';

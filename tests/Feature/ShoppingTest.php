@@ -219,6 +219,8 @@ class ShoppingTest extends TestCase
         $user->save();
         $this->put('/admin/shipping', ['shipping_fee_sen' => 500, 'shipping_enabled' => false, 'reservation_minutes' => 15])->assertSessionHasNoErrors();
         $this->assertSame(500, CommerceSetting::current()->shipping_fee_sen);
+        $user = User::factory()->create();
+        $this->actingAs($user);
         $address = $this->address($user);
         $this->post('/cart/items', ['product_id' => $this->product()->id, 'quantity' => 1]);
         $this->post('/checkout', ['checkout_key' => (string) Str::uuid(), 'address_id' => $address->id])->assertSessionHasErrors('cart');

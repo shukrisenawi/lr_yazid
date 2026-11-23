@@ -8,6 +8,7 @@ import { websiteCopy } from '@/lib/websiteCopy';
 import WebsiteHead from '@/components/WebsiteHead.vue';
 import BrandLogo from '@/components/BrandLogo.vue';
 const page = usePage();
+const isAdmin = computed(() => page.props.auth.user?.role === 'admin');
 const menuOpen = ref(false);
 const copy = computed(() => page.props.copy as Record<string, string>);
 </script>
@@ -49,15 +50,21 @@ const copy = computed(() => page.props.copy as Record<string, string>);
                     <Link href="/products" class="hover:underline"
                         >Products</Link
                     >
-                    <Link href="/vip-membership" class="hover:underline"
+                    <Link
+                        v-if="!isAdmin"
+                        href="/vip-membership"
+                        class="hover:underline"
                         >VIP Membership</Link
                     >
-                    <Link href="/cart" class="whitespace-nowrap hover:underline"
+                    <Link
+                        v-if="!isAdmin"
+                        href="/cart"
+                        class="whitespace-nowrap hover:underline"
                         >Cart ({{ page.props.cartCount ?? 0 }})</Link
                     >
                     <template v-if="page.props.auth.user">
                         <Link
-                            href="/dashboard"
+                            :href="isAdmin ? '/admin/dashboard' : '/dashboard'"
                             class="font-medium hover:underline"
                             >{{ copy.account }}</Link
                         >
