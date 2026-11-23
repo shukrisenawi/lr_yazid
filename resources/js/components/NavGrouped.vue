@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { ChevronRight } from '@lucide/vue';
 import { computed, ref, watch } from 'vue';
 import CartBadge from '@/components/CartBadge.vue';
+import MenuBadge from '@/components/MenuBadge.vue';
 import {
     SidebarGroup,
     SidebarMenu,
@@ -70,6 +71,10 @@ function toggle(id: string) {
                 >
                     <component :is="group.icon" />
                     <span>{{ group.title }}</span>
+                    <MenuBadge
+                        :count="group.items.reduce((total, item) => total + (page.props.menuBadges?.[toUrl(item.href)] ?? 0), 0)"
+                        :label="group.title"
+                    />
                     <ChevronRight
                         class="ml-auto size-3.5 group-data-[collapsible=icon]:hidden"
                         :class="{ 'rotate-90': openGroup === group.id }"
@@ -102,6 +107,7 @@ function toggle(id: string) {
                                 <CartBadge
                                     v-if="toUrl(item.href) === '/cart'"
                                 />
+                                <MenuBadge v-else :href="toUrl(item.href)" :label="item.title" />
                             </Link>
                         </SidebarMenuSubButton>
                     </SidebarMenuSubItem>

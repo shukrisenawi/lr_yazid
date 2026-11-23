@@ -2,7 +2,11 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\UserRole;
+use App\Models\Appointment;
 use App\Models\ContentPage;
+use App\Models\Order;
+use App\Models\Payment;
 use App\Models\WebsiteSetting;
 use App\Services\CartService;
 use Illuminate\Http\Request;
@@ -46,6 +50,11 @@ class HandleInertiaRequests extends Middleware
             'footerPages' => fn () => ContentPage::where('status', 'published')->where('show_in_footer', true)->orderBy('title')->get(['title', 'slug']),
             'cartCount' => fn () => app(CartService::class)->count($request),
             'unreadNotificationCount' => fn () => $request->user()?->unreadNotifications()->count() ?? 0,
+            'menuBadges' => fn () => $request->user()?->role === UserRole::Admin ? [
+                '/admin/orders' => Order::where('payment_status', 'paid')->where('fulfillment_status', 'new')->count(),
+                '/admin/payments' => Payment::where('requires_review', true)->count(),
+                '/admin/appointments' => Appointment::where('status', 'pending')->count(),
+            ] : [],
             'auth' => [
                 'impersonating' => $request->user() !== null
                     && $request->session()->get('impersonation.customer_id') === $request->user()->id,

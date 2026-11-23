@@ -23,6 +23,7 @@ declare module '@inertiajs/core' {
             auth: Auth;
             sidebarOpen: boolean;
             cartCount: number;
+            menuBadges: Record<string, number>;
             unreadNotificationCount: number;
             footerPages: { title: string; slug: string }[];
             [key: string]: unknown;
