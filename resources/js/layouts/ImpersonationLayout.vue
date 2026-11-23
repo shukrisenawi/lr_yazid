@@ -16,7 +16,7 @@ const form = useForm({});
     <div
         v-if="page.props.auth.impersonating"
         role="status"
-        class="sticky top-0 z-50 flex flex-wrap items-center justify-center gap-3 border-b border-amber-300 bg-amber-100 px-4 py-3 text-sm text-amber-950"
+        class="sticky top-0 z-50 flex flex-wrap items-center justify-center gap-2 border-b border-amber-300 bg-amber-100 px-3 py-1 text-xs text-amber-950"
     >
         <span
             >You are logged in as
@@ -30,10 +30,10 @@ const form = useForm({});
                         type="button"
                         :disabled="form.processing"
                         aria-label="Return to admin"
-                        class="inline-flex size-10 items-center justify-center rounded-md border border-amber-700 hover:bg-amber-200 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50"
+                        class="inline-flex size-7 items-center justify-center rounded border border-amber-700 hover:bg-amber-200 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50"
                         @click="form.post('/impersonation/stop')"
                     >
-                        <Undo2 :size="18" aria-hidden="true" />
+                        <Undo2 :size="14" aria-hidden="true" />
                     </button>
                 </TooltipTrigger>
                 <TooltipContent>Return to admin</TooltipContent>
