@@ -47,6 +47,8 @@ class HandleInertiaRequests extends Middleware
             'cartCount' => fn () => app(CartService::class)->count($request),
             'unreadNotificationCount' => fn () => $request->user()?->unreadNotifications()->count() ?? 0,
             'auth' => [
+                'impersonating' => $request->user() !== null
+                    && $request->session()->get('impersonation.customer_id') === $request->user()->id,
                 'isVip' => $request->user()?->hasActiveMembership() ?? false,
                 'user' => $request->user()?->only(['id', 'name', 'email', 'phone', 'role', 'avatar', 'email_verified_at', 'created_at', 'updated_at', 'profile_version']),
             ],

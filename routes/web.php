@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CommerceNoticeController;
 use App\Http\Controllers\Admin\ContentPageController as AdminContentPageController;
 use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\CustomerImpersonationController;
 use App\Http\Controllers\Admin\HomepageBannerController;
 use App\Http\Controllers\Admin\MembershipController as AdminMembershipController;
 use App\Http\Controllers\Admin\MembershipPlanController;
@@ -33,6 +34,8 @@ use App\Http\Middleware\CustomerOnly;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [CatalogController::class, 'home'])->name('home');
+Route::post('/impersonation/stop', [CustomerImpersonationController::class, 'destroy'])
+    ->middleware('auth')->block()->name('impersonation.stop');
 Route::get('/pages/{slug}', [ContentPageController::class, 'show'])->name('content.show');
 Route::get('/lp/{slug}', [ContentPageController::class, 'landing'])->name('landing.show');
 Route::get('/vip-membership', [MembershipController::class, 'index'])->middleware(CustomerOnly::class)->name('membership.info');
@@ -66,6 +69,8 @@ Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('adm
     Route::post('orders/{order}/cancel', [AdminOrderController::class, 'cancel'])->name('orders.cancel');
     Route::post('orders/{order}/manual-refunds', [AdminOrderController::class, 'refund'])->name('orders.manual-refunds.store');
     Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
+    Route::post('customers/{customer}/login', [CustomerImpersonationController::class, 'store'])
+        ->block()->name('customers.login');
     Route::get('customers/{customer}', [CustomerController::class, 'show'])->name('customers.show');
     Route::put('customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
     Route::get('appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');

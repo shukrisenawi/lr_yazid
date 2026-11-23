@@ -2,6 +2,7 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { initializeTheme } from '@/composables/useAppearance';
 import { defineAsyncComponent } from 'vue';
 import PublicLayout from '@/layouts/PublicLayout.vue';
+import ImpersonationLayout from '@/layouts/ImpersonationLayout.vue';
 import { initializeFlashToast } from '@/lib/flashToast';
 import { websiteTitle } from '@/lib/websiteTitle';
 
@@ -30,23 +31,23 @@ void createInertiaApp({
     layout: (name) => {
         switch (true) {
             case name.startsWith('landing/'):
-                return [];
+                return [ImpersonationLayout];
             case name.startsWith('invoice/'):
-                return InvoiceLayout;
+                return [ImpersonationLayout, InvoiceLayout];
             case name.startsWith('public/'):
-                return PublicLayout;
+                return [ImpersonationLayout, PublicLayout];
             case name.startsWith('customer/'):
-                return CustomerLayout;
+                return [ImpersonationLayout, CustomerLayout];
             case name.startsWith('admin/'):
-                return AdminLayout;
+                return [ImpersonationLayout, AdminLayout];
             case name.startsWith('vip/'):
-                return VIPLayout;
+                return [ImpersonationLayout, VIPLayout];
             case name.startsWith('auth/'):
-                return AuthLayout;
+                return [ImpersonationLayout, AuthLayout];
             case name.startsWith('settings/'):
-                return [AppLayout, SettingsLayout];
+                return [ImpersonationLayout, AppLayout, SettingsLayout];
             default:
-                return AppLayout;
+                return [ImpersonationLayout, AppLayout];
         }
     },
     withApp: (app) => {

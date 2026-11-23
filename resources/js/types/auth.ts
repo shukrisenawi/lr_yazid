@@ -14,6 +14,7 @@ export type User = {
 };
 
 export type Auth = {
+    impersonating: boolean;
     user: User;
     isVip: boolean;
 };

@@ -1,1 +1,0 @@
-import{En as e,Z as t,ct as n,en as r,qt as i}from"./dist-jVGu4_vM.js";import{t as a}from"./AppLayout-DryeGLs9.js";var o=n({__name:`CustomerLayout`,setup(n){return(n,o)=>(i(),t(a,null,{default:e(()=>[r(n.$slots,`default`)]),_:3}))}});export{o as default};

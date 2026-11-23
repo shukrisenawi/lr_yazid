@@ -20,6 +20,7 @@ const filter = useForm({
     search: props.filters.search ?? '',
     membership: props.filters.membership ?? '',
 });
+const login = useForm({});
 </script>
 <template>
     <Head :title="copy.title" />
@@ -72,6 +73,7 @@ const filter = useForm({
                         <th class="p-4">{{ copy.membership }}</th>
                         <th class="p-4">{{ copy.orders }}</th>
                         <th class="p-4">{{ copy.joined }}</th>
+                        <th class="p-4">Tindakan</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -98,10 +100,25 @@ const filter = useForm({
                         <td class="p-4 whitespace-nowrap">
                             {{ dateTime(customer.created_at) }}
                         </td>
+                        <td class="p-4">
+                            <button
+                                type="button"
+                                :disabled="login.processing"
+                                :aria-label="`Login sebagai ${customer.name}`"
+                                class="rounded-md border px-4 py-2 whitespace-nowrap hover:bg-muted disabled:opacity-50"
+                                @click="
+                                    login.post(
+                                        `/admin/customers/${customer.id}/login`,
+                                    )
+                                "
+                            >
+                                Login sebagai customer
+                            </button>
+                        </td>
                     </tr>
                     <tr v-if="!customers.data.length">
                         <td
-                            colspan="5"
+                            colspan="6"
                             class="p-10 text-center text-muted-foreground"
                         >
                             {{ copy.empty }}
