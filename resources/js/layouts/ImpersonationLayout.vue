@@ -1,5 +1,12 @@
 <script setup lang="ts">
 import { useForm, usePage } from '@inertiajs/vue3';
+import { Undo2 } from '@lucide/vue';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 const page = usePage();
 const form = useForm({});
@@ -12,18 +19,26 @@ const form = useForm({});
         class="sticky top-0 z-50 flex flex-wrap items-center justify-center gap-3 border-b border-amber-300 bg-amber-100 px-4 py-3 text-sm text-amber-950"
     >
         <span
-            >Anda sedang login sebagai
+            >You are logged in as
             <strong>{{ page.props.auth.user?.name }}</strong
             >.</span
         >
-        <button
-            type="button"
-            :disabled="form.processing"
-            class="rounded-md border border-amber-700 px-3 py-2 font-semibold hover:bg-amber-200 disabled:opacity-50"
-            @click="form.post('/impersonation/stop')"
-        >
-            Kembali ke admin
-        </button>
+        <TooltipProvider :delay-duration="200">
+            <Tooltip>
+                <TooltipTrigger as-child>
+                    <button
+                        type="button"
+                        :disabled="form.processing"
+                        aria-label="Return to admin"
+                        class="inline-flex size-10 items-center justify-center rounded-md border border-amber-700 hover:bg-amber-200 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50"
+                        @click="form.post('/impersonation/stop')"
+                    >
+                        <Undo2 :size="18" aria-hidden="true" />
+                    </button>
+                </TooltipTrigger>
+                <TooltipContent>Return to admin</TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
     </div>
     <slot />
 </template>

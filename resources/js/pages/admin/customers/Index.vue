@@ -1,5 +1,12 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { LogIn } from '@lucide/vue';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 import Pagination from '@/components/Pagination.vue';
 import { customerCopy as copy } from '@/lib/customerCopy';
 import { dateTime } from '@/types/commerce';
@@ -73,7 +80,7 @@ const login = useForm({});
                         <th class="p-4">{{ copy.membership }}</th>
                         <th class="p-4">{{ copy.orders }}</th>
                         <th class="p-4">{{ copy.joined }}</th>
-                        <th class="p-4">Tindakan</th>
+                        <th class="p-4">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -101,19 +108,32 @@ const login = useForm({});
                             {{ dateTime(customer.created_at) }}
                         </td>
                         <td class="p-4">
-                            <button
-                                type="button"
-                                :disabled="login.processing"
-                                :aria-label="`Login sebagai ${customer.name}`"
-                                class="rounded-md border px-4 py-2 whitespace-nowrap hover:bg-muted disabled:opacity-50"
-                                @click="
-                                    login.post(
-                                        `/admin/customers/${customer.id}/login`,
-                                    )
-                                "
-                            >
-                                Login sebagai customer
-                            </button>
+                            <TooltipProvider :delay-duration="200">
+                                <Tooltip>
+                                    <TooltipTrigger as-child>
+                                        <button
+                                            type="button"
+                                            :disabled="login.processing"
+                                            :aria-label="`Log in as ${customer.name}`"
+                                            class="inline-flex size-10 items-center justify-center rounded-md border hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50"
+                                            @click="
+                                                login.post(
+                                                    `/admin/customers/${customer.id}/login`,
+                                                )
+                                            "
+                                        >
+                                            <LogIn
+                                                :size="18"
+                                                aria-hidden="true"
+                                            />
+                                        </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent
+                                        >Log in as
+                                        {{ customer.name }}</TooltipContent
+                                    >
+                                </Tooltip>
+                            </TooltipProvider>
                         </td>
                     </tr>
                     <tr v-if="!customers.data.length">
