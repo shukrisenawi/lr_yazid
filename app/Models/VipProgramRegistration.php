@@ -19,7 +19,7 @@ class VipProgramRegistration extends Model
     /** @return BelongsTo<VipProgram, $this> */
     public function program(): BelongsTo
     {
-        return $this->belongsTo(VipProgram::class, 'vip_program_id');
+        return $this->belongsTo(VipProgram::class, 'vip_program_id')->withTrashed();
     }
 
     /** @return BelongsTo<User, $this> */

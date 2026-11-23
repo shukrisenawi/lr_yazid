@@ -94,6 +94,7 @@ class OrderController extends Controller
     private function filters(Request $request): array
     {
         return $request->validate(['search' => ['nullable', 'string', 'max:100'],
+            'archive' => ['nullable', 'in:active,archived,all'],
             'payment' => ['nullable', 'in:pending,paid,failed,cancelled,refunded'],
             'fulfillment' => ['nullable', 'in:new,processing,packed,shipped,delivered,cancelled'],
             'from' => ['nullable', 'date_format:Y-m-d'], 'to' => ['nullable', 'date_format:Y-m-d', ...($request->filled('from') ? ['after_or_equal:from'] : [])]]);
@@ -105,6 +106,7 @@ class OrderController extends Controller
     private function query(array $filters): Builder
     {
         return Order::when($filters['search'] ?? null, fn ($q, $search) => $q->where(fn ($q) => $q->where('reference', 'like', '%'.$search.'%')->orWhere('customer_name', 'like', '%'.$search.'%')->orWhere('customer_email', 'like', '%'.$search.'%')))
+            ->when(($filters['archive'] ?? 'active') !== 'all', fn ($q) => ($filters['archive'] ?? 'active') === 'archived' ? $q->whereNotNull('archived_at') : $q->whereNull('archived_at'))
             ->when($filters['payment'] ?? null, fn ($q, $value) => $q->where('payment_status', $value))
             ->when($filters['fulfillment'] ?? null, fn ($q, $value) => $q->where('fulfillment_status', $value))
             ->when($filters['from'] ?? null, fn ($q, $value) => $q->where('created_at', '>=', $value.' 00:00:00'))

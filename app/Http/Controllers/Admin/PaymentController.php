@@ -20,11 +20,14 @@ class PaymentController extends Controller
 {
     public function index(Request $request): Response
     {
-        $data = $request->validate(['status' => ['nullable', 'string', 'in:creating,creation_unknown,pending,paid,failed,expired']]);
+        $data = $request->validate(['status' => ['nullable', 'string', 'in:creating,creation_unknown,pending,paid,failed,expired'], 'archive' => ['nullable', 'in:active,archived,all']]);
 
         return Inertia::render('admin/Payments', [
-            'payments' => Payment::with(['order:id,reference,customer_name,customer_email'])->when($data['status'] ?? null, fn ($query, $status) => $query->where('status', $status))->latest()->paginate(20)->withQueryString(),
+            'payments' => Payment::with(['order:id,reference,customer_name,customer_email'])
+                ->when(($data['archive'] ?? 'active') !== 'all', fn ($query) => ($data['archive'] ?? 'active') === 'archived' ? $query->whereNotNull('archived_at') : $query->whereNull('archived_at'))
+                ->when($data['status'] ?? null, fn ($query, $status) => $query->where('status', $status))->latest()->paginate(20)->withQueryString(),
             'status' => $data['status'] ?? '',
+            'archive' => $data['archive'] ?? 'active',
         ]);
     }
 

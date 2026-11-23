@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import AdminRecordAction from '@/components/AdminRecordAction.vue';
+import { recordManagementCopy as recordCopy } from '@/lib/recordManagementCopy';
 import Pagination from '@/components/Pagination.vue';
 import StatusBadge from '@/components/StatusBadge.vue';
 import { money, type Paginated } from '@/types/catalog';
@@ -7,6 +9,7 @@ import type { Payment } from '@/types/commerce';
 const props = defineProps<{
     payments: Paginated<
         Payment & {
+            archived_at: string | null;
             order: {
                 reference: string;
                 customer_name: string;
@@ -15,8 +18,9 @@ const props = defineProps<{
         }
     >;
     status: string;
+    archive: string;
 }>();
-const filter = useForm({ status: props.status });
+const filter = useForm({ status: props.status, archive: props.archive });
 const reconcile = useForm({});
 </script>
 <template>
@@ -32,6 +36,17 @@ const reconcile = useForm({});
             class="mt-6 flex items-end gap-3"
             @submit.prevent="filter.get('/admin/payments')"
         >
+            <label class="grid gap-2 text-sm"
+                >{{ recordCopy.view }}
+                <select
+                    v-model="filter.archive"
+                    class="rounded-md border bg-background p-2"
+                >
+                    <option value="active">{{ recordCopy.active }}</option>
+                    <option value="archived">{{ recordCopy.archived }}</option>
+                    <option value="all">{{ recordCopy.all }}</option>
+                </select>
+            </label>
             <label class="grid gap-2 text-sm"
                 >Payment status<select
                     v-model="filter.status"
@@ -142,6 +157,17 @@ const reconcile = useForm({});
                                 Check the provider dashboard before retrying an
                                 unconfirmed bill creation.
                             </p>
+                            <Link
+                                :href="`/admin/orders/${payment.order_id}`"
+                                class="mt-3 block underline"
+                                >View order / cancel unpaid order</Link
+                            >
+                            <AdminRecordAction
+                                module="payments"
+                                :record-id="payment.id"
+                                archive
+                                :archived="!!payment.archived_at"
+                            />
                         </td>
                     </tr>
                     <tr v-if="!payments.data.length">

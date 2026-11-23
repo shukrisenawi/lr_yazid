@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\MembershipPlanController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\RecordActionController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\ShippingSettingsController;
 use App\Http\Controllers\Admin\VipProgramController as AdminVipProgramController;
@@ -51,6 +52,10 @@ Route::middleware(CustomerOnly::class)->group(function () {
 });
 
 Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::delete('records/{module}/{record}', [RecordActionController::class, 'destroy'])
+        ->whereNumber('record')->name('records.destroy');
+    Route::patch('records/{module}/{record}/archive', [RecordActionController::class, 'archive'])
+        ->whereNumber('record')->name('records.archive');
     Route::get('commerce-notices', [CommerceNoticeController::class, 'index'])->name('commerce-notices.index');
     Route::get('dashboard', [ReportController::class, 'index'])->name('dashboard');
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');

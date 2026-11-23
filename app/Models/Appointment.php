@@ -6,6 +6,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property CarbonImmutable|null $scheduled_starts_at
@@ -13,6 +14,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Appointment extends Model
 {
+    use SoftDeletes;
+
     protected $guarded = ['id'];
 
     protected function casts(): array
@@ -36,7 +39,7 @@ class Appointment extends Model
     /** @return BelongsTo<AppointmentService, $this> */
     public function service(): BelongsTo
     {
-        return $this->belongsTo(AppointmentService::class, 'appointment_service_id');
+        return $this->belongsTo(AppointmentService::class, 'appointment_service_id')->withTrashed();
     }
 
     /** @return HasMany<AppointmentRescheduleRequest, $this> */

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AdminRecordAction from '@/components/AdminRecordAction.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import ImageUpload from '@/components/ImageUpload.vue';
@@ -49,6 +50,11 @@ function save() {
         <h1 class="mt-5 text-3xl font-semibold">
             {{ banner ? copy.edit : copy.create }}
         </h1>
+        <AdminRecordAction
+            v-if="banner"
+            module="banners"
+            :record-id="banner.id"
+        />
         <p class="mt-4 text-sm leading-relaxed text-muted-foreground">
             {{ copy.bannerHelp }}
         </p>

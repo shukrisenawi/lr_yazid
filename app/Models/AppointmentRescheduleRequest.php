@@ -23,6 +23,6 @@ class AppointmentRescheduleRequest extends Model
     /** @return BelongsTo<Appointment, $this> */
     public function appointment(): BelongsTo
     {
-        return $this->belongsTo(Appointment::class);
+        return $this->belongsTo(Appointment::class)->withTrashed();
     }
 }

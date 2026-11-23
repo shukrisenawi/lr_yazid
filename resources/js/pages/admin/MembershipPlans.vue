@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import AdminRecordAction from '@/components/AdminRecordAction.vue';
 import RinggitInput from '@/components/RinggitInput.vue';
 import { money } from '@/types/catalog';
 import type { MembershipPlan } from '@/types/membership';
@@ -52,6 +53,14 @@ function save() {
                 class="rounded-xl border p-5"
             >
                 <h2 class="font-semibold">{{ plan.name }}</h2>
+                <AdminRecordAction
+                    module="membership-plans"
+                    :record-id="plan.id"
+                    @success="
+                        editing = null;
+                        form.reset();
+                    "
+                />
                 <p class="mt-3 text-sm">
                     {{ money(plan.price_sen) }} /
                     {{ plan.duration_months }} months ·

@@ -24,7 +24,7 @@ class AppointmentSlot extends Model
     /** @return BelongsTo<AppointmentService, $this> */
     public function service(): BelongsTo
     {
-        return $this->belongsTo(AppointmentService::class, 'appointment_service_id');
+        return $this->belongsTo(AppointmentService::class, 'appointment_service_id')->withTrashed();
     }
 
     /** @return HasMany<Appointment, $this> */

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import AdminRecordAction from '@/components/AdminRecordAction.vue';
+import { recordManagementCopy as recordCopy } from '@/lib/recordManagementCopy';
 import Pagination from '@/components/Pagination.vue';
 import { orderCopy as copy } from '@/lib/orderCopy';
 import { documentCopy } from '@/lib/documentCopy';
@@ -8,13 +10,14 @@ import { computed } from 'vue';
 import { money, type Paginated } from '@/types/catalog';
 import type { Order } from '@/types/commerce';
 const props = defineProps<{
-    orders: Paginated<Order>;
+    orders: Paginated<Order & { archived_at: string | null }>;
     filters: {
         search?: string | null;
         payment?: string | null;
         fulfillment?: string | null;
         from?: string | null;
         to?: string | null;
+        archive?: string | null;
     };
 }>();
 const filter = useForm({
@@ -23,6 +26,7 @@ const filter = useForm({
     fulfillment: props.filters.fulfillment ?? '',
     from: props.filters.from ?? '',
     to: props.filters.to ?? '',
+    archive: props.filters.archive ?? 'active',
 });
 const exportUrl = computed(() => orderExportUrl(props.filters));
 </script>
@@ -43,6 +47,17 @@ const exportUrl = computed(() => orderExportUrl(props.filters));
             class="mt-8 flex flex-wrap items-end gap-4"
             @submit.prevent="filter.get('/admin/orders')"
         >
+            <label class="grid gap-2 text-sm"
+                >{{ recordCopy.view }}
+                <select
+                    v-model="filter.archive"
+                    class="rounded-md border bg-background p-2.5"
+                >
+                    <option value="active">{{ recordCopy.active }}</option>
+                    <option value="archived">{{ recordCopy.archived }}</option>
+                    <option value="all">{{ recordCopy.all }}</option>
+                </select>
+            </label>
             <label class="grid gap-2 text-sm"
                 >{{ copy.search
                 }}<input
@@ -104,6 +119,7 @@ const exportUrl = computed(() => orderExportUrl(props.filters));
                         <th class="p-4">{{ copy.payment }}</th>
                         <th class="p-4">{{ copy.fulfillment }}</th>
                         <th class="p-4">{{ copy.total }}</th>
+                        <th class="p-4">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -132,9 +148,17 @@ const exportUrl = computed(() => orderExportUrl(props.filters));
                         <td class="p-4 whitespace-nowrap">
                             {{ money(order.total_sen) }}
                         </td>
+                        <td class="p-4">
+                            <AdminRecordAction
+                                module="orders"
+                                :record-id="order.id"
+                                archive
+                                :archived="!!order.archived_at"
+                            />
+                        </td>
                     </tr>
                     <tr v-if="!orders.data.length">
-                        <td colspan="5" class="p-10 text-center">
+                        <td colspan="6" class="p-10 text-center">
                             {{ copy.empty }}
                         </td>
                     </tr>

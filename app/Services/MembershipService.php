@@ -18,7 +18,7 @@ class MembershipService
     {
         $plans = $order->items()->where('type', 'membership')->pluck('membership_plan_id');
 
-        return Membership::where('user_id', $order->user_id)->whereIn('membership_plan_id', $plans)->where('status', 'revoked')->lockForUpdate()->first() === null;
+        return Membership::withTrashed()->where('user_id', $order->user_id)->whereIn('membership_plan_id', $plans)->where('status', 'revoked')->lockForUpdate()->first() === null;
     }
 
     public function activateVerified(Order $order, Payment $payment): void
@@ -33,14 +33,14 @@ class MembershipService
                 if (MembershipTransaction::where('order_item_id', $item->id)->exists()) {
                     continue;
                 }
-                $membership = Membership::where('user_id', $order->user_id)->where('membership_plan_id', $item->membership_plan_id)->lockForUpdate()->first();
+                $membership = Membership::withTrashed()->where('user_id', $order->user_id)->where('membership_plan_id', $item->membership_plan_id)->lockForUpdate()->first();
                 $previous = $membership?->expires_at;
                 $stillValid = $membership && $membership->status === 'active' && $membership->expires_at->gt($paidAt);
                 $start = $stillValid ? $membership->starts_at : $paidAt;
                 $expiry = ($stillValid ? $membership->expires_at : $paidAt)->addMonthsNoOverflow($item->membership_months);
                 $type = $membership ? 'renewal' : 'activation';
                 $membership ??= new Membership(['user_id' => $order->user_id, 'membership_plan_id' => $item->membership_plan_id]);
-                $membership->fill(['status' => 'active', 'starts_at' => $start, 'expires_at' => $expiry])->save();
+                $membership->fill(['deleted_at' => null, 'status' => 'active', 'starts_at' => $start, 'expires_at' => $expiry])->save();
                 MembershipTransaction::create([
                     'user_id' => $order->user_id, 'membership_id' => $membership->id,
                     'payment_id' => $payment->id, 'order_item_id' => $item->id, 'type' => $type,

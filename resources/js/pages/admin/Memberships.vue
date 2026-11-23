@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import AdminRecordAction from '@/components/AdminRecordAction.vue';
 import Pagination from '@/components/Pagination.vue';
 import StatusBadge from '@/components/StatusBadge.vue';
 import { dateTime } from '@/types/commerce';
@@ -113,6 +114,11 @@ function select(row: Row) {
                             >
                                 Adjust expiry
                             </button>
+                            <AdminRecordAction
+                                module="memberships"
+                                :record-id="membership.id"
+                                @success="selected = null"
+                            />
                         </td>
                     </tr>
                     <tr v-if="!memberships.data.length">

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import AdminRecordAction from '@/components/AdminRecordAction.vue';
 import Pagination from '@/components/Pagination.vue';
 import { appointmentCopy as copy } from '@/lib/appointmentCopy';
 import type { AppointmentService } from '@/types/appointment';
@@ -68,6 +69,14 @@ function save() {
                         service.is_active ? copy.active : copy.disabled
                     }}</span>
                 </div>
+                <AdminRecordAction
+                    module="appointment-services"
+                    :record-id="service.id"
+                    @success="
+                        selected = null;
+                        form.reset();
+                    "
+                />
                 <p class="mt-3 text-sm text-muted-foreground">
                     {{ service.description }}
                 </p>

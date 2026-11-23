@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AdminRecordAction from '@/components/AdminRecordAction.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import RichTextEditor from '@/components/RichTextEditor.vue';
 import { contentCopy as copy } from '@/lib/contentCopy';
@@ -42,6 +43,11 @@ function save() {
         <h1 class="mt-5 text-3xl font-semibold">
             {{ contentPage ? copy.edit : copy.create }}
         </h1>
+        <AdminRecordAction
+            v-if="contentPage"
+            module="content-pages"
+            :record-id="contentPage.id"
+        />
         <p class="mt-4 text-sm leading-relaxed text-muted-foreground">
             {{ copy.help }}
         </p>
