@@ -5,13 +5,15 @@ Existing edit screens remain the source of validation for each module.
 
 ## Delete
 
-The Delete action is available in the banner, content page, VIP program, customer
-and appointment detail/edit screens, and the appointment services, membership
-plans and memberships lists. Products, categories, slots and blocked dates retain
-their existing management actions.
+Edit and Delete icon buttons are available in administrator data lists. Delete
+is not shown on the banner, content page, VIP program, customer, appointment or
+product detail/edit screens. Products retain their existing archive-on-delete
+behavior; categories retain their existing deletion rules.
 
-Deletion requires a reason of 5–1,000 characters and records the administrator,
-module, record ID, action, reason and timestamp in `admin_record_actions`.
+Deletion opens an accessible confirmation modal with Confirm delete and Cancel
+buttons, with no reason input. The administrator, module, record ID, action,
+system-generated confirmation note and timestamp are recorded in `admin_record_actions`
+for the record-management endpoints. Archive/Restore actions still require a reason.
 Content, banners, programs, services, plans, memberships and appointments use soft
 deletion, preserving images, revisions and related history.
 

@@ -119,7 +119,9 @@ describe('appointment scheduling', () => {
             },
         ]);
         Array.from(root.querySelectorAll('td button'))
-            .find((button) => button.textContent === 'Edit')!
+            .find((button) =>
+                button.getAttribute('aria-label')?.startsWith('Edit slot '),
+            )!
             .dispatchEvent(new Event('click'));
         await nextTick();
         expect(calls.forms[1].starts_at).toBe('2026-11-16T09:00:00');

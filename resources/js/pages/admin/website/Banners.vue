@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import Pagination from '@/components/Pagination.vue';
+import AdminRecordAction from '@/components/AdminRecordAction.vue';
+import AdminEditButton from '@/components/AdminEditButton.vue';
 import { websiteCopy as copy } from '@/lib/websiteCopy';
 import type { Banner } from '@/types/website';
 import type { Paginated } from '@/types/catalog';
@@ -48,6 +50,17 @@ defineProps<{ banners: Paginated<Banner> }>();
                     </p>
                 </div>
                 <div class="text-sm">
+                    <div class="flex items-center gap-4">
+                        <AdminEditButton
+                            :href="`/admin/banners/${banner.id}/edit`"
+                            :label="`Edit ${banner.title}`"
+                        />
+                        <AdminRecordAction
+                            module="banners"
+                            :record-id="banner.id"
+                            :record-name="banner.title"
+                        />
+                    </div>
                     <p>
                         {{
                             banner.status === 'published'

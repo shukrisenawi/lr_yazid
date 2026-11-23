@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import AdminRecordAction from '@/components/AdminRecordAction.vue';
 import ImageUpload from '@/components/ImageUpload.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -58,11 +57,6 @@ function save() {
         <h1 class="mt-5 text-3xl font-semibold">
             {{ program ? copy.edit : copy.create }}
         </h1>
-        <AdminRecordAction
-            v-if="program"
-            module="programs"
-            :record-id="program.id"
-        />
         <Link
             v-if="program"
             :href="`/admin/programs/${program.id}/participants`"

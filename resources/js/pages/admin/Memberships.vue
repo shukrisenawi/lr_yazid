@@ -2,6 +2,7 @@
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import AdminRecordAction from '@/components/AdminRecordAction.vue';
+import AdminEditButton from '@/components/AdminEditButton.vue';
 import Pagination from '@/components/Pagination.vue';
 import StatusBadge from '@/components/StatusBadge.vue';
 import { dateTime } from '@/types/commerce';
@@ -108,12 +109,10 @@ function select(row: Row) {
                             {{ dateTime(membership.expires_at) }}
                         </td>
                         <td class="p-4">
-                            <button
-                                class="underline"
+                            <AdminEditButton
+                                :label="`Edit membership for ${membership.user.name}`"
                                 @click="select(membership)"
-                            >
-                                Adjust expiry
-                            </button>
+                            />
                             <AdminRecordAction
                                 module="memberships"
                                 :record-id="membership.id"

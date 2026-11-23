@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import Pagination from '@/components/Pagination.vue';
+import AdminRecordAction from '@/components/AdminRecordAction.vue';
+import AdminEditButton from '@/components/AdminEditButton.vue';
 import { contentCopy as copy } from '@/lib/contentCopy';
 import { dateTime } from '@/types/commerce';
 import type { ContentPage } from '@/types/content';
@@ -141,6 +143,17 @@ const filter = useForm({
                     </div>
                 </div>
                 <div class="text-sm">
+                    <div class="flex items-center gap-4">
+                        <AdminEditButton
+                            :href="`/admin/content-pages/${item.id}/edit`"
+                            :label="`Edit ${item.title}`"
+                        />
+                        <AdminRecordAction
+                            module="content-pages"
+                            :record-id="item.id"
+                            :record-name="item.title"
+                        />
+                    </div>
                     <p>
                         {{
                             item.status === 'published'

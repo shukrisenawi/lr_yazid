@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
-import AdminRecordAction from '@/components/AdminRecordAction.vue';
 import AppointmentCalendar from '@/components/AppointmentCalendar.vue';
 import AppointmentDetails from '@/components/AppointmentDetails.vue';
 import { appointmentCopy as copy } from '@/lib/appointmentCopy';
@@ -56,10 +55,6 @@ function navigate(month: string) {
         <div class="mt-6 grid items-start gap-8 lg:grid-cols-[1.5fr_1fr]">
             <div><AppointmentDetails :appointment="appointment" /></div>
             <aside class="space-y-6">
-                <AdminRecordAction
-                    module="appointments"
-                    :record-id="appointment.id"
-                />
                 <section class="rounded-xl border p-6">
                     <h2 class="font-semibold">{{ appointment.user?.name }}</h2>
                     <p class="mt-3 text-sm">{{ appointment.user?.email }}</p>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Head, router, useForm } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
+import AdminRecordAction from '@/components/AdminRecordAction.vue';
 import type { Category } from '@/types/catalog';
 defineProps<{ categories: Category[] }>();
 const form = useForm({ name: '', slug: '' });
@@ -8,10 +9,6 @@ function save(category: Category) {
     edit.name = category.name;
     edit.slug = category.slug;
     edit.put(`/admin/categories/${category.id}`);
-}
-function remove(id: number) {
-    if (confirm('Delete this category? Products will become uncategorized.'))
-        router.delete(`/admin/categories/${id}`);
 }
 </script>
 <template>
@@ -84,14 +81,14 @@ function remove(id: number) {
                     :disabled="edit.processing"
                     class="rounded border px-4 py-2"
                 >
-                    Save changes</button
-                ><button
-                    type="button"
-                    class="px-4 py-2 text-sm text-red-700 underline"
-                    @click="remove(category.id)"
-                >
-                    Delete ({{ category.products_count }} products)
+                    Save changes
                 </button>
+                <AdminRecordAction
+                    module="categories"
+                    :record-id="category.id"
+                    :record-name="category.name"
+                    :delete-url="`/admin/categories/${category.id}`"
+                />
             </form>
             <p v-if="!categories.length" class="py-10 text-muted-foreground">
                 No categories yet. Create one above.

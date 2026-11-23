@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import Pagination from '@/components/Pagination.vue';
+import AdminRecordAction from '@/components/AdminRecordAction.vue';
+import AdminEditButton from '@/components/AdminEditButton.vue';
 import { appointmentCopy as copy } from '@/lib/appointmentCopy';
 import type { Appointment } from '@/types/appointment';
 import type { Paginated } from '@/types/catalog';
@@ -109,6 +111,7 @@ const filter = useForm({
                         <th class="p-4">{{ copy.bookingStatus }}</th>
                         <th class="p-4">{{ copy.rescheduleRequests }}</th>
                         <th class="p-4">{{ copy.recordedAt }}</th>
+                        <th class="p-4">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -159,10 +162,23 @@ const filter = useForm({
                         <td class="p-4 whitespace-nowrap">
                             {{ dateTime(appointment.created_at) }}
                         </td>
+                        <td class="p-4">
+                            <div class="flex items-center gap-2">
+                                <AdminEditButton
+                                    :href="`/admin/appointments/${appointment.id}`"
+                                    :label="`Edit ${appointment.reference}`"
+                                />
+                                <AdminRecordAction
+                                    module="appointments"
+                                    :record-id="appointment.id"
+                                    :record-name="appointment.reference"
+                                />
+                            </div>
+                        </td>
                     </tr>
                     <tr v-if="!appointments.data.length">
                         <td
-                            colspan="7"
+                            colspan="8"
                             class="p-10 text-center text-muted-foreground"
                         >
                             {{ copy.emptyBookings }}

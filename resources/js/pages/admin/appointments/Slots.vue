@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AdminEditButton from '@/components/AdminEditButton.vue';
+import AdminRecordAction from '@/components/AdminRecordAction.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import Pagination from '@/components/Pagination.vue';
@@ -87,10 +89,6 @@ function saveSlot() {
 function generate(preview: boolean) {
     generator.preview = preview;
     generator.post(`${base}/generate-slots`, { preserveScroll: true });
-}
-function remove(id: number) {
-    if (confirm(copy.deleteConfirm))
-        action.delete(`${base}/slots/${id}`, { preserveScroll: true });
 }
 </script>
 <template>
@@ -199,12 +197,11 @@ function remove(id: number) {
                             <td class="p-4">{{ row.appointments_count }}</td>
                             <td class="p-4">
                                 <div class="flex gap-4">
-                                    <button
-                                        class="underline"
+                                    <AdminEditButton
+                                        :label="`Edit slot ${dateTime(row.starts_at)}`"
                                         @click="edit(row)"
-                                    >
-                                        {{ copy.edit }}</button
-                                    ><button
+                                    />
+                                    <AdminRecordAction
                                         v-if="
                                             !row.appointments_count &&
                                             !row.target_reschedules_exists &&
@@ -212,12 +209,11 @@ function remove(id: number) {
                                             !row.previous_histories_exists &&
                                             !row.new_histories_exists
                                         "
-                                        :disabled="action.processing"
-                                        class="whitespace-nowrap underline"
-                                        @click="remove(row.id)"
-                                    >
-                                        {{ copy.delete }}
-                                    </button>
+                                        module="slots"
+                                        :record-id="row.id"
+                                        :record-name="dateTime(row.starts_at)"
+                                        :delete-url="`${base}/slots/${row.id}`"
+                                    />
                                 </div>
                             </td>
                         </tr>

@@ -116,10 +116,6 @@ function remove(id: number) {
             },
         });
 }
-function archive() {
-    if (confirm('Archive this product? It will no longer be publicly visible.'))
-        destructive.delete(`/admin/products/${props.product?.id}`);
-}
 </script>
 <template>
     <Head :title="product ? 'Edit product' : 'Add product'" />
@@ -525,13 +521,7 @@ function archive() {
                     destructive.post(`/admin/products/${product.id}/duplicate`)
                 "
             >
-                Duplicate product</button
-            ><button
-                :disabled="destructive.processing"
-                class="text-red-700 underline dark:text-red-400"
-                @click="archive"
-            >
-                Archive product
+                Duplicate product
             </button>
         </div>
     </div>

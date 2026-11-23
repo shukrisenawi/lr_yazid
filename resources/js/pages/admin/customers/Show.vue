@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import AdminRecordAction from '@/components/AdminRecordAction.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import Pagination from '@/components/Pagination.vue';
 import CustomerContactEditor from '@/components/CustomerContactEditor.vue';
@@ -45,7 +44,6 @@ defineProps<{
             copy.back
         }}</Link>
         <h1 class="mt-5 text-3xl font-semibold">{{ customer.name }}</h1>
-        <AdminRecordAction module="customers" :record-id="customer.id" />
         <section class="mt-6 rounded-xl border p-6">
             <p class="font-medium">{{ isVip ? copy.vip : copy.nonVip }}</p>
             <p class="mt-3 text-sm">

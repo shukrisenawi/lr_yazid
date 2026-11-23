@@ -8,6 +8,8 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import Pagination from '@/components/Pagination.vue';
+import AdminRecordAction from '@/components/AdminRecordAction.vue';
+import AdminEditButton from '@/components/AdminEditButton.vue';
 import { customerCopy as copy } from '@/lib/customerCopy';
 import { dateTime } from '@/types/commerce';
 import type { Paginated } from '@/types/catalog';
@@ -108,32 +110,43 @@ const login = useForm({});
                             {{ dateTime(customer.created_at) }}
                         </td>
                         <td class="p-4">
-                            <TooltipProvider :delay-duration="200">
-                                <Tooltip>
-                                    <TooltipTrigger as-child>
-                                        <button
-                                            type="button"
-                                            :disabled="login.processing"
-                                            :aria-label="`Log in as ${customer.name}`"
-                                            class="inline-flex size-10 items-center justify-center rounded-md border hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50"
-                                            @click="
-                                                login.post(
-                                                    `/admin/customers/${customer.id}/login`,
-                                                )
-                                            "
+                            <div class="flex items-center gap-2">
+                                <TooltipProvider :delay-duration="200">
+                                    <Tooltip>
+                                        <TooltipTrigger as-child>
+                                            <button
+                                                type="button"
+                                                :disabled="login.processing"
+                                                :aria-label="`Log in as ${customer.name}`"
+                                                class="inline-flex size-10 items-center justify-center rounded-md border hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50"
+                                                @click="
+                                                    login.post(
+                                                        `/admin/customers/${customer.id}/login`,
+                                                    )
+                                                "
+                                            >
+                                                <LogIn
+                                                    :size="18"
+                                                    aria-hidden="true"
+                                                />
+                                            </button>
+                                        </TooltipTrigger>
+                                        <TooltipContent
+                                            >Log in as
+                                            {{ customer.name }}</TooltipContent
                                         >
-                                            <LogIn
-                                                :size="18"
-                                                aria-hidden="true"
-                                            />
-                                        </button>
-                                    </TooltipTrigger>
-                                    <TooltipContent
-                                        >Log in as
-                                        {{ customer.name }}</TooltipContent
-                                    >
-                                </Tooltip>
-                            </TooltipProvider>
+                                    </Tooltip>
+                                </TooltipProvider>
+                                <AdminEditButton
+                                    :href="`/admin/customers/${customer.id}`"
+                                    :label="`Edit ${customer.name}`"
+                                />
+                                <AdminRecordAction
+                                    module="customers"
+                                    :record-id="customer.id"
+                                    :record-name="customer.name"
+                                />
+                            </div>
                         </td>
                     </tr>
                     <tr v-if="!customers.data.length">

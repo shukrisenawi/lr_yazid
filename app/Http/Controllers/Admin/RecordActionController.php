@@ -31,10 +31,8 @@ class RecordActionController extends Controller
             'memberships' => Membership::class, 'customers' => User::class,
         ];
         abort_unless(isset($models[$module]), 404);
-        $data = $request->validate(['reason' => ['required', 'string', 'min:5', 'max:1000']]);
-
         try {
-            DB::transaction(function () use ($models, $module, $record, $request, $data) {
+            DB::transaction(function () use ($models, $module, $record, $request) {
                 $model = $models[$module]::whereKey($record)->lockForUpdate()->firstOrFail();
                 if ($model instanceof User) {
                     abort_unless($model->role->value === 'customer', 404);
@@ -67,7 +65,7 @@ class RecordActionController extends Controller
                     $model->product?->update(['status' => 'inactive']);
                 }
                 $model->delete();
-                $this->audit($request, $module, $record, 'deleted', $data['reason']);
+                $this->audit($request, $module, $record, 'deleted', 'Confirmed deletion from the administrator list.');
             }, 3);
         } catch (QueryException $error) {
             if (! in_array((string) $error->getCode(), ['23000', '23503'], true)) {

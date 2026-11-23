@@ -3,6 +3,7 @@ export const recordManagementCopy = {
     archive: 'Archive',
     restore: 'Restore',
     confirm: 'Confirm',
+    confirmDelete: 'Confirm delete',
     cancel: 'Cancel',
     reason: 'Reason',
     deleteHelp:

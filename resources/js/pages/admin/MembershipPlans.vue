@@ -2,6 +2,7 @@
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import AdminRecordAction from '@/components/AdminRecordAction.vue';
+import AdminEditButton from '@/components/AdminEditButton.vue';
 import RinggitInput from '@/components/RinggitInput.vue';
 import { money } from '@/types/catalog';
 import type { MembershipPlan } from '@/types/membership';
@@ -53,23 +54,26 @@ function save() {
                 class="rounded-xl border p-5"
             >
                 <h2 class="font-semibold">{{ plan.name }}</h2>
-                <AdminRecordAction
-                    module="membership-plans"
-                    :record-id="plan.id"
-                    @success="
-                        editing = null;
-                        form.reset();
-                    "
-                />
                 <p class="mt-3 text-sm">
                     {{ money(plan.price_sen) }} /
                     {{ plan.duration_months }} months ·
                     {{ plan.is_active ? 'Active' : 'Inactive' }}
                 </p>
                 <div class="mt-4 flex flex-wrap gap-4 text-sm">
-                    <button class="underline" @click="edit(plan)">
-                        Edit plan</button
-                    ><Link
+                    <AdminEditButton
+                        :label="`Edit ${plan.name}`"
+                        @click="edit(plan)"
+                    />
+                    <AdminRecordAction
+                        module="membership-plans"
+                        :record-id="plan.id"
+                        :record-name="plan.name"
+                        @success="
+                            editing = null;
+                            form.reset();
+                        "
+                    />
+                    <Link
                         v-if="plan.product"
                         :href="`/admin/products/${plan.product.id}/edit`"
                         class="underline"

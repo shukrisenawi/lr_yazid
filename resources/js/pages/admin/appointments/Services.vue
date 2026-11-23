@@ -2,6 +2,7 @@
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import AdminRecordAction from '@/components/AdminRecordAction.vue';
+import AdminEditButton from '@/components/AdminEditButton.vue';
 import Pagination from '@/components/Pagination.vue';
 import { appointmentCopy as copy } from '@/lib/appointmentCopy';
 import type { AppointmentService } from '@/types/appointment';
@@ -69,14 +70,6 @@ function save() {
                         service.is_active ? copy.active : copy.disabled
                     }}</span>
                 </div>
-                <AdminRecordAction
-                    module="appointment-services"
-                    :record-id="service.id"
-                    @success="
-                        selected = null;
-                        form.reset();
-                    "
-                />
                 <p class="mt-3 text-sm text-muted-foreground">
                     {{ service.description }}
                 </p>
@@ -84,10 +77,21 @@ function save() {
                     {{ service.location }} · {{ service.duration_minutes }} min
                     · {{ copy.capacity }}: {{ service.default_capacity }}
                 </p>
-                <div class="mt-5 flex flex-wrap gap-5 text-sm">
-                    <button class="underline" @click="edit(service)">
-                        {{ copy.edit }}</button
-                    ><Link
+                <div class="mt-5 flex flex-wrap items-center gap-2 text-sm">
+                    <AdminEditButton
+                        :label="`Edit ${service.name}`"
+                        @click="edit(service)"
+                    />
+                    <AdminRecordAction
+                        module="appointment-services"
+                        :record-id="service.id"
+                        :record-name="service.name"
+                        @success="
+                            selected = null;
+                            form.reset();
+                        "
+                    />
+                    <Link
                         :href="`/admin/appointment-services/${service.id}/slots`"
                         class="underline"
                         >{{ copy.manage }} ({{ service.slots_count }})</Link

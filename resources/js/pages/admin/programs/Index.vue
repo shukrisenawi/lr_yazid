@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import Pagination from '@/components/Pagination.vue';
+import AdminRecordAction from '@/components/AdminRecordAction.vue';
+import AdminEditButton from '@/components/AdminEditButton.vue';
 import StatusBadge from '@/components/StatusBadge.vue';
 import { programCopy as copy } from '@/lib/programCopy';
 import type { Paginated } from '@/types/catalog';
@@ -66,6 +68,7 @@ const form = useForm({
                         <th class="p-4">{{ copy.starts }}</th>
                         <th class="p-4">{{ copy.status }}</th>
                         <th class="p-4">{{ copy.participants }}</th>
+                        <th class="p-4">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -98,10 +101,23 @@ const form = useForm({
                                 {{ program.capacity }}</Link
                             >
                         </td>
+                        <td class="p-4">
+                            <div class="flex items-center gap-2">
+                                <AdminEditButton
+                                    :href="`/admin/programs/${program.id}/edit`"
+                                    :label="`Edit ${program.title}`"
+                                />
+                                <AdminRecordAction
+                                    module="programs"
+                                    :record-id="program.id"
+                                    :record-name="program.title"
+                                />
+                            </div>
+                        </td>
                     </tr>
                     <tr v-if="!programs.data.length">
                         <td
-                            colspan="4"
+                            colspan="5"
                             class="p-10 text-center text-muted-foreground"
                         >
                             {{ copy.empty }}

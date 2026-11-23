@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import Pagination from '@/components/Pagination.vue';
+import AdminRecordAction from '@/components/AdminRecordAction.vue';
+import AdminEditButton from '@/components/AdminEditButton.vue';
 import { money, type Paginated, type Product } from '@/types/catalog';
 const props = defineProps<{ products: Paginated<Product>; search: string }>();
 const form = useForm({ search: props.search });
@@ -58,11 +60,18 @@ const form = useForm({ search: props.search });
                         <td class="p-4">{{ product.stock }}</td>
                         <td class="p-4 capitalize">{{ product.status }}</td>
                         <td class="p-4">
-                            <Link
-                                :href="`/admin/products/${product.id}/edit`"
-                                class="underline"
-                                >Edit</Link
-                            >
+                            <div class="flex items-center gap-2">
+                                <AdminEditButton
+                                    :href="`/admin/products/${product.id}/edit`"
+                                    :label="`Edit ${product.name}`"
+                                />
+                                <AdminRecordAction
+                                    module="products"
+                                    :record-id="product.id"
+                                    :record-name="product.name"
+                                    :delete-url="`/admin/products/${product.id}`"
+                                />
+                            </div>
                         </td>
                     </tr>
                     <tr v-if="!products.data.length">

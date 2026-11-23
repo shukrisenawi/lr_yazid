@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import AdminRecordAction from '@/components/AdminRecordAction.vue';
+import AdminEditButton from '@/components/AdminEditButton.vue';
 import { recordManagementCopy as recordCopy } from '@/lib/recordManagementCopy';
 import Pagination from '@/components/Pagination.vue';
 import { orderCopy as copy } from '@/lib/orderCopy';
@@ -149,6 +150,10 @@ const exportUrl = computed(() => orderExportUrl(props.filters));
                             {{ money(order.total_sen) }}
                         </td>
                         <td class="p-4">
+                            <AdminEditButton
+                                :href="`/admin/orders/${order.id}`"
+                                :label="`Edit ${order.reference}`"
+                            />
                             <AdminRecordAction
                                 module="orders"
                                 :record-id="order.id"

@@ -87,10 +87,10 @@ class AdminRecordManagementTest extends TestCase
         $this->actingAs($this->admin);
         foreach (['content-pages' => $page, 'banners' => $banner] as $module => $model) {
             $url = "/admin/records/$module/$model->id";
-            $this->delete($url, ['reason' => 'bad'])->assertSessionHasErrors('reason');
-            $this->delete($url, ['reason' => 'Remove obsolete content'])->assertRedirect("/admin/$module");
+            $this->delete($url)->assertSessionHasNoErrors()->assertRedirect("/admin/$module");
             $this->assertSoftDeleted($model);
-            $this->assertDatabaseHas('admin_record_actions', ['module' => $module, 'record_id' => $model->id, 'admin_id' => $this->admin->id, 'action' => 'deleted']);
+            $this->assertDatabaseHas('admin_record_actions', ['module' => $module, 'record_id' => $model->id, 'admin_id' => $this->admin->id, 'action' => 'deleted',
+                'reason' => 'Confirmed deletion from the administrator list.']);
             $this->delete($url, ['reason' => 'Duplicate deletion'])->assertNotFound();
         }
         $this->assertDatabaseCount('content_page_revisions', 1);
