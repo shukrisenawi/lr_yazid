@@ -9,7 +9,7 @@ defineProps<{ report: AdminReport }>();
 </script>
 <template>
     <Head :title="copy.title" />
-    <div class="mx-auto w-full max-w-7xl min-w-0 p-6 md:p-10">
+    <div class="dashboard-report mx-auto w-full max-w-7xl min-w-0 p-6 md:p-10">
         <Link href="/admin/dashboard" class="text-sm underline">{{
             copy.back
         }}</Link>
