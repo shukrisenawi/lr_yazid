@@ -2,12 +2,10 @@
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import RichTextEditor from '@/components/RichTextEditor.vue';
 import { contentCopy as copy } from '@/lib/contentCopy';
-import { dateTime } from '@/types/commerce';
 import type { ContentPage } from '@/types/content';
 const props = defineProps<{
     contentPage: ContentPage | null;
     publicBaseUrl: string;
-    revisions: { version: number; administrator: string; created_at: string }[];
 }>();
 const form = useForm({
     title: props.contentPage?.title ?? '',
@@ -201,16 +199,5 @@ function save() {
                 {{ copy.save }}
             </button>
         </form>
-        <section v-if="revisions.length" class="mt-12 border-t pt-6">
-            <h2 class="text-lg font-semibold">{{ copy.revisions }}</h2>
-            <p class="mt-3 text-sm text-muted-foreground">{{ copy.stale }}</p>
-            <ol class="mt-5 space-y-3 text-sm">
-                <li v-for="revision in revisions" :key="revision.version">
-                    {{ copy.version }} {{ revision.version }} ·
-                    {{ revision.administrator }} ·
-                    {{ dateTime(revision.created_at) }}
-                </li>
-            </ol>
-        </section>
     </div>
 </template>
