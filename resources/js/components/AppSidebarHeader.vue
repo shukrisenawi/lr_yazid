@@ -4,13 +4,11 @@ import NotificationBell from '@/components/NotificationBell.vue';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import type { BreadcrumbItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { House, Moon, Sun } from '@lucide/vue';
+import { House, Moon, Sun, User } from '@lucide/vue';
 import { useAppearance } from '@/composables/useAppearance';
-import { useInitials } from '@/composables/useInitials';
 
 const page = usePage();
 const { resolvedAppearance, updateAppearance } = useAppearance();
-const { getInitials } = useInitials();
 
 withDefaults(
     defineProps<{
@@ -69,9 +67,9 @@ withDefaults(
                     :alt="page.props.auth.user.name"
                     class="dashboard-avatar object-cover"
                 />
-                <span v-else class="dashboard-avatar">{{
-                    getInitials(page.props.auth.user.name)
-                }}</span>
+                <span v-else class="dashboard-avatar">
+                    <User class="size-5" aria-hidden="true" />
+                </span>
                 <span class="hidden sm:grid">
                     <span class="max-w-40 truncate text-sm font-medium">{{
                         page.props.auth.user.name

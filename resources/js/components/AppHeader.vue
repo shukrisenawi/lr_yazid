@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from '@lucide/vue';
+import { BookOpen, Folder, LayoutGrid, Menu, Search, User } from '@lucide/vue';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
@@ -33,7 +33,6 @@ import {
 } from '@/components/ui/tooltip';
 import UserMenuContent from '@/components/UserMenuContent.vue';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
-import { getInitials } from '@/composables/useInitials';
 import { toUrl } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem, NavItem } from '@/types';
@@ -256,7 +255,7 @@ const rightNavItems: NavItem[] = [
                                     <AvatarFallback
                                         class="rounded-lg bg-neutral-200 font-semibold text-black dark:bg-neutral-700 dark:text-white"
                                     >
-                                        {{ getInitials(auth.user?.name) }}
+                                        <User class="size-4" aria-hidden="true" />
                                     </AvatarFallback>
                                 </Avatar>
                             </Button>
