@@ -70,7 +70,7 @@ class AppointmentSchedulingTest extends TestCase
         $this->admin();
         $data = ['name' => 'Consultation', 'description' => 'VIP consultation', 'duration_minutes' => 30,
             'default_capacity' => 1, 'location' => 'Kuala Lumpur', 'is_active' => true,
-            'minimum_notice_hours' => 24, 'maximum_advance_days' => 90, 'cancellation_notice_hours' => 24, 'maximum_active_bookings' => 3];
+            'minimum_notice_hours' => 24, 'maximum_advance_days' => 60, 'cancellation_notice_hours' => 24, 'maximum_active_bookings' => 3];
         $this->post('/admin/appointment-services', $data)->assertSessionHasNoErrors();
         $service = AppointmentService::firstOrFail();
         $slot = $this->manual($service);
@@ -78,6 +78,21 @@ class AppointmentSchedulingTest extends TestCase
         $this->assertSame(1, $slot->fresh()->capacity);
         $this->assertSame('Kuala Lumpur', $slot->fresh()->location);
         $this->put("/admin/appointment-services/$service->id", [...$data, 'minimum_notice_hours' => 24, 'maximum_advance_days' => 1])->assertSessionHasErrors('minimum_notice_hours');
+        $this->post('/admin/appointment-services', [...$data, 'maximum_advance_days' => 61])->assertSessionHasErrors('maximum_advance_days');
+        $this->put("/admin/appointment-services/$service->id", [...$data, 'maximum_advance_days' => 61])->assertSessionHasErrors('maximum_advance_days');
+        $this->assertSame(60, $service->fresh()->maximum_advance_days);
+    }
+
+    public function test_advance_booking_migration_updates_existing_services_and_the_default(): void
+    {
+        $service = $this->service();
+        $service->update(['maximum_advance_days' => 14]);
+
+        $migration = require database_path('migrations/2026_11_24_000001_set_appointment_advance_booking_to_sixty_days.php');
+        $migration->up();
+
+        $this->assertSame(60, $service->fresh()->maximum_advance_days);
+        $this->assertSame(60, $this->service()->fresh()->maximum_advance_days);
     }
 
     public function test_preview_is_read_only_and_generation_is_idempotent(): void

@@ -51,7 +51,7 @@ const service: AppointmentService = {
     default_capacity: 1,
     is_active: true,
     minimum_notice_hours: 24,
-    maximum_advance_days: 90,
+    maximum_advance_days: 60,
     cancellation_notice_hours: 24,
     maximum_active_bookings: 3,
     slots_count: 0,

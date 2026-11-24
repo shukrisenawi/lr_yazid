@@ -1,1 +1,0 @@
-import{$ as e,X as t,ct as n,en as r,ot as i,qt as a,z as o}from"./dist-jVGu4_vM.js";import{r as s}from"./app-Bw31FL3Y.js";var c={class:`min-h-screen bg-white text-neutral-950`},l=n({__name:`InvoiceLayout`,setup(n){return(n,l)=>(a(),e(o,null,[i(s),t(`main`,c,[r(n.$slots,`default`)])],64))}});export{l as default};

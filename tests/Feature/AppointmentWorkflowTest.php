@@ -10,7 +10,9 @@ use App\Models\AppointmentSlot;
 use App\Models\MembershipPlan;
 use App\Models\User;
 use App\Notifications\AppointmentNotice;
+use App\Services\AppointmentAvailabilityService;
 use App\Services\AppointmentBookingService;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
@@ -62,6 +64,28 @@ class AppointmentWorkflowTest extends TestCase
     private function approve(Appointment $appointment): void
     {
         $this->actingAs($this->admin)->put("/admin/appointments/$appointment->id", ['decision' => 'approved'])->assertSessionHasNoErrors();
+    }
+
+    public function test_booking_and_availability_allow_sixty_days_but_reject_later_slots(): void
+    {
+        $user = $this->vip();
+        $this->service->refresh();
+        $this->assertSame(60, $this->service->maximum_advance_days);
+        $boundary = $this->slot(60);
+        $outside = $this->slot(61);
+        $availability = app(AppointmentAvailabilityService::class);
+
+        foreach ([$boundary, $outside] as $slot) {
+            $slots = $availability->month($user, $this->service, CarbonImmutable::parse($slot->starts_at)->startOfMonth());
+            $result = collect($slots)->firstWhere('id', $slot->id);
+            $this->assertSame($slot->id === $boundary->id, $result['available']);
+        }
+
+        $this->book($user, $boundary);
+        $this->actingAs($user)->post('/vip/appointments', [
+            'slot_id' => $outside->id, 'booking_key' => (string) Str::uuid(), 'purpose' => 'Too far ahead',
+        ])->assertSessionHasErrors('appointment');
+        $this->assertDatabaseCount('appointments', 1);
     }
 
     public function test_booking_is_pending_and_two_customers_can_request_the_final_place(): void

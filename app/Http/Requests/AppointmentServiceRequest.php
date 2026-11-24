@@ -20,7 +20,7 @@ class AppointmentServiceRequest extends FormRequest
             'duration_minutes' => ['required', 'integer', 'min:5', 'max:480'], 'default_capacity' => ['required', 'integer', 'min:1', 'max:1000'],
             'location' => ['required', 'string', 'max:500'], 'is_active' => ['required', 'boolean'],
             'minimum_notice_hours' => ['required', 'integer', 'min:0', 'max:2160'],
-            'maximum_advance_days' => ['required', 'integer', 'min:1', 'max:366'],
+            'maximum_advance_days' => ['required', 'integer', 'min:1', 'max:60'],
             'cancellation_notice_hours' => ['required', 'integer', 'min:0', 'max:2160'],
             'maximum_active_bookings' => ['required', 'integer', 'min:1', 'max:100'],
         ];

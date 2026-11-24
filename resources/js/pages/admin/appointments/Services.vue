@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import AdminRecordAction from '@/components/AdminRecordAction.vue';
 import AdminEditButton from '@/components/AdminEditButton.vue';
 import Pagination from '@/components/Pagination.vue';
@@ -17,9 +17,15 @@ const form = useForm({
     location: '',
     is_active: true,
     minimum_notice_hours: 24,
-    maximum_advance_days: 90,
+    maximum_advance_days: 60,
     cancellation_notice_hours: 24,
     maximum_active_bookings: 3,
+});
+const durationHours = computed({
+    get: () => form.duration_minutes / 60,
+    set: (hours: number) => {
+        form.duration_minutes = Math.round(Number(hours) * 60);
+    },
 });
 function edit(service: AppointmentService) {
     selected.value = service.id;
@@ -152,15 +158,16 @@ function save() {
             <div class="grid gap-5 sm:grid-cols-2">
                 <label class="grid gap-2 text-sm"
                     ><span
-                        >{{ copy.duration }}
+                        >Duration (hours)
                         <span class="text-red-600" aria-hidden="true"
                             >*</span
                         ></span
                     ><input
-                        v-model="form.duration_minutes"
+                        v-model="durationHours"
                         type="number"
-                        min="5"
-                        max="480"
+                        min="0.08333333333333333"
+                        max="8"
+                        step="any"
                         required
                         class="rounded-md border bg-transparent p-2.5" /></label
                 ><label class="grid gap-2 text-sm"
@@ -199,7 +206,7 @@ function save() {
                         v-model="form.maximum_advance_days"
                         type="number"
                         min="1"
-                        max="366"
+                        max="60"
                         required
                         class="rounded-md border bg-transparent p-2.5" /></label
                 ><label class="grid gap-2 text-sm"
