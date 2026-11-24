@@ -377,7 +377,7 @@ function generate(preview: boolean) {
                 <fieldset>
                     <legend class="mb-3 text-sm">
                         {{ copy.weekdays }}
-                        <span class="text-red-600" aria-hidden="true">*</span>
+                        (optional — leave unselected for all days)
                     </legend>
                     <div class="flex flex-wrap gap-4">
                         <label
@@ -444,17 +444,13 @@ function generate(preview: boolean) {
                             type="time"
                             class="rounded-md border bg-transparent p-2.5" /></label
                     ><label class="grid gap-2 text-sm"
-                        ><span
-                            >{{ copy.duration }}
-                            <span class="text-red-600" aria-hidden="true"
-                                >*</span
-                            ></span
+                        ><span>{{ copy.duration }} (optional)</span
                         ><input
                             v-model="generator.duration_minutes"
                             type="number"
                             min="5"
                             max="480"
-                            required
+                            :placeholder="`Service default: ${service.duration_minutes} minutes`"
                             class="rounded-md border bg-transparent p-2.5" /></label
                     ><label class="grid gap-2 text-sm"
                         ><span

@@ -106,6 +106,8 @@ class AppointmentSchedulingService
             if (! $service->is_active) {
                 throw ValidationException::withMessages(['generator' => __('appointment.inactive')]);
             }
+            $data['weekdays'] = ($data['weekdays'] ?? []) ?: range(1, 7);
+            $data['duration_minutes'] = $data['duration_minutes'] ?? $service->duration_minutes;
             $blocked = $service->blockedDates()->whereBetween('date', [$from->toDateString(), $to->toDateString()])->pluck('date')->all();
             $existing = $service->slots()->where('starts_at', '<', $to->addDay())->where('ends_at', '>', $from)->orderBy('starts_at')->lockForUpdate()->get();
             $cursor = 0;

@@ -100,6 +100,34 @@ class AppointmentWorkflowTest extends TestCase
         Notification::assertSentTo($this->admin, AppointmentNotice::class);
     }
 
+    public function test_calendar_date_range_includes_both_endpoints_across_months(): void
+    {
+        $this->travelTo(now()->setDate(2026, 11, 28)->startOfDay());
+        $first = $this->slot(2);
+        $last = $this->slot(4);
+        $this->slot(1);
+        $this->slot(5);
+        $this->actingAs($this->vip())
+            ->get('/vip/appointments/book?service='.$this->service->id.'&from=2026-11-30&to=2026-12-02')
+            ->assertOk()->assertInertia(fn (Assert $page) => $page
+            ->component('vip/appointments/Book')->where('from', '2026-11-30')->where('to', '2026-12-02')
+            ->has('slots', 2)->where('slots.0.id', $first->id)->where('slots.1.id', $last->id));
+    }
+
+    public function test_calendar_rejects_incomplete_reversed_invalid_and_excessive_ranges(): void
+    {
+        $this->actingAs($this->vip());
+        foreach ([
+            'from=2026-12-04' => 'to',
+            'to=2026-12-06' => 'from',
+            'from=2026-12-06&to=2026-12-04' => 'to',
+            'from=invalid&to=2026-12-06' => 'from',
+            'from=2026-12-04&to=2027-03-04' => 'to',
+        ] as $query => $field) {
+            $this->get('/vip/appointments/book?'.$query)->assertSessionHasErrors($field);
+        }
+    }
+
     public function test_idempotency_key_and_duplicate_active_request_do_not_duplicate_records_or_notices(): void
     {
         $user = $this->vip();

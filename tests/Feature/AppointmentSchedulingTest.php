@@ -109,6 +109,21 @@ class AppointmentSchedulingTest extends TestCase
         $this->assertDatabaseCount('appointment_schedules', 2);
     }
 
+    public function test_generator_accepts_optional_working_days_and_duration(): void
+    {
+        $this->admin();
+        $service = $this->service();
+        $url = "/admin/appointment-services/$service->id/generate-slots";
+        $service->update(['duration_minutes' => 60]);
+        $data = [...$this->configuration(), 'to' => '2026-11-22', 'break_start' => null, 'break_end' => null];
+        unset($data['weekdays'], $data['duration_minutes']);
+        $this->post($url, [...$data, 'preview' => true])->assertSessionHasNoErrors()->assertSessionHas('slotGeneration.candidates', 21);
+        $this->post($url, [...$data, 'weekdays' => [], 'duration_minutes' => ''])->assertSessionHasNoErrors()->assertSessionHas('slotGeneration.created', 21);
+        $this->assertSame(3, $service->slots()->whereDate('starts_at', '2026-11-22')->count());
+        $slot = $service->slots()->firstOrFail();
+        $this->assertEquals(60, $slot->starts_at->diffInMinutes($slot->ends_at));
+    }
+
     public function test_generator_skips_breaks_blocked_dates_and_nonworking_days(): void
     {
         $this->admin();

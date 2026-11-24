@@ -8,12 +8,35 @@ const props = defineProps<{
     services: { id: number; name: string; description: string | null }[];
     serviceId: number | null;
     month: string;
+    from?: string | null;
+    to?: string | null;
     slots: AvailableAppointmentSlot[];
     bookingKey: string;
     reschedule: { id: number; reference: string } | null;
 }>();
 const service = ref(props.serviceId);
 const loading = ref(false);
+const dateRange = useForm({
+    from: props.from ?? '',
+    to: props.to ?? '',
+});
+function showRange() {
+    form.slot_id = null;
+    loading.value = true;
+    dateRange
+        .transform((data) => ({
+            ...data,
+            service: service.value,
+            month: data.from.slice(0, 7),
+            reschedule: props.reschedule?.id,
+        }))
+        .get('/vip/appointments/book', {
+            preserveState: true,
+            onFinish: () => {
+                loading.value = false;
+            },
+        });
+}
 const form = useForm({
     slot_id: null as number | null,
     booking_key: props.bookingKey,
@@ -26,7 +49,13 @@ function navigate(month = props.month) {
     loading.value = true;
     router.get(
         '/vip/appointments/book',
-        { service: service.value, month, reschedule: props.reschedule?.id },
+        {
+            service: service.value,
+            month,
+            reschedule: props.reschedule?.id,
+            from: props.from || undefined,
+            to: props.to || undefined,
+        },
         {
             preserveState: true,
             onFinish: () => {
@@ -78,12 +107,67 @@ function submit() {
                     </option>
                 </select></label
             >
+            <form
+                class="mt-6 flex flex-wrap items-end gap-4 rounded-xl border p-4"
+                @submit.prevent="showRange"
+            >
+                <label class="grid gap-2 text-sm">
+                    <span
+                        >From date
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    >
+                    <input
+                        v-model="dateRange.from"
+                        type="date"
+                        required
+                        class="rounded-md border bg-background p-2.5"
+                    />
+                </label>
+                <label class="grid gap-2 text-sm">
+                    <span
+                        >To date
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    >
+                    <input
+                        v-model="dateRange.to"
+                        type="date"
+                        :min="dateRange.from"
+                        required
+                        class="rounded-md border bg-background p-2.5"
+                    />
+                </label>
+                <button
+                    :disabled="dateRange.processing"
+                    class="rounded-md bg-emerald-800 px-5 py-2.5 text-white disabled:opacity-50"
+                >
+                    Show slots
+                </button>
+                <Link
+                    v-if="from && to"
+                    :href="`/vip/appointments/book?service=${service}&month=${month}${reschedule ? `&reschedule=${reschedule.id}` : ''}`"
+                    class="py-2.5 text-sm underline"
+                    >Monthly calendar</Link
+                >
+                <p
+                    v-if="Object.keys(dateRange.errors).length"
+                    role="alert"
+                    class="w-full text-sm text-red-600"
+                >
+                    {{ Object.values(dateRange.errors).join(' ') }}
+                </p>
+            </form>
             <div class="mt-6 grid items-start gap-8 lg:grid-cols-[1.5fr_1fr]">
                 <AppointmentCalendar
                     v-model="form.slot_id"
                     :month="month"
                     :slots="slots"
                     :loading="loading"
+                    :from="from"
+                    :to="to"
                     @month="navigate"
                 />
                 <form

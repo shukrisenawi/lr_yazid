@@ -12,13 +12,19 @@ class AppointmentAvailabilityService
     /** @return array<int, array<string, mixed>> */
     public function month(User $user, AppointmentService $service, CarbonImmutable $month, ?Appointment $exclude = null): array
     {
+        return $this->range($user, $service, $month->startOfMonth(), $month->endOfMonth(), $exclude);
+    }
+
+    /** @return array<int, array<string, mixed>> */
+    public function range(User $user, AppointmentService $service, CarbonImmutable $from, CarbonImmutable $to, ?Appointment $exclude = null): array
+    {
         $expiry = $user->memberships()->where('status', 'active')->where('starts_at', '<=', now())->where('expires_at', '>', now())->max('expires_at');
         $expiry = $expiry ? CarbonImmutable::parse($expiry) : null;
-        $blocked = $service->blockedDates()->whereBetween('date', [$month->startOfMonth()->toDateString(), $month->endOfMonth()->addDay()->toDateString()])->pluck('date')->all();
+        $blocked = $service->blockedDates()->whereBetween('date', [$from->toDateString(), $to->addDay()->toDateString()])->pluck('date')->all();
         $active = Appointment::where('user_id', $user->id)->whereIn('status', ['pending', 'approved'])
             ->when($exclude, fn ($query) => $query->where('id', '!=', $exclude->id))->with('slot')->get();
 
-        return $service->slots()->where('starts_at', '>=', $month->startOfMonth())->where('starts_at', '<', $month->startOfMonth()->addMonth())
+        return $service->slots()->where('starts_at', '>=', $from->startOfDay())->where('starts_at', '<', $to->addDay()->startOfDay())
             ->withCount(['appointments as approved_count' => fn ($query) => $query->where('status', 'approved')->when($exclude, fn ($query) => $query->where('id', '!=', $exclude->id))])
             ->orderBy('starts_at')->get()->map(function ($slot) use ($expiry, $blocked, $active, $service, $exclude) {
                 $reason = null;
