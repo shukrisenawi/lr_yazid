@@ -8,6 +8,23 @@ import { money } from '@/types/catalog';
 import type { MembershipPlan } from '@/types/membership';
 defineProps<{ plans: MembershipPlan[] }>();
 const editing = ref<number | null>(null);
+const activeTab = ref<'plan' | 'trial'>('plan');
+function switchTab(event: KeyboardEvent) {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    activeTab.value =
+        event.key === 'Home'
+            ? 'plan'
+            : event.key === 'End'
+              ? 'trial'
+              : activeTab.value === 'plan'
+                ? 'trial'
+                : 'plan';
+    const tabList = (event.currentTarget as HTMLElement).parentElement;
+    tabList
+        ?.querySelector<HTMLButtonElement>(`#${activeTab.value}-tab`)
+        ?.focus();
+}
 const trial = useForm({
     name: '',
     email: '',
@@ -34,6 +51,7 @@ const form = useForm({
     benefits: [] as string[],
 });
 function edit(plan: MembershipPlan) {
+    activeTab.value = 'plan';
     editing.value = plan.id;
     form.name = plan.name;
     form.price_sen = plan.price_sen;
@@ -63,242 +81,298 @@ function save() {
     <Head title="Membership Plans" />
     <div class="max-w-5xl p-6 md:p-10">
         <h1 class="text-3xl font-semibold">Membership plans</h1>
-        <form
-            class="mt-8 space-y-5 rounded-xl border p-6"
-            @submit.prevent="createTrial"
+        <div
+            role="tablist"
+            aria-label="Membership management"
+            class="mt-8 flex flex-wrap gap-2 border-b pb-3"
         >
-            <h2 class="text-xl font-semibold">Create VIP trial account</h2>
-            <p class="text-sm text-muted-foreground">
-                Create a new customer with free VIP access for 1–365 days,
-                starting now. The customer can log in immediately without email
-                verification.
-            </p>
-            <p
-                v-if="Object.keys(trial.errors).length"
-                role="alert"
-                class="text-sm text-red-700"
-            >
-                {{ Object.values(trial.errors).join(' ') }}
-            </p>
-            <div class="grid gap-5 sm:grid-cols-2">
-                <label class="grid gap-2 text-sm"
-                    >Full name
-                    <input
-                        v-model="trial.name"
-                        required
-                        autocomplete="name"
-                        class="rounded-md border bg-transparent p-2.5"
-                    />
-                </label>
-                <label class="grid gap-2 text-sm"
-                    >Email
-                    <input
-                        v-model="trial.email"
-                        type="email"
-                        required
-                        autocomplete="email"
-                        class="rounded-md border bg-transparent p-2.5"
-                    />
-                </label>
-                <label class="grid gap-2 text-sm"
-                    >Malaysian phone number
-                    <input
-                        v-model="trial.phone"
-                        type="tel"
-                        required
-                        placeholder="0123456789"
-                        class="rounded-md border bg-transparent p-2.5"
-                    />
-                </label>
-                <label class="grid gap-2 text-sm"
-                    >Membership plan
-                    <select
-                        v-model="trial.membership_plan_id"
-                        required
-                        class="rounded-md border bg-background p-2.5"
-                    >
-                        <option value="" disabled>Select a plan</option>
-                        <option
-                            v-for="plan in plans"
-                            :key="plan.id"
-                            :value="plan.id"
-                        >
-                            {{ plan.name }}
-                        </option>
-                    </select>
-                </label>
-                <label class="grid gap-2 text-sm"
-                    >Password
-                    <input
-                        v-model="trial.password"
-                        type="password"
-                        required
-                        autocomplete="new-password"
-                        class="rounded-md border bg-transparent p-2.5"
-                    />
-                </label>
-                <label class="grid gap-2 text-sm"
-                    >Confirm password
-                    <input
-                        v-model="trial.password_confirmation"
-                        type="password"
-                        required
-                        autocomplete="new-password"
-                        class="rounded-md border bg-transparent p-2.5"
-                    />
-                </label>
-                <label class="grid gap-2 text-sm"
-                    >Trial duration (days)
-                    <input
-                        v-model="trial.trial_days"
-                        type="number"
-                        min="1"
-                        max="365"
-                        required
-                        class="rounded-md border bg-transparent p-2.5"
-                    />
-                </label>
-            </div>
             <button
-                :disabled="trial.processing || !plans.length"
-                class="rounded-md bg-emerald-800 px-5 py-2.5 text-white disabled:opacity-50"
+                v-for="tab in [
+                    { id: 'plan', label: 'Create membership plan' },
+                    { id: 'trial', label: 'Create VIP trial account' },
+                ] as const"
+                :id="`${tab.id}-tab`"
+                :key="tab.id"
+                type="button"
+                role="tab"
+                :aria-selected="activeTab === tab.id"
+                :aria-controls="`${tab.id}-panel`"
+                :tabindex="activeTab === tab.id ? 0 : -1"
+                class="rounded-md px-4 py-2.5 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
+                :class="
+                    activeTab === tab.id
+                        ? 'bg-emerald-800 text-white'
+                        : 'text-muted-foreground hover:bg-muted'
+                "
+                @click="activeTab = tab.id"
+                @keydown="switchTab"
             >
-                {{
-                    trial.processing ? 'Creating…' : 'Create VIP trial account'
-                }}
+                {{ tab.label }}
             </button>
-            <p v-if="!plans.length" class="text-sm text-muted-foreground">
-                Create a membership plan below first.
-            </p>
-        </form>
-        <div class="my-8 grid gap-4 md:grid-cols-2">
-            <section
-                v-for="plan in plans"
-                :key="plan.id"
-                class="rounded-xl border p-5"
-            >
-                <h2 class="font-semibold">{{ plan.name }}</h2>
-                <p class="mt-3 text-sm">
-                    {{ money(plan.price_sen) }} /
-                    {{ plan.duration_months }} months ·
-                    {{ plan.is_active ? 'Active' : 'Inactive' }}
-                </p>
-                <div class="mt-4 flex flex-wrap gap-4 text-sm">
-                    <AdminEditButton
-                        :label="`Edit ${plan.name}`"
-                        @click="edit(plan)"
-                    />
-                    <AdminRecordAction
-                        module="membership-plans"
-                        :record-id="plan.id"
-                        :record-name="plan.name"
-                        @success="
-                            editing = null;
-                            form.reset();
-                        "
-                    />
-                    <Link
-                        v-if="plan.product"
-                        :href="`/admin/products/${plan.product.id}/edit`"
-                        class="underline"
-                        >Manage images and description</Link
-                    >
-                </div>
-            </section>
         </div>
-        <form class="space-y-5 rounded-xl border p-6" @submit.prevent="save">
-            <h2 class="text-xl font-semibold">
-                {{
-                    editing ? 'Edit membership plan' : 'Create membership plan'
-                }}
-            </h2>
-            <p
-                v-if="Object.keys(form.errors).length"
-                role="alert"
-                class="text-sm text-red-700"
+        <section
+            id="trial-panel"
+            v-show="activeTab === 'trial'"
+            role="tabpanel"
+            aria-labelledby="trial-tab"
+            tabindex="0"
+        >
+            <form
+                class="mt-8 space-y-5 rounded-xl border p-6"
+                @submit.prevent="createTrial"
             >
-                {{ Object.values(form.errors).join(' ') }}
-            </p>
-            <label class="grid gap-2 text-sm"
-                ><span
-                    >Plan name
-                    <span class="text-red-600" aria-hidden="true">*</span></span
-                ><input
-                    v-model="form.name"
-                    required
-                    class="rounded-md border bg-transparent p-2.5"
-            /></label>
-            <div class="grid gap-5 sm:grid-cols-2">
+                <h2 class="text-xl font-semibold">Create VIP trial account</h2>
+                <p class="text-sm text-muted-foreground">
+                    Create a new customer with free VIP access for 1–365 days,
+                    starting now. The customer can log in immediately without
+                    email verification.
+                </p>
+                <p
+                    v-if="Object.keys(trial.errors).length"
+                    role="alert"
+                    class="text-sm text-red-700"
+                >
+                    {{ Object.values(trial.errors).join(' ') }}
+                </p>
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <label class="grid gap-2 text-sm"
+                        >Full name
+                        <input
+                            v-model="trial.name"
+                            required
+                            autocomplete="name"
+                            class="rounded-md border bg-transparent p-2.5"
+                        />
+                    </label>
+                    <label class="grid gap-2 text-sm"
+                        >Email
+                        <input
+                            v-model="trial.email"
+                            type="email"
+                            required
+                            autocomplete="email"
+                            class="rounded-md border bg-transparent p-2.5"
+                        />
+                    </label>
+                    <label class="grid gap-2 text-sm"
+                        >Malaysian phone number
+                        <input
+                            v-model="trial.phone"
+                            type="tel"
+                            required
+                            placeholder="0123456789"
+                            class="rounded-md border bg-transparent p-2.5"
+                        />
+                    </label>
+                    <label class="grid gap-2 text-sm"
+                        >Membership plan
+                        <select
+                            v-model="trial.membership_plan_id"
+                            required
+                            class="rounded-md border bg-background p-2.5"
+                        >
+                            <option value="" disabled>Select a plan</option>
+                            <option
+                                v-for="plan in plans"
+                                :key="plan.id"
+                                :value="plan.id"
+                            >
+                                {{ plan.name }}
+                            </option>
+                        </select>
+                    </label>
+                    <label class="grid gap-2 text-sm"
+                        >Password
+                        <input
+                            v-model="trial.password"
+                            type="password"
+                            required
+                            autocomplete="new-password"
+                            class="rounded-md border bg-transparent p-2.5"
+                        />
+                    </label>
+                    <label class="grid gap-2 text-sm"
+                        >Confirm password
+                        <input
+                            v-model="trial.password_confirmation"
+                            type="password"
+                            required
+                            autocomplete="new-password"
+                            class="rounded-md border bg-transparent p-2.5"
+                        />
+                    </label>
+                    <label class="grid gap-2 text-sm"
+                        >Trial duration (days)
+                        <input
+                            v-model="trial.trial_days"
+                            type="number"
+                            min="1"
+                            max="365"
+                            required
+                            class="rounded-md border bg-transparent p-2.5"
+                        />
+                    </label>
+                </div>
+                <button
+                    :disabled="trial.processing || !plans.length"
+                    class="rounded-md bg-emerald-800 px-5 py-2.5 text-white disabled:opacity-50"
+                >
+                    {{
+                        trial.processing
+                            ? 'Creating…'
+                            : 'Create VIP trial account'
+                    }}
+                </button>
+                <p v-if="!plans.length" class="text-sm text-muted-foreground">
+                    Create a membership plan in the other tab first.
+                </p>
+            </form>
+        </section>
+        <section
+            id="plan-panel"
+            v-show="activeTab === 'plan'"
+            role="tabpanel"
+            aria-labelledby="plan-tab"
+            tabindex="0"
+        >
+            <div class="my-8 grid gap-4 md:grid-cols-2">
+                <section
+                    v-for="plan in plans"
+                    :key="plan.id"
+                    class="rounded-xl border p-5"
+                >
+                    <h2 class="font-semibold">{{ plan.name }}</h2>
+                    <p class="mt-3 text-sm">
+                        {{ money(plan.price_sen) }} /
+                        {{ plan.duration_months }} months ·
+                        {{ plan.is_active ? 'Active' : 'Inactive' }}
+                    </p>
+                    <div class="mt-4 flex flex-wrap gap-4 text-sm">
+                        <AdminEditButton
+                            :label="`Edit ${plan.name}`"
+                            @click="edit(plan)"
+                        />
+                        <AdminRecordAction
+                            module="membership-plans"
+                            :record-id="plan.id"
+                            :record-name="plan.name"
+                            @success="
+                                editing = null;
+                                form.reset();
+                            "
+                        />
+                        <Link
+                            v-if="plan.product"
+                            :href="`/admin/products/${plan.product.id}/edit`"
+                            class="underline"
+                            >Manage images and description</Link
+                        >
+                    </div>
+                </section>
+            </div>
+            <form
+                class="space-y-5 rounded-xl border p-6"
+                @submit.prevent="save"
+            >
+                <h2 class="text-xl font-semibold">
+                    {{
+                        editing
+                            ? 'Edit membership plan'
+                            : 'Create membership plan'
+                    }}
+                </h2>
+                <p
+                    v-if="Object.keys(form.errors).length"
+                    role="alert"
+                    class="text-sm text-red-700"
+                >
+                    {{ Object.values(form.errors).join(' ') }}
+                </p>
                 <label class="grid gap-2 text-sm"
                     ><span
-                        >Price (RM)
-                        <span class="text-red-600" aria-hidden="true"
-                            >*</span
-                        ></span
-                    ><RinggitInput
-                        v-model="form.price_sen"
-                        type="number"
-                        min="1"
-                        max="1000000"
-                        required
-                        class="rounded-md border bg-transparent p-2.5" /></label
-                ><label class="grid gap-2 text-sm"
-                    ><span
-                        >Duration (calendar months)
+                        >Plan name
                         <span class="text-red-600" aria-hidden="true"
                             >*</span
                         ></span
                     ><input
-                        v-model="form.duration_months"
-                        type="number"
-                        min="1"
-                        max="60"
+                        v-model="form.name"
                         required
                         class="rounded-md border bg-transparent p-2.5"
                 /></label>
-            </div>
-            <label class="grid gap-2 text-sm"
-                >Description<textarea
-                    v-model="form.description"
-                    rows="3"
-                    class="rounded-md border bg-transparent p-3"
-                /></label
-            ><label class="grid gap-2 text-sm"
-                ><span
-                    >Benefits (one per line)
-                    <span class="text-red-600" aria-hidden="true">*</span></span
-                ><textarea
-                    v-model="benefits"
-                    required
-                    rows="5"
-                    class="rounded-md border bg-transparent p-3"
-                /></label
-            ><label class="flex items-center gap-2 text-sm"
-                ><input v-model="form.is_active" type="checkbox" />Plan
-                available for purchase</label
-            >
-            <div class="flex gap-4">
-                <button
-                    :disabled="form.processing"
-                    class="rounded-md bg-emerald-800 px-5 py-2.5 text-white disabled:opacity-50"
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <label class="grid gap-2 text-sm"
+                        ><span
+                            >Price (RM)
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><RinggitInput
+                            v-model="form.price_sen"
+                            type="number"
+                            min="1"
+                            max="1000000"
+                            required
+                            class="rounded-md border bg-transparent p-2.5" /></label
+                    ><label class="grid gap-2 text-sm"
+                        ><span
+                            >Duration (calendar months)
+                            <span class="text-red-600" aria-hidden="true"
+                                >*</span
+                            ></span
+                        ><input
+                            v-model="form.duration_months"
+                            type="number"
+                            min="1"
+                            max="60"
+                            required
+                            class="rounded-md border bg-transparent p-2.5"
+                    /></label>
+                </div>
+                <label class="grid gap-2 text-sm"
+                    >Description<textarea
+                        v-model="form.description"
+                        rows="3"
+                        class="rounded-md border bg-transparent p-3"
+                    /></label
+                ><label class="grid gap-2 text-sm"
+                    ><span
+                        >Benefits (one per line)
+                        <span class="text-red-600" aria-hidden="true"
+                            >*</span
+                        ></span
+                    ><textarea
+                        v-model="benefits"
+                        required
+                        rows="5"
+                        class="rounded-md border bg-transparent p-3"
+                    /></label
+                ><label class="flex items-center gap-2 text-sm"
+                    ><input v-model="form.is_active" type="checkbox" />Plan
+                    available for purchase</label
                 >
-                    {{ form.processing ? 'Saving…' : 'Save plan' }}</button
-                ><button
-                    v-if="editing"
-                    type="button"
-                    class="underline"
-                    @click="
-                        editing = null;
-                        form.reset();
-                    "
-                >
-                    Create another plan
-                </button>
-            </div>
-            <p class="text-xs text-muted-foreground">
-                Program and appointment modules must be released before those
-                benefits can be used.
-            </p>
-        </form>
+                <div class="flex gap-4">
+                    <button
+                        :disabled="form.processing"
+                        class="rounded-md bg-emerald-800 px-5 py-2.5 text-white disabled:opacity-50"
+                    >
+                        {{ form.processing ? 'Saving…' : 'Save plan' }}</button
+                    ><button
+                        v-if="editing"
+                        type="button"
+                        class="underline"
+                        @click="
+                            editing = null;
+                            form.reset();
+                        "
+                    >
+                        Create another plan
+                    </button>
+                </div>
+                <p class="text-xs text-muted-foreground">
+                    Program and appointment modules must be released before
+                    those benefits can be used.
+                </p>
+            </form>
+        </section>
     </div>
 </template>
