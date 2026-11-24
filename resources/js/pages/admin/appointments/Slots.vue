@@ -2,7 +2,7 @@
 import AdminEditButton from '@/components/AdminEditButton.vue';
 import AdminRecordAction from '@/components/AdminRecordAction.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import Pagination from '@/components/Pagination.vue';
 import StatusBadge from '@/components/StatusBadge.vue';
 import { appointmentCopy as copy } from '@/lib/appointmentCopy';
@@ -58,6 +58,24 @@ const generator = useForm({
     preview: true,
 });
 const block = useForm({ date: '', reason: '' });
+const settings = useForm({
+    name: props.service.name,
+    description: props.service.description ?? '',
+    duration_minutes: props.service.duration_minutes,
+    default_capacity: props.service.default_capacity,
+    location: props.service.location,
+    is_active: props.service.is_active,
+    minimum_notice_hours: props.service.minimum_notice_hours,
+    maximum_advance_days: props.service.maximum_advance_days,
+    cancellation_notice_hours: props.service.cancellation_notice_hours,
+    maximum_active_bookings: props.service.maximum_active_bookings,
+});
+const durationHours = computed({
+    get: () => generator.duration_minutes / 60,
+    set: (hours: number) => {
+        generator.duration_minutes = Math.round(Number(hours) * 60);
+    },
+});
 const action = useForm({});
 function edit(row: AppointmentSlot) {
     selected.value = row.id;
@@ -101,6 +119,60 @@ function generate(preview: boolean) {
             {{ service.name }} · {{ copy.slots }}
         </h1>
         <p class="mt-3 text-sm text-muted-foreground">{{ copy.bookedHelp }}</p>
+        <form
+            class="mt-6 space-y-4 rounded-xl border p-6"
+            @submit.prevent="settings.put(base, { preserveScroll: true })"
+        >
+            <h2 class="text-xl font-semibold">Booking settings</h2>
+            <p class="text-sm text-muted-foreground">
+                Allow bookings up to 2 months (60 days) ahead. Generate slots for
+                those dates below; existing slots are not changed.
+            </p>
+            <div class="grid gap-5 sm:grid-cols-2">
+                <label class="grid gap-2 text-sm">
+                    {{ copy.notice }}
+                    <input
+                        v-model="settings.minimum_notice_hours"
+                        type="number"
+                        min="0"
+                        max="2160"
+                        required
+                        class="rounded-md border bg-transparent p-2.5"
+                    />
+                </label>
+                <label class="grid gap-2 text-sm">
+                    {{ copy.advance }}
+                    <input
+                        v-model="settings.maximum_advance_days"
+                        type="number"
+                        min="1"
+                        max="60"
+                        required
+                        class="rounded-md border bg-transparent p-2.5"
+                    />
+                </label>
+            </div>
+            <p
+                v-if="Object.keys(settings.errors).length"
+                role="alert"
+                class="text-sm text-red-700"
+            >
+                {{ Object.values(settings.errors).join(' ') }}
+            </p>
+            <p
+                v-if="settings.recentlySuccessful"
+                role="status"
+                class="text-sm text-emerald-700"
+            >
+                Booking settings saved.
+            </p>
+            <button
+                :disabled="settings.processing"
+                class="rounded-md bg-emerald-800 px-5 py-2.5 text-white disabled:opacity-50"
+            >
+                {{ settings.processing ? copy.saving : 'Save booking settings' }}
+            </button>
+        </form>
         <nav class="mt-8 flex flex-wrap gap-3" aria-label="Scheduling sections">
             <button
                 v-for="value in ['slots', 'generate', 'blocked'] as const"
@@ -444,13 +516,15 @@ function generate(preview: boolean) {
                             type="time"
                             class="rounded-md border bg-transparent p-2.5" /></label
                     ><label class="grid gap-2 text-sm"
-                        ><span>{{ copy.duration }} (optional)</span
+                        ><span>Duration (hours)</span
                         ><input
-                            v-model="generator.duration_minutes"
+                            v-model="durationHours"
                             type="number"
-                            min="5"
-                            max="480"
-                            :placeholder="`Service default: ${service.duration_minutes} minutes`"
+                            min="0.08333333333333333"
+                            max="8"
+                            step="any"
+                            required
+                            :placeholder="`Service default: ${service.duration_minutes / 60} hours`"
                             class="rounded-md border bg-transparent p-2.5" /></label
                     ><label class="grid gap-2 text-sm"
                         ><span
