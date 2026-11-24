@@ -213,6 +213,35 @@ class MembershipPurchaseTest extends TestCase
         $this->assertDatabaseCount('memberships', 0);
     }
 
+    public function test_admin_can_delete_trial_customer_without_transactions_or_bookings(): void
+    {
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $user = User::factory()->create();
+        $membership = $user->memberships()->create([
+            'membership_plan_id' => $this->plan()->id, 'status' => 'active',
+            'starts_at' => now(), 'expires_at' => now()->addDays(7),
+        ]);
+        $this->actingAs($admin)->delete("/admin/records/customers/{$user->id}")
+            ->assertSessionHasNoErrors()->assertRedirect('/admin/customers');
+        $this->assertDatabaseMissing('users', ['id' => $user->id]);
+        $this->assertDatabaseMissing('memberships', ['id' => $membership->id]);
+        $this->assertDatabaseHas('admin_record_actions', [
+            'module' => 'customers', 'record_id' => $user->id, 'action' => 'deleted',
+        ]);
+    }
+
+    public function test_paid_membership_customer_cannot_be_deleted(): void
+    {
+        $user = User::factory()->create(['phone' => '+60123456789']);
+        $this->verify($this->checkout($user, $this->plan()));
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $this->actingAs($admin)->delete("/admin/records/customers/{$user->id}")
+            ->assertSessionHasErrors('record');
+        $this->assertDatabaseHas('users', ['id' => $user->id]);
+        $this->assertDatabaseCount('memberships', 1);
+        $this->assertDatabaseCount('membership_transactions', 1);
+    }
+
     public function test_combined_order_consumes_physical_stock_and_activates_vip(): void
     {
         $user = User::factory()->create(['phone' => '+60123456789']);

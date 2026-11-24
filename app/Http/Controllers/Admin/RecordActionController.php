@@ -37,10 +37,14 @@ class RecordActionController extends Controller
                 if ($model instanceof User) {
                     abort_unless($model->role->value === 'customer', 404);
                     // Financial and booking records must never cascade away with a customer.
-                    $this->reject($model->orders()->exists() || $model->memberships()->withTrashed()->exists()
+                    $this->reject($model->orders()->exists()
+                        || DB::table('membership_transactions')->where('user_id', $record)->exists()
+                        || DB::table('membership_transactions')->whereIn('membership_id', $model->memberships()->withTrashed()->select('id'))->exists()
                         || DB::table('appointments')->where('user_id', $record)->exists()
                         || DB::table('vip_program_registrations')->where('user_id', $record)->exists(),
                         'This customer has transaction or booking history and cannot be deleted.');
+                    // Free trial memberships have no financial history to preserve.
+                    $model->memberships()->withTrashed()->forceDelete();
                 }
                 if ($model instanceof Appointment) {
                     $this->reject(in_array($model->status, ['pending', 'approved'], true)
