@@ -102,7 +102,16 @@ function saveSlot() {
         },
     };
     if (selected.value) slot.put(`${base}/slots/${selected.value}`, options);
-    else slot.post(`${base}/slots`, options);
+    else {
+        slot.transform((data) => ({
+            ...data,
+            starts_at: `${data.starts_at}T00:00:00+08:00`,
+            ends_at: `${data.ends_at}T23:59:59+08:00`,
+        })).post(`${base}/slots`, {
+            ...options,
+            onFinish: () => slot.transform((data) => data),
+        });
+    }
 }
 function generate(preview: boolean) {
     generator.preview = preview;
@@ -309,6 +318,10 @@ function generate(preview: boolean) {
                 <h2 class="text-xl font-semibold">
                     {{ selected ? copy.editSlot : copy.manual }}
                 </h2>
+                <p v-if="!selected" class="text-sm text-muted-foreground">
+                    All-day slot, from the start date at 00:00 to the end date at
+                    23:59:59 (Malaysia time).
+                </p>
                 <p
                     v-if="Object.keys(slot.errors).length"
                     role="alert"
@@ -319,25 +332,26 @@ function generate(preview: boolean) {
                 <div class="grid gap-5 sm:grid-cols-2">
                     <label class="grid gap-2 text-sm"
                         ><span
-                            >{{ copy.start }}
+                            >{{ selected ? copy.start : 'Start date' }}
                             <span class="text-red-600" aria-hidden="true"
                                 >*</span
                             ></span
                         ><input
                             v-model="slot.starts_at"
-                            type="datetime-local"
+                            :type="selected ? 'datetime-local' : 'date'"
                             required
                             step="1"
                             class="rounded-md border bg-transparent p-2.5" /></label
                     ><label class="grid gap-2 text-sm"
                         ><span
-                            >{{ copy.end }}
+                            >{{ selected ? copy.end : 'End date' }}
                             <span class="text-red-600" aria-hidden="true"
                                 >*</span
                             ></span
                         ><input
                             v-model="slot.ends_at"
-                            type="datetime-local"
+                            :type="selected ? 'datetime-local' : 'date'"
+                            :min="!selected ? slot.starts_at : undefined"
                             required
                             step="1"
                             class="rounded-md border bg-transparent p-2.5" /></label

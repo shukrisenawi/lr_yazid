@@ -25,8 +25,10 @@ class AppointmentSchedulingService
             }
             $slot->fill($data);
             $minutes = $slot->starts_at->diffInMinutes($slot->ends_at, false);
-            if ($slot->starts_at->lte(now()) || $minutes < 5 || $minutes > 480) {
-                throw ValidationException::withMessages(['ends_at' => 'Slots must be in the future and last between 5 and 480 minutes.']);
+            $allDay = $slot->starts_at->format('H:i:s') === '00:00:00'
+                && $slot->ends_at->format('H:i:s') === '23:59:59';
+            if ($slot->starts_at->lte(now()) || $minutes < 5 || ($allDay ? $minutes >= 93 * 1440 : $minutes > 480)) {
+                throw ValidationException::withMessages(['ends_at' => 'Slots must be in the future and last between 5 and 480 minutes, or cover up to 93 whole days.']);
             }
             if (! $service->is_active && (! $slot->exists || $slot->status === 'available')) {
                 throw ValidationException::withMessages(['slot' => __('appointment.inactive')]);

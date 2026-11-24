@@ -56,6 +56,34 @@ class AppointmentSchedulingTest extends TestCase
         return $service->slots()->firstOrFail();
     }
 
+    public function test_manual_slot_can_cover_a_whole_day_in_malaysia_time(): void
+    {
+        $this->admin();
+        $service = $this->service();
+        $this->post("/admin/appointment-services/$service->id/slots", [
+            ...$this->slotData(),
+            'starts_at' => '2026-11-16T00:00:00+08:00',
+            'ends_at' => '2026-11-16T23:59:59+08:00',
+        ])->assertSessionHasNoErrors();
+
+        $slot = $service->slots()->firstOrFail();
+        $this->assertSame('2026-11-16 00:00:00', $slot->starts_at->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-11-16 23:59:59', $slot->ends_at->format('Y-m-d H:i:s'));
+    }
+
+    public function test_manual_all_day_slot_range_is_limited_to_93_days(): void
+    {
+        $this->admin();
+        $service = $this->service();
+        $data = [...$this->slotData(), 'starts_at' => '2026-11-16T00:00:00+08:00'];
+        $this->post("/admin/appointment-services/$service->id/slots", [
+            ...$data, 'ends_at' => '2027-02-17T23:59:59+08:00',
+        ])->assertSessionHasErrors('ends_at');
+        $this->post("/admin/appointment-services/$service->id/slots", [
+            ...$data, 'ends_at' => '2027-02-16T23:59:59+08:00',
+        ])->assertSessionHasNoErrors();
+    }
+
     public function test_customer_cannot_access_or_change_scheduling(): void
     {
         $service = $this->service();
