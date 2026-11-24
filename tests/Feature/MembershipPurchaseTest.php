@@ -10,7 +10,6 @@ use App\Models\MembershipTransaction;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
-use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
@@ -190,7 +189,9 @@ class MembershipPurchaseTest extends TestCase
         $this->assertTrue($user->hasActiveMembership());
         $this->assertTrue(Hash::check('TrialPassword123!', $user->password));
         $this->assertSame(now()->addDays(14)->toDateTimeString(), $user->memberships()->firstOrFail()->expires_at->toDateTimeString());
-        Notification::assertSentTo($user, VerifyEmail::class);
+        $this->assertTrue($user->hasVerifiedEmail());
+        Notification::assertNothingSent();
+        $this->actingAs($user)->get('/vip/dashboard')->assertOk();
         $this->assertDatabaseCount('orders', 0);
         $this->assertDatabaseCount('membership_transactions', 0);
         $this->travel(14)->days();

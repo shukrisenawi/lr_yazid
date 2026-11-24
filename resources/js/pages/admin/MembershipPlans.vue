@@ -70,8 +70,8 @@ function save() {
             <h2 class="text-xl font-semibold">Create VIP trial account</h2>
             <p class="text-sm text-muted-foreground">
                 Create a new customer with free VIP access for 1–365 days,
-                starting now. The customer must verify their email before
-                accessing VIP features.
+                starting now. The customer can log in immediately without email
+                verification.
             </p>
             <p
                 v-if="Object.keys(trial.errors).length"

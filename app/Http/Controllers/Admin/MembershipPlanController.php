@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\MembershipPlanRequest;
 use App\Models\MembershipPlan;
 use App\Models\Product;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -39,21 +38,20 @@ class MembershipPlanController extends Controller
             'trial_days' => ['required', 'integer', 'min:1', 'max:365'],
         ]);
 
-        $user = DB::transaction(function () use ($request, $creator, $data) {
+        DB::transaction(function () use ($request, $creator, $data) {
             $plan = MembershipPlan::whereKey($data['membership_plan_id'])->lockForUpdate()->firstOrFail();
             $user = $creator->create($request->only('name', 'email', 'phone', 'password', 'password_confirmation'));
+            $user->email_verified_at = now();
+            $user->save();
             $user->memberships()->create([
                 'membership_plan_id' => $plan->id,
                 'status' => 'active',
                 'starts_at' => now(),
                 'expires_at' => now()->addDays((int) $data['trial_days']),
             ]);
-
-            return $user;
         });
-        event(new Registered($user));
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => 'VIP trial account created. Email verification is required before accessing VIP features.']);
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'VIP trial account created. The customer can log in immediately without email verification.']);
 
         return back();
     }
