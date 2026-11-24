@@ -111,6 +111,7 @@ Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('adm
     Route::get('memberships', [AdminMembershipController::class, 'index'])->name('memberships.index');
     Route::put('memberships/{membership}/expiry', [AdminMembershipController::class, 'adjust'])->name('memberships.adjust');
     Route::post('membership-plans', [MembershipPlanController::class, 'store'])->name('membership-plans.store');
+    Route::post('membership-plans/trial', [MembershipPlanController::class, 'trial'])->middleware('throttle:10,1')->name('membership-plans.trial');
     Route::put('membership-plans/{membershipPlan}', [MembershipPlanController::class, 'update'])->name('membership-plans.update');
     Route::get('payment-settings', [AdminPaymentController::class, 'settings'])->name('payments.settings');
     Route::put('payment-settings', [AdminPaymentController::class, 'update'])->name('payments.settings.update');

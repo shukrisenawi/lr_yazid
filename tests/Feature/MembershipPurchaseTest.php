@@ -10,8 +10,11 @@ use App\Models\MembershipTransaction;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -168,6 +171,45 @@ class MembershipPurchaseTest extends TestCase
         $user->save();
         $this->post('/admin/membership-plans', $data)->assertSessionHasNoErrors();
         $this->assertDatabaseHas('products', ['type' => 'membership', 'stock' => 0, 'price_sen' => 19900]);
+    }
+
+    public function test_admin_can_create_trial_account_for_selected_number_of_days(): void
+    {
+        $this->freezeTime();
+        Notification::fake();
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $plan = $this->plan();
+        $this->actingAs($admin)->post('/admin/membership-plans/trial', [
+            'name' => 'Trial Customer', 'email' => 'trial@example.com',
+            'phone' => '0123456789', 'password' => 'TrialPassword123!',
+            'password_confirmation' => 'TrialPassword123!',
+            'membership_plan_id' => $plan->id, 'trial_days' => 14,
+        ])->assertSessionHasNoErrors()->assertRedirect();
+        $user = User::where('email', 'trial@example.com')->firstOrFail();
+        $this->assertSame(UserRole::Customer, $user->role);
+        $this->assertTrue($user->hasActiveMembership());
+        $this->assertTrue(Hash::check('TrialPassword123!', $user->password));
+        $this->assertSame(now()->addDays(14)->toDateTimeString(), $user->memberships()->firstOrFail()->expires_at->toDateTimeString());
+        Notification::assertSentTo($user, VerifyEmail::class);
+        $this->assertDatabaseCount('orders', 0);
+        $this->assertDatabaseCount('membership_transactions', 0);
+        $this->travel(14)->days();
+        $this->assertFalse($user->hasActiveMembership());
+    }
+
+    public function test_trial_creation_is_admin_only_and_requires_valid_days(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user)->post('/admin/membership-plans/trial')->assertForbidden();
+        $user->role = UserRole::Admin;
+        $user->save();
+        foreach ([0, 366, 1.5] as $days) {
+            $this->post('/admin/membership-plans/trial', [
+                'membership_plan_id' => $this->plan()->id, 'trial_days' => $days,
+            ])->assertSessionHasErrors('trial_days');
+        }
+        $this->assertDatabaseCount('users', 1);
+        $this->assertDatabaseCount('memberships', 0);
     }
 
     public function test_combined_order_consumes_physical_stock_and_activates_vip(): void

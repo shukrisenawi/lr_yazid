@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Fortify\CreateNewUser;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MembershipPlanRequest;
 use App\Models\MembershipPlan;
 use App\Models\Product;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -27,6 +30,32 @@ class MembershipPlanController extends Controller
     public function update(MembershipPlanRequest $request, MembershipPlan $membershipPlan): RedirectResponse
     {
         return $this->save($request, $membershipPlan);
+    }
+
+    public function trial(Request $request, CreateNewUser $creator): RedirectResponse
+    {
+        $data = $request->validate([
+            'membership_plan_id' => ['required', 'integer', 'exists:membership_plans,id,deleted_at,NULL'],
+            'trial_days' => ['required', 'integer', 'min:1', 'max:365'],
+        ]);
+
+        $user = DB::transaction(function () use ($request, $creator, $data) {
+            $plan = MembershipPlan::whereKey($data['membership_plan_id'])->lockForUpdate()->firstOrFail();
+            $user = $creator->create($request->only('name', 'email', 'phone', 'password', 'password_confirmation'));
+            $user->memberships()->create([
+                'membership_plan_id' => $plan->id,
+                'status' => 'active',
+                'starts_at' => now(),
+                'expires_at' => now()->addDays((int) $data['trial_days']),
+            ]);
+
+            return $user;
+        });
+        event(new Registered($user));
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'VIP trial account created. Email verification is required before accessing VIP features.']);
+
+        return back();
     }
 
     private function save(MembershipPlanRequest $request, ?MembershipPlan $plan): RedirectResponse

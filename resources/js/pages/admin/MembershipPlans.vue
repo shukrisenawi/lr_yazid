@@ -8,6 +8,22 @@ import { money } from '@/types/catalog';
 import type { MembershipPlan } from '@/types/membership';
 defineProps<{ plans: MembershipPlan[] }>();
 const editing = ref<number | null>(null);
+const trial = useForm({
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
+    password_confirmation: '',
+    membership_plan_id: '',
+    trial_days: 7,
+});
+function createTrial() {
+    trial.post('/admin/membership-plans/trial', {
+        preserveScroll: true,
+        onSuccess: () => trial.reset(),
+        onFinish: () => trial.reset('password', 'password_confirmation'),
+    });
+}
 const benefits = ref('VIP dashboard\nVIP programs\nAppointment booking');
 const form = useForm({
     name: 'Annual VIP Membership',
@@ -47,6 +63,114 @@ function save() {
     <Head title="Membership Plans" />
     <div class="max-w-5xl p-6 md:p-10">
         <h1 class="text-3xl font-semibold">Membership plans</h1>
+        <form
+            class="mt-8 space-y-5 rounded-xl border p-6"
+            @submit.prevent="createTrial"
+        >
+            <h2 class="text-xl font-semibold">Create VIP trial account</h2>
+            <p class="text-sm text-muted-foreground">
+                Create a new customer with free VIP access for 1–365 days,
+                starting now. The customer must verify their email before
+                accessing VIP features.
+            </p>
+            <p
+                v-if="Object.keys(trial.errors).length"
+                role="alert"
+                class="text-sm text-red-700"
+            >
+                {{ Object.values(trial.errors).join(' ') }}
+            </p>
+            <div class="grid gap-5 sm:grid-cols-2">
+                <label class="grid gap-2 text-sm"
+                    >Full name
+                    <input
+                        v-model="trial.name"
+                        required
+                        autocomplete="name"
+                        class="rounded-md border bg-transparent p-2.5"
+                    />
+                </label>
+                <label class="grid gap-2 text-sm"
+                    >Email
+                    <input
+                        v-model="trial.email"
+                        type="email"
+                        required
+                        autocomplete="email"
+                        class="rounded-md border bg-transparent p-2.5"
+                    />
+                </label>
+                <label class="grid gap-2 text-sm"
+                    >Malaysian phone number
+                    <input
+                        v-model="trial.phone"
+                        type="tel"
+                        required
+                        placeholder="0123456789"
+                        class="rounded-md border bg-transparent p-2.5"
+                    />
+                </label>
+                <label class="grid gap-2 text-sm"
+                    >Membership plan
+                    <select
+                        v-model="trial.membership_plan_id"
+                        required
+                        class="rounded-md border bg-background p-2.5"
+                    >
+                        <option value="" disabled>Select a plan</option>
+                        <option
+                            v-for="plan in plans"
+                            :key="plan.id"
+                            :value="plan.id"
+                        >
+                            {{ plan.name }}
+                        </option>
+                    </select>
+                </label>
+                <label class="grid gap-2 text-sm"
+                    >Password
+                    <input
+                        v-model="trial.password"
+                        type="password"
+                        required
+                        autocomplete="new-password"
+                        class="rounded-md border bg-transparent p-2.5"
+                    />
+                </label>
+                <label class="grid gap-2 text-sm"
+                    >Confirm password
+                    <input
+                        v-model="trial.password_confirmation"
+                        type="password"
+                        required
+                        autocomplete="new-password"
+                        class="rounded-md border bg-transparent p-2.5"
+                    />
+                </label>
+                <label class="grid gap-2 text-sm"
+                    >Trial duration (days)
+                    <input
+                        v-model="trial.trial_days"
+                        type="number"
+                        min="1"
+                        max="365"
+                        required
+                        class="rounded-md border bg-transparent p-2.5"
+                    />
+                </label>
+            </div>
+            <button
+                :disabled="trial.processing || !plans.length"
+                class="rounded-md bg-emerald-800 px-5 py-2.5 text-white disabled:opacity-50"
+            >
+                {{
+                    trial.processing ? 'Creating…' : 'Create VIP trial account'
+                }}
+            </button>
+            <p v-if="!plans.length" class="text-sm text-muted-foreground">
+                Create a membership plan below first.
+            </p>
+        </form>
         <div class="my-8 grid gap-4 md:grid-cols-2">
             <section
                 v-for="plan in plans"
