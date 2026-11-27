@@ -16,7 +16,7 @@ export const appointmentCopy = {
     remaining: 'places remaining',
     fullyBooked: 'Fully booked',
     unavailable: 'Unavailable',
-    purpose: 'Purpose of appointment',
+    purpose: 'Details of Appointment',
     additionalNotes: 'Additional notes (optional)',
     submitRequest: 'Submit request',
     submitting: 'Submitting…',

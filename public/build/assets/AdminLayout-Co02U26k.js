@@ -1,1 +1,0 @@
-import{En as e,X as t,Z as n,ct as r,en as i,qt as a}from"./dist-jVGu4_vM.js";import{t as o}from"./AppLayout-Lg-xs2zC.js";var s={class:`admin-content contents`},c=r({__name:`AdminLayout`,setup(r){return(r,c)=>(a(),n(o,null,{default:e(()=>[t(`div`,s,[i(r.$slots,`default`)])]),_:3}))}});export{c as default};
