@@ -12,6 +12,7 @@ export type Address = {
 };
 export type CartLine = {
     id: number;
+    type: 'physical' | 'membership';
     product_id: number;
     product_variant_id: number | null;
     name: string;

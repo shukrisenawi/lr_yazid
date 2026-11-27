@@ -1,9 +1,24 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import CartLine from '@/components/CartLine.vue';
 import OrderSummary from '@/components/OrderSummary.vue';
 import type { CartSummary } from '@/types/commerce';
-defineProps<{ cart: CartSummary }>();
+const props = defineProps<{ cart: CartSummary }>();
+const groups = computed(() =>
+    [
+        {
+            title: 'Product',
+            description: 'Physical products · Shipping required',
+            items: props.cart.items.filter((line) => line.type === 'physical'),
+        },
+        {
+            title: 'Non-product',
+            description: 'No shipping required',
+            items: props.cart.items.filter((line) => line.type !== 'physical'),
+        },
+    ].filter((group) => group.items.length > 0),
+);
 const form = useForm({});
 function clear() {
     if (confirm('Remove all items from your cart?'))
@@ -19,11 +34,22 @@ function clear() {
             class="mt-8 grid items-start gap-10 lg:grid-cols-[1.5fr_1fr]"
         >
             <section aria-label="Cart items">
-                <CartLine
-                    v-for="line in cart.items"
-                    :key="line.id"
-                    :line="line"
-                />
+                <section
+                    v-for="group in groups"
+                    :key="group.title"
+                    :aria-label="group.title"
+                    class="mb-8"
+                >
+                    <h2 class="text-xl font-semibold">{{ group.title }}</h2>
+                    <p class="mt-1 mb-4 text-sm text-muted-foreground">
+                        {{ group.description }}
+                    </p>
+                    <CartLine
+                        v-for="line in group.items"
+                        :key="line.id"
+                        :line="line"
+                    />
+                </section>
                 <div class="mt-6 flex flex-wrap justify-between gap-4 text-sm">
                     <Link href="/products" class="underline"
                         >Continue shopping</Link
@@ -44,7 +70,7 @@ function clear() {
                     :total="cart.total_sen"
                 />
                 <p
-                    v-if="!cart.shipping_enabled"
+                    v-if="cart.requires_shipping && !cart.shipping_enabled"
                     role="alert"
                     class="mt-4 text-sm text-red-700 dark:text-red-400"
                 >
